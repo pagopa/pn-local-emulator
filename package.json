@@ -1,0 +1,22 @@
+{
+  "name": "pn-local-validator",
+  "version": "0.0.0",
+  "description": "A system that emulates some features of Piattaforma Notifiche platform.",
+  "main": "dist/main.js",
+  "scripts": {
+    "clean": "tsc --build --clean",
+    "compile": "tsc",
+    "start": "pnpm compile && node -r dotenv/config dist/main.js dotenv_config_path=.env.default"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GNU GPL 3.0",
+  "devDependencies": {
+    "dotenv": "^16.0.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "fp-ts": "^2.12.2",
+    "io-ts": "^2.2.17"
+  }
+}
