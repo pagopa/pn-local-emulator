@@ -9,3 +9,7 @@ compile:
 .PHONY: start
 start:
 	pnpm start
+
+.PHONY: test
+test:
+	pnpm test
