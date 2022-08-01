@@ -5,13 +5,3 @@ paths:
   # empty because we don't use them
 components:
   schemas:
-    PreLoadRequest:
-      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/PreLoadRequest"
-    PreLoadResponse:
-      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/PreLoadResponse"
-    # NewNotificationRequest:
-    #   $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NewNotificationRequest"
-    NewNotificationResponse:
-      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/NewNotificationResponse"
-    # Problem:
-    #   $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/Problem"
