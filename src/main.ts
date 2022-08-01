@@ -8,13 +8,15 @@ pipe(
   parseConfig(process.env),
   E.map((config) => {
     const logger = makeLogger();
-    // create the driving adapters
+    /* put here the driven adapters (e.g.: Repositories ) */
+
+    /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication()
     http.startApplication(logger, config, application)
   }),
   E.fold(
     (error) =>
-      console.log(error),
+      void makeLogger().error(error),
     (_) =>
       _
   )
