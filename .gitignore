@@ -414,3 +414,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/git,emacs,intellij+all,node,macos,vim,visualstudiocode,linux,windows
+
+# Ignore the generated stuff
+src/generated/*

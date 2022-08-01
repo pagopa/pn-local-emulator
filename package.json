@@ -4,6 +4,7 @@
   "description": "A system that emulates some features of Piattaforma Notifiche platform.",
   "main": "dist/main.js",
   "scripts": {
+    "generate": "shx rm -rf ./src/generated/definitions && shx mkdir -p ./src/generated/definitions && gen-api-models --api-spec ./openapi/index.yaml --no-strict --out-dir ./src/generated/definitions",
     "clean": "tsc --build --clean",
     "compile": "tsc",
     "start": "pnpm compile && node -r dotenv/config dist/main.js dotenv_config_path=.env.default"
@@ -12,7 +13,9 @@
   "author": "",
   "license": "GNU GPL 3.0",
   "devDependencies": {
+    "@pagopa/openapi-codegen-ts": "^11.2.0",
     "dotenv": "^16.0.1",
+    "shx": "^0.3.4",
     "typescript": "^4.7.4"
   },
   "dependencies": {
