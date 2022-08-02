@@ -13,7 +13,7 @@ export const startApplication = (logger: Logger, config: Config, application: ex
   const server = http.createServer(application);
   const [hostname, port] = [config.server.hostname, config.server.port]
   server.listen(port, hostname, () => {
-    logger.info(`Server is listening on port ${port}`);
+    logger.info(`Server is listening on ${hostname}:${port}`);
   });
 
 }
