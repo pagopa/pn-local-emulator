@@ -12,7 +12,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "GNU GPL 3.0",
+  "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "@pagopa/openapi-codegen-ts": "^11.2.0",
     "@types/express": "^4.17.13",
