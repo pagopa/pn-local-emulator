@@ -7,6 +7,7 @@
     "generate": "shx rm -rf ./src/generated/definitions && shx mkdir -p ./src/generated/definitions && gen-api-models --api-spec ./openapi/index.yaml --no-strict --out-dir ./src/generated/definitions",
     "clean": "tsc --build --clean",
     "compile": "tsc",
+    "prettify": "prettier --write \"./**/*.ts\"",
     "start": "pnpm compile && node -r dotenv/config dist/main.js dotenv_config_path=.env.default",
     "test": "DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i"
   },
@@ -20,6 +21,7 @@
     "@types/node": "^18.6.3",
     "dotenv": "^16.0.1",
     "jest": "^28.1.3",
+    "prettier": "^2.7.1",
     "shx": "^0.3.4",
     "ts-jest": "^28.0.7",
     "typescript": "^4.7.4"
