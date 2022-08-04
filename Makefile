@@ -6,6 +6,10 @@ clean:
 generate:
 	pnpm generate
 
+.PHONY: prettify
+prettify:
+	pnpm prettify
+
 .PHONY: compile
 compile:
 	pnpm compile
