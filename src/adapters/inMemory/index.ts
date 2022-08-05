@@ -28,3 +28,5 @@ export const makePreLoadRepository =
 
 export const makeUploadToS3Repository =
   makeRepository
+
+export const makeNewNotificationRepository = makeRepository
