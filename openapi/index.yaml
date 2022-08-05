@@ -74,8 +74,127 @@ components:
         $ref: "#/components/schemas/PreLoadResponse"
     PreLoadResponse:
       $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/PreLoadResponse"
+    NewNotificationRequest:
+      description: I campi utilizzati per la creazione di una nuova Notifica.
+      type: object
+      required:
+        - paProtocolNumber
+        - subject
+        - recipients
+        - documents
+        - physicalCommunicationType
+        - notificationFeePolicy
+      properties:
+        idempotenceToken:
+          description: >-
+            Identificativo utilizzabile dal chiamante per disambiguare differenti
+            "richieste di notificazione" effetuate con lo stesso numero di protocollo
+            (campo _paProtocolNumber_). Questo può essere necessario in caso di
+            "richiesta di notifica" rifiutata per errori nei codici di verifica degli
+            allegati.
+          type: string
+        paProtocolNumber:
+          description: >-
+            Numero di protocollo che la PA mittente assegna alla notifica stessa
+          type: string
+        subject:
+          type: string
+          description: titolo della notifica
+        abstract:
+          type: string
+          description: descrizione sintetica della notifica
+        recipients:
+          type: array
+          description: Informazioni sui destinatari
+          items:
+            $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationRecipient"
+        documents:
+          type: array
+          description: Documenti notificati
+          items:
+            # $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationDocument"
+            $ref: "#/components/schemas/NotificationDocument"
+        notificationFeePolicy:
+          type: string
+          description: >-
+            Politica di addebitamento dei costi di notifica. <br/>
+            - _FLAT_RATE_: costo forfettario fisso. <br/>
+            - _DELIVERY_MODE_: costo calcolato in base all'effettivo percorso di notifica. <br/>
+          enum:
+            - FLAT_RATE
+            - DELIVERY_MODE
+        cancelledIun:
+          type: string
+          description: IUN della notifica annullata da questa notifica
+        physicalCommunicationType:
+          type: string
+          description: Tipologia comunicazione fisica
+          enum:
+            - SIMPLE_REGISTERED_LETTER
+            - REGISTERED_LETTER_890
+        senderDenomination:
+          description: Denominazione dell'ente mittente
+          type: string
+        senderTaxId:
+          description: Codice Fiscale dell'ente mittente
+          type: string
+        group:
+          type: string
+          description: Gruppo di utenti dell'ente mittente che può visualizzare la notifica
+        amount:
+          type: integer
+          description: Importo della notifica in eurocent
+        paymentExpirationDate:
+          type: string
+          pattern: "^([0-9]{4})-(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])$"
+          description: Data di scadenza del pagamento nel formato YYYY-MM-DD riferito all'Italia
+          # gestito come stringa e pattern perchè con format: date open-api-generator non lo gestiva correttamente
+    NewNotificationResponse:
+      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/NewNotificationResponse"
     Problem:
       $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/7ed97786292fd6274c720eaccdc6d590f95606f0/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/Problem"
+    NotificationDocument:
+      description: >-
+        Un documento da notifcare
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/NotificationAttachment"
+        - type: object
+          properties:
+            title:
+              type: string
+              description: Titolo del documento allegato
+            requiresAck:
+              type: boolean
+              description: >-
+                Se presente e valorizzato __true__ il download del documento
+                diventa necessario al fine del perfezionamento per presa visione.
+            sendByMail:
+              type: boolean
+              description: >-
+                Se presente e valorizzato __true__ il documento verrà spedito
+                nelle comunicazioni cartacee. In MVP questo flag sarà attivabile
+                solo su un documento.
+            docIdx:
+              type: string
+              description: >-
+                Indice del documento partendo da 0.
+    NotificationAttachment:
+      description: >-
+        Un allegato della notifica.
+      type: object
+      required:
+        - digests
+        - contentType
+        - ref
+      properties:
+        digests:
+          $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationAttachmentDigests"
+        contentType:
+          type: string
+          description: tipo di contenuto dell'allegato, supportato application/pdf
+        ref:
+          $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationAttachmentBodyRef"
 
   responses:
     200UploadS3Response:
