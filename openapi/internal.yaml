@@ -1,0 +1,52 @@
+openapi: 3.0.3
+info:
+  title: 'Internal HTTP API'
+  version: '0.0.0'
+paths:
+  # empty because we don't use them
+  "/checklistresult":
+    get:
+      description: >-
+        Return checklist result
+      operationId: getChecklistResult
+      responses:
+        '200':
+          $ref: '#/components/responses/200ChecklistResultResponse'
+components:
+  schemas:
+    ChecklistResult:
+      type: array
+      items:
+        $ref: '#/components/schemas/ChecklistResultElement'
+    ChecklistResultElement:
+      type: object
+      properties:
+        title:
+          type: string
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckResult'
+      required:
+        - title
+        - results
+    CheckResult:
+      type: object
+      properties:
+        name:
+          type: string
+        result:
+          type: string
+          enum:
+            - "ok"
+            - "ko"
+      required:
+        - name
+        - result
+  responses:
+    200ChecklistResultResponse:
+      description: Checklist result
+      content:
+        "application/json":
+          schema:
+            $ref: '#/components/schemas/ChecklistResult'
