@@ -1,0 +1,7 @@
+openapi: 3.0.3
+info:
+  title: 'The real source is [this](https://github.com/pagopa/pn-delivery/tree/develop/docs/openapi) repository, this file is just a workaround to generate the request and reponses'
+paths:
+  # empty because we don't use them
+components:
+  schemas:
