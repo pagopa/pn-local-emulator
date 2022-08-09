@@ -1,7 +1,23 @@
 openapi: 3.0.3
 info:
-  title: 'The real source is [this](https://github.com/pagopa/pn-delivery/tree/develop/docs/openapi) repository, this file is just a workaround to generate the request and reponses'
+  title: 'The real source is [this](https://github.com/pagopa/pn-delivery/tree/develop/docs/openapi) repository, this file is just a workaround to generate the requests and responses'
 paths:
   # empty because we don't use them
 components:
   schemas:
+    ApiKey:
+      type: string
+    PreLoadRequestBody:
+      type: array
+      items:
+        $ref: "#/components/schemas/PreLoadRequest"
+    PreLoadRequest:
+      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/PreLoadRequest"
+    PreLoadResponseBody:
+      type: array
+      items:
+        $ref: "#/components/schemas/PreLoadResponse"
+    PreLoadResponse:
+      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/PreLoadResponse"
+    Problem:
+      $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/7ed97786292fd6274c720eaccdc6d590f95606f0/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/Problem"
