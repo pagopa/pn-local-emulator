@@ -8,6 +8,7 @@ export type Config = {
   server: {
     port: number;
     hostname: string;
+    uploadToS3URL: URL;
   };
 };
 
@@ -25,6 +26,7 @@ export const parseConfig = (envs: Record<string, undefined | string>): E.Either<
         server: {
           port: envs.PORT,
           hostname: envs.HOSTNAME,
+          uploadToS3URL: new URL(`http://${envs.HOSTNAME}:${envs.PORT}/uploadS3`),
         },
       })
     )

@@ -1,12 +1,67 @@
 openapi: 3.0.3
 info:
   title: 'The real source is [this](https://github.com/pagopa/pn-delivery/tree/develop/docs/openapi) repository, this file is just a workaround to generate the requests and responses'
+  version: 0.0.0
 paths:
   # empty because we don't use them
+  "/uploadS3/{key}":
+    parameters:
+      - $ref: "#/components/parameters/pathAwsDocumentKeyParam"
+    put:
+      summary: "Simulate the s3 upload"
+      description: >
+        This endpoint simulate the upload to s3.
+      parameters:
+        - $ref: "#/components/parameters/headerAmzSdkChecksumAlgParam"
+        - $ref: "#/components/parameters/headerAmzMetaSecretParam"
+        - $ref: "#/components/parameters/headerAmzChecksumSHA256Param"
+      responses:
+        '200':
+          $ref: "#/components/responses/200UploadS3Response"
 components:
+  parameters:
+    pathAwsDocumentKeyParam:
+      name: key
+      in: path
+      description: The key of the document
+      required: true
+      schema:
+        $ref: '#/components/schemas/AmzDocumentKey'
+    headerAmzSdkChecksumAlgParam:
+      name: x-amz-sdk-checksum-algorithm
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/AmzSdkChecksumAlg'
+    headerAmzMetaSecretParam:
+      name: x-amz-meta-secret
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/AmzMetaSecret'
+    headerAmzChecksumSHA256Param:
+      name: x-amz-checksum-sha256
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/AmzChecksumSHA256'
+
   schemas:
     ApiKey:
       type: string
+    AmzDocumentKey:
+      example: '8F7E/9A3B/1234/AB87'
+      type: string
+    AmzSdkChecksumAlg:
+      type: string
+      enum:
+        - SHA256
+    AmzMetaSecret:
+      type: string
+    AmzChecksumSHA256:
+      type: string
+    AmzVersionId:
+      type: integer
     PreLoadRequestBody:
       type: array
       items:
@@ -21,3 +76,12 @@ components:
       $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/PreLoadResponse"
     Problem:
       $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/7ed97786292fd6274c720eaccdc6d590f95606f0/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/Problem"
+
+  responses:
+    200UploadS3Response:
+      description: >
+        The upload to s3 response
+      headers:
+        x-amz-version-id:
+          schema:
+          $ref: "#/components/schemas/AmzVersionId"

@@ -8,5 +8,6 @@ export const config: Config = {
   server: {
     hostname: envs['HOSTNAME'],
     port: Number(envs['PORT']),
+    uploadToS3URL: new URL(`http://${envs['HOSTNAME']}:${envs['PORT']}/uploadS3`),
   },
 };
