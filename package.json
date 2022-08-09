@@ -11,7 +11,8 @@
     "lint:fix": "eslint --fix src",
     "prettify": "prettier --write \"./**/*.ts\"",
     "start": "pnpm compile && node -r dotenv/config dist/main.js dotenv_config_path=.env.default",
-    "test": "DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i"
+    "test": "DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,7 @@
     "@types/jest": "^28.1.6",
     "@types/node": "^18.6.3",
     "dotenv": "^16.0.1",
+    "husky": "^8.0.1",
     "eslint": "^8.21.0",
     "jest": "^28.1.3",
     "prettier": "^2.7.1",
