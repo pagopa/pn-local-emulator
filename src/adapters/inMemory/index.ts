@@ -1,6 +1,6 @@
-import { flow, identity } from 'fp-ts/lib/function';
+import { flow } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
-import { PreLoadRecord, PreLoadRecordRepository } from '../../domain/PreLoadRepository';
+import { Repository } from '../../domain/Repository';
 import { Logger } from '../../logger';
 
 export const insertEntityTE =
@@ -10,9 +10,9 @@ export const insertEntityTE =
     return TE.right(entity);
   };
 
-export const makePreLoadRepository =
+const makeRepository =
   (logger: Logger) =>
-  (snapshot: ReadonlyArray<PreLoadRecord>): PreLoadRecordRepository => {
+  <T>(snapshot: ReadonlyArray<T>): Repository<T> => {
     const store = snapshot.concat();
     return {
       insert: flow(
@@ -22,3 +22,9 @@ export const makePreLoadRepository =
       list: () => TE.of(store),
     };
   };
+
+export const makePreLoadRepository =
+  makeRepository
+
+export const makeUploadToS3Repository =
+  makeRepository

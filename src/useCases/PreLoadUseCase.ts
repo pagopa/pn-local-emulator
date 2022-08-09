@@ -7,12 +7,11 @@ import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 
 export const PreLoadUseCase =
-  (logger: Logger, repository: PreLoadRecordRepository) =>
+  (logger: Logger, uploadToS3URL: URL, repository: PreLoadRecordRepository) =>
   (apiKey: ApiKey) =>
   (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> => {
     const input = { apiKey, body };
-    // TODO: Move as input argument
-    const url = 'http://localhost:8080/delivery/attachments/preload';
+    const url = uploadToS3URL.href;
     const returned = body
       .map((req) => {
         // TODO: Move into an adapter

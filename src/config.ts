@@ -8,6 +8,7 @@ export type Config = {
   server: {
     port: number;
     hostname: string;
+    uploadToS3URL: URL;
   };
 };
 
@@ -26,7 +27,8 @@ export const parseConfig = (
       (envs) => ({
         server: {
           port: envs.PORT,
-          hostname: envs.HOSTNAME
+          hostname: envs.HOSTNAME,
+          uploadToS3URL: new URL(`http://${envs.HOSTNAME}:${envs.PORT}/uploadS3`)
         }
       })
     )
