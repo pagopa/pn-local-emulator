@@ -1,10 +1,10 @@
-import { Response } from './types';
-import { Repository } from './Repository';
 import { PreLoadResponseBody } from '../generated/definitions/PreLoadResponseBody';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequest } from '../generated/definitions/PreLoadRequest';
 import { HttpMethodEnum, PreLoadResponse } from '../generated/definitions/PreLoadResponse';
+import { Repository } from './Repository';
+import { Response } from './types';
 
 export type PreLoadRecord = {
   type: 'PreLoadRecord';

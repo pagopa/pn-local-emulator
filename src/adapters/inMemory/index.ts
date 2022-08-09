@@ -4,19 +4,16 @@ import { PreLoadRecord, PreLoadRecordRepository } from '../../domain/PreLoadRepo
 import { Logger } from '../../logger';
 
 export const insertEntityTE =
-  <E>(store: E[]) =>
-  (entity: E): TE.TaskEither<Error, E> =>
+  <E>(store: ReadonlyArray<PreLoadRecord>) =>
+  (entity: E) =>
     TE.right([...store, entity]);
 
 export const makePreLoadRepository =
   (logger: Logger) =>
-  (snapshot: ReadonlyArray<PreLoadRecord>): PreLoadRecordRepository => {
-    const store = snapshot.concat();
-    return {
-      insert: flow(
-        insertEntityTE(store),
-        TE.chainFirst((item) => TE.of(logger.debug(`Record item: ${item}`)))
-      ),
-      list: () => TE.of(store),
-    };
-  };
+  (store: ReadonlyArray<PreLoadRecord>): PreLoadRecordRepository => ({
+    insert: flow(
+      insertEntityTE(store),
+      TE.chainFirst((item) => TE.of(logger.debug(`Record item: ${item}`)))
+    ),
+    list: () => TE.of(store),
+  });
