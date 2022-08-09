@@ -1,14 +1,12 @@
-import { flow, identity } from 'fp-ts/lib/function';
+import { flow } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import { PreLoadRecord, PreLoadRecordRepository } from '../../domain/PreLoadRepository';
 import { Logger } from '../../logger';
 
 export const insertEntityTE =
-  <E>(store: Array<E>) =>
-  (entity: E): TE.TaskEither<Error, E> => {
-    store.push(entity);
-    return TE.right(entity);
-  };
+  <E>(store: E[]) =>
+  (entity: E): TE.TaskEither<Error, E> =>
+    TE.right([...store, entity]);
 
 export const makePreLoadRepository =
   (logger: Logger) =>

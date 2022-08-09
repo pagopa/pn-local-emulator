@@ -13,7 +13,7 @@ pipe(
     /* put here the driven adapters (e.g.: Repositories ) */
     const preLoadRecordRepository = inMemory.makePreLoadRepository(logger)([]);
     /* init the use cases */
-    const preLoadUseCase = PreLoadUseCase(logger, preLoadRecordRepository)
+    const preLoadUseCase = PreLoadUseCase(logger, preLoadRecordRepository);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(preLoadUseCase);

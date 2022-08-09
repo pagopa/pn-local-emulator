@@ -9,26 +9,22 @@ import { Problem } from '../../generated/definitions/Problem';
 
 export const makeAPIProblem =
   (status: number, message: string) =>
-  (errors: t.Errors | undefined): Problem => {
-    return {
-      type: `https://www.webfx.com/web-development/glossary/http-status-codes/what-is-a-${status}-status-code/`,
-      status: unsafeCoerce(status), // TODO Figure why without the cast this doesn't compile
-      title: message,
-      detail: errors ? PR.failure(errors) : message,
-      errors: [],
-    };
-  };
+  (errors: t.Errors | undefined): Problem => ({
+    type: `https://www.webfx.com/web-development/glossary/http-status-codes/what-is-a-${status}-status-code/`,
+    status: unsafeCoerce(status), // TODO Figure why without the cast this doesn't compile
+    title: message,
+    detail: errors ? PR.failure(errors) : message,
+    errors: [],
+  });
 
 export const sendResponse =
   (res: express.Response) =>
   <T0, T1>(left: (t0: T0) => express.Response, right: (t1: T1) => express.Response) =>
-  (arg: E.Either<t.Errors, TE.TaskEither<T0, T1>>): Promise<express.Response> => {
-    return pipe(
+  (arg: E.Either<t.Errors, TE.TaskEither<T0, T1>>): Promise<express.Response> =>
+    pipe(
       E.mapLeft(makeAPIProblem(400, 'Input Error'))(arg),
       E.fold(
-        (invalidInput) => {
-          return Promise.resolve(res.status(400).send(invalidInput));
-        },
+        (invalidInput) => Promise.resolve(res.status(400).send(invalidInput)),
         flow(
           TE.fold(
             (l) => TE.of(left(l)),
@@ -39,4 +35,3 @@ export const sendResponse =
         )
       )
     );
-  };

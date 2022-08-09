@@ -8,7 +8,7 @@ describe('Config', () => {
     it('should fail because some property is missing', () => {
       const envs = {
         ...data.envs,
-        HOSTNAME: undefined
+        HOSTNAME: undefined,
       };
 
       const actual = C.parseConfig(envs);

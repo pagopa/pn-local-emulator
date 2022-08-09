@@ -12,19 +12,22 @@ export type PreLoadRecord = {
   output: Response<200, PreLoadResponseBody> | Response<401>;
 };
 
-export const makePreLoadResponse =
-  (key: string, secret: string, url: string, req: PreLoadRequest): PreLoadResponse => ({
-    preloadIdx: req.preloadIdx,
-    httpMethod: HttpMethodEnum.PUT,
-    secret,
-    url,
-    key
-  })
+export const makePreLoadResponse = (
+  key: string,
+  secret: string,
+  url: string,
+  req: PreLoadRequest
+): PreLoadResponse => ({
+  preloadIdx: req.preloadIdx,
+  httpMethod: HttpMethodEnum.PUT,
+  secret,
+  url,
+  key,
+});
 
-export const makePreLoadRecord =
-  (record: Omit<PreLoadRecord, 'type'>): PreLoadRecord => ({
-    type: 'PreLoadRecord',
-    ...record
-  });
+export const makePreLoadRecord = (record: Omit<PreLoadRecord, 'type'>): PreLoadRecord => ({
+  type: 'PreLoadRecord',
+  ...record,
+});
 
 export type PreLoadRecordRepository = Repository<PreLoadRecord>;
