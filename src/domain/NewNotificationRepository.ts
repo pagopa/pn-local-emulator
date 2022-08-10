@@ -11,4 +11,17 @@ export type NewNotificationRecord = {
   output: Response<202, NewNotificationResponse> | Response<401>;
 };
 
+export const makeNewNotificationResponse = (input: NewNotificationRequest) => (notificationRequestId: string): NewNotificationResponse => {
+  return {
+    idempotenceToken: input.idempotenceToken,
+    paProtocolNumber: input.paProtocolNumber,
+    notificationRequestId: notificationRequestId,
+  };
+};
+
+export const makeNewNotificationRecord = (record: Omit<NewNotificationRecord, 'type'>): NewNotificationRecord => ({
+  type: 'NewNotificationRecord',
+  ...record,
+});
+
 export type NewNotificationRepository = Repository<NewNotificationRecord>;
