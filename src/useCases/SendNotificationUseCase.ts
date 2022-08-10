@@ -10,6 +10,7 @@ import {
 import crypto from 'crypto';
 import { pipe } from 'fp-ts/lib/function';
 import { Logger } from '../logger';
+import { onValidApiKey } from "./utils";
 
 export const SendNotificationUseCase =
   (logger: Logger, repository: NewNotificationRepository) =>
@@ -17,10 +18,7 @@ export const SendNotificationUseCase =
   (body: NewNotificationRequest): TE.TaskEither<Error, NewNotificationRecord['output']> => {
     const input = { apiKey, body };
     const returned = makeNewNotificationResponse(body)(crypto.randomUUID());
-    const output =
-          apiKey === 'key-value'
-        ? { statusCode: 202 as const, returned }
-        : { statusCode: 401 as const, returned: undefined };
+    const output = onValidApiKey(apiKey)({ statusCode: 202 as const, returned });
     const record = makeNewNotificationRecord({ input, output });
     return pipe(
       repository.insert(record),

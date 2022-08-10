@@ -5,6 +5,7 @@ import { makePreLoadRecord, makePreLoadResponse, PreLoadRecord, PreLoadRecordRep
 import * as crypto from 'crypto';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
+import { onValidApiKey } from "./utils";
 
 export const PreLoadUseCase =
   (logger: Logger, uploadToS3URL: URL, repository: PreLoadRecordRepository) =>
@@ -18,10 +19,7 @@ export const PreLoadUseCase =
         const [key, secret] = [crypto.randomUUID(), crypto.randomUUID()];
         return makePreLoadResponse(key, secret, url, req)
       });
-    const output =
-      (apiKey === "key-value")
-        ? { statusCode: 200 as const, returned: returned }
-        : { statusCode: 401 as const, returned: undefined };
+    const output = onValidApiKey(apiKey)({ statusCode: 200 as const, returned: returned });
     const record = makePreLoadRecord({ input, output });
     return pipe(
       repository.insert(record),
