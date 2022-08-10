@@ -1,13 +1,13 @@
 import { Config } from '../config';
 
 export const envs: NodeJS.ProcessEnv = {
-  ...process.env
+  ...process.env,
 };
 
 export const config: Config = {
   server: {
     hostname: envs['HOSTNAME'],
     port: Number(envs['PORT']),
-    uploadToS3URL: new URL(`http://${envs['HOSTNAME']}:${envs['PORT']}/uploadS3`)
-  }
+    uploadToS3URL: new URL(`http://${envs['HOSTNAME']}:${envs['PORT']}/uploadS3`),
+  },
 };
