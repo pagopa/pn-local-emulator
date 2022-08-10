@@ -1,16 +1,16 @@
+import crypto from 'crypto';
 import * as TE from 'fp-ts/TaskEither';
+import { pipe } from 'fp-ts/lib/function';
 import { NewNotificationRequest } from '../generated/definitions/NewNotificationRequest';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import {
-    makeNewNotificationRecord,
-    makeNewNotificationResponse,
-    NewNotificationRecord,
-    NewNotificationRepository
+  makeNewNotificationRecord,
+  makeNewNotificationResponse,
+  NewNotificationRecord,
+  NewNotificationRepository,
 } from '../domain/NewNotificationRepository';
-import crypto from 'crypto';
-import { pipe } from 'fp-ts/lib/function';
 import { Logger } from '../logger';
-import { onValidApiKey } from "./utils";
+import { onValidApiKey } from './utils';
 
 export const SendNotificationUseCase =
   (logger: Logger, repository: NewNotificationRepository) =>

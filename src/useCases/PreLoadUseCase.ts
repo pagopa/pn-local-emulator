@@ -10,7 +10,7 @@ import {
 } from '../domain/PreLoadRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
-import { onValidApiKey } from "./utils";
+import { onValidApiKey } from './utils';
 
 export const PreLoadUseCase =
   (logger: Logger, uploadToS3URL: URL, repository: PreLoadRecordRepository) =>
@@ -18,13 +18,12 @@ export const PreLoadUseCase =
   (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> => {
     const input = { apiKey, body };
     const url = uploadToS3URL.href;
-    const returned = body
-      .map((req) => {
-        // TODO: Move into an adapter
-        const [key, secret] = [crypto.randomUUID(), crypto.randomUUID()];
-        return makePreLoadResponse(key, secret, url, req)
-      });
-    const output = onValidApiKey(apiKey)({ statusCode: 200 as const, returned: returned });
+    const returned = body.map((req) => {
+      // TODO: Move into an adapter
+      const [key, secret] = [crypto.randomUUID(), crypto.randomUUID()];
+      return makePreLoadResponse(key, secret, url, req);
+    });
+    const output = onValidApiKey(apiKey)({ statusCode: 200 as const, returned });
     const record = makePreLoadRecord({ input, output });
     return pipe(
       repository.insert(record),
