@@ -11,7 +11,7 @@ export const check0 = {
 };
 export const check1 = {
   name: 'Contains an api-key',
-  eval: RA.some((record: PreLoadRecord) => record.input.apiKey !== undefined),
+  eval: RA.some((record: PreLoadRecord) => pipe(record.input.apiKey, O.fromNullable, O.isSome)),
 };
 export const check2 = {
   name: 'preloadIdx values are unique within the body',
