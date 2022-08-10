@@ -24,7 +24,7 @@ export const SendNotificationUseCase =
       repository.insert(record),
       TE.map((_) => {
         logger.debug(record);
-        return _.output;
+        return record.output;
       })
     );
   };
