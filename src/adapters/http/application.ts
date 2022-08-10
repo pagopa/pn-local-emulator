@@ -1,5 +1,5 @@
-import express from 'express';
 import * as http from 'http';
+import express from 'express';
 import { Config } from '../../config';
 import { Logger } from '../../logger';
 import { PreLoadUseCase } from '../../useCases/PreLoadUseCase';
@@ -12,7 +12,7 @@ import { makeSendNotificationRouter } from './sendNotification/router';
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
   uploadToS3UseCase: UploadToS3UseCase,
-  sendNotificationUseCase: SendNotificationUseCase
+  sendNotificationUseCase: SendNotificationUseCase,
 ): express.Application => {
   const app = express();
   app.use(express.json());
@@ -23,11 +23,7 @@ export const makeApplication = (
   return app;
 };
 
-export const startApplication = (
-  logger: Logger,
-  config: Config,
-  application: express.Application
-) => {
+export const startApplication = (logger: Logger, config: Config, application: express.Application) => {
   const server = http.createServer(application);
   const [hostname, port] = [config.server.hostname, config.server.port];
   server.listen(port, hostname, () => {

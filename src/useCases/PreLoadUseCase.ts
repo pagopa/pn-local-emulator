@@ -1,8 +1,13 @@
+import * as crypto from 'crypto';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 import { Logger } from '../logger';
-import { makePreLoadRecord, makePreLoadResponse, PreLoadRecord, PreLoadRecordRepository } from '../domain/PreLoadRepository';
-import * as crypto from 'crypto';
+import {
+  makePreLoadRecord,
+  makePreLoadResponse,
+  PreLoadRecord,
+  PreLoadRecordRepository,
+} from '../domain/PreLoadRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 import { onValidApiKey } from "./utils";
@@ -23,11 +28,9 @@ export const PreLoadUseCase =
     const record = makePreLoadRecord({ input, output });
     return pipe(
       repository.insert(record),
-      TE.map((_) => {
-        logger.debug(record);
-        return _.output
-      })
-    )
+      TE.chainFirst(() => TE.of(logger.debug(record))),
+      TE.map((_) => record.output)
+    );
   };
 
 export type PreLoadUseCase = ReturnType<typeof PreLoadUseCase>;
