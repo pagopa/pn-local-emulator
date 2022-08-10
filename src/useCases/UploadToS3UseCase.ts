@@ -1,6 +1,5 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
-import { last } from 'fp-ts/lib/ReadonlyNonEmptyArray';
 import { UploadToS3RecordRepository } from '../domain/UploadToS3RecordRepository';
 import { AmzChecksumSHA256 } from '../generated/definitions/AmzChecksumSHA256';
 import { AmzMetaSecret } from '../generated/definitions/AmzMetaSecret';
@@ -18,8 +17,7 @@ export const UploadToS3UseCase =
     const output = { statusCode: 200 as const, returned: Math.random() };
     return pipe(
       uploadToS3Repository.insert({ type: 'UploadToS3Record', input, output }),
-      // TODO: fix race condition
-      TE.map((record) => last(record).output.returned)
+      TE.map((_) => output.returned)
     );
   };
 
