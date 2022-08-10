@@ -25,7 +25,7 @@ export type ChecklistResult = ReadonlyArray<Result>;
 
 // utils //////////////////////////////////////////////////////////////////////
 
-const evalCheck =
+export const evalCheck =
   <T>(check: Check<T>) =>
   (input: T): Result =>
     pipe(
