@@ -1,5 +1,5 @@
-import express from 'express';
 import * as http from 'http';
+import express from 'express';
 import { Config } from '../../config';
 import { Logger } from '../../logger';
 import { PreLoadUseCase } from '../../useCases/PreLoadUseCase';

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 import { Logger } from '../logger';
@@ -7,7 +8,6 @@ import {
   PreLoadRecord,
   PreLoadRecordRepository,
 } from '../domain/PreLoadRepository';
-import * as crypto from 'crypto';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 
@@ -24,15 +24,13 @@ export const PreLoadUseCase =
     });
     const output =
       apiKey === 'key-value'
-        ? { statusCode: 200 as const, returned: returned }
+        ? { statusCode: 200 as const, returned }
         : { statusCode: 401 as const, returned: undefined };
     const record = makePreLoadRecord({ input, output });
     return pipe(
       repository.insert(record),
-      TE.map((_) => {
-        logger.debug(record);
-        return _.output;
-      })
+      TE.chainFirst(() => TE.of(logger.debug(record))),
+      TE.map((_) => record.output)
     );
   };
 
