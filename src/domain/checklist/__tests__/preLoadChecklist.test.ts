@@ -10,7 +10,7 @@ const basePreloadRecord: PreLoadRecord = {
 
 describe('preLoadChecklist', () => {
   const group: Group = { name: 'The preload request' };
-  const preloadedDoc = { preloadIdx: '0', contentType: 'application/pdf', sha256: 'a-sha256' };
+  const basePreloadDoc = { preloadIdx: '0', contentType: 'application/pdf', sha256: 'a-sha256' };
 
   it('should exists a response with status code 401', () => {
     const check = evalCheck({ ...check0, group });
@@ -40,13 +40,19 @@ describe('preLoadChecklist', () => {
     const actualOK = check([
       {
         ...basePreloadRecord,
-        input: { ...basePreloadRecord.input, body: [preloadedDoc, { ...preloadedDoc, preloadIdx: '1' }] },
+        input: {
+          ...basePreloadRecord.input,
+          body: [
+            { ...basePreloadDoc, preloadIdx: '0' },
+            { ...basePreloadDoc, preloadIdx: '1' },
+          ],
+        },
       },
     ]);
     expect(actualOK.result).toStrictEqual('ok');
 
     const actualKO = check([
-      { ...basePreloadRecord, input: { ...basePreloadRecord.input, body: [preloadedDoc, preloadedDoc] } },
+      { ...basePreloadRecord, input: { ...basePreloadRecord.input, body: [basePreloadDoc, basePreloadDoc] } },
     ]);
     expect(actualKO.result).toStrictEqual('ko');
   });
@@ -60,8 +66,8 @@ describe('preLoadChecklist', () => {
         input: {
           ...basePreloadRecord.input,
           body: [
-            { ...preloadedDoc, contentType },
-            { ...preloadedDoc, contentType },
+            { ...basePreloadDoc, contentType },
+            { ...basePreloadDoc, contentType },
           ],
         },
       },
@@ -70,7 +76,7 @@ describe('preLoadChecklist', () => {
     const actualKO = check([
       {
         ...basePreloadRecord,
-        input: { ...basePreloadRecord.input, body: [preloadedDoc, { ...preloadedDoc, contentType: 'text/plain' }] },
+        input: { ...basePreloadRecord.input, body: [basePreloadDoc, { ...basePreloadDoc, contentType: 'text/plain' }] },
       },
     ]);
     expect(actualKO.result).toStrictEqual('ko');
