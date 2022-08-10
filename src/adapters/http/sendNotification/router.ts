@@ -8,8 +8,8 @@ import { SendNotificationUseCase } from '../../../useCases/SendNotificationUseCa
 
 const handler =
   (sendNotificationUseCase: SendNotificationUseCase): express.Handler =>
-  (req, res) => {
-    return f.pipe(
+  (req, res) =>
+    f.pipe(
       E.of(sendNotificationUseCase),
       E.ap(ApiKey.decode(req.headers['x-api-key'])),
       E.ap(NewNotificationRequest.decode(req.body)),
@@ -18,7 +18,6 @@ const handler =
         (_) => res.status(202).send(_.returned)
       )
     );
-  };
 
 export const makeSendNotificationRouter = (sendNotificationUseCase: SendNotificationUseCase): express.Router => {
   const router = express.Router();

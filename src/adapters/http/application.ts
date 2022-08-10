@@ -4,15 +4,15 @@ import { Config } from '../../config';
 import { Logger } from '../../logger';
 import { PreLoadUseCase } from '../../useCases/PreLoadUseCase';
 import { UploadToS3UseCase } from '../../useCases/UploadToS3UseCase';
+import { SendNotificationUseCase } from '../../useCases/SendNotificationUseCase';
 import { makePreLoadRouter } from './preLoad/router';
 import { makeUploadToS3Router } from './uploadToS3/router';
-import { SendNotificationUseCase } from '../../useCases/SendNotificationUseCase';
 import { makeSendNotificationRouter } from './sendNotification/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
   uploadToS3UseCase: UploadToS3UseCase,
-  sendNotificationUseCase: SendNotificationUseCase,
+  sendNotificationUseCase: SendNotificationUseCase
 ): express.Application => {
   const app = express();
   app.use(express.json());

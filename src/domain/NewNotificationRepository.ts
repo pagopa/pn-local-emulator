@@ -1,9 +1,8 @@
-import { Response } from './types';
-import { Repository } from './Repository';
-import { PreLoadResponseBody } from '../generated/definitions/PreLoadResponseBody';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRequest } from '../generated/definitions/NewNotificationRequest';
 import { NewNotificationResponse } from '../generated/definitions/NewNotificationResponse';
+import { Repository } from './Repository';
+import { Response } from './types';
 
 export type NewNotificationRecord = {
   type: 'NewNotificationRecord';
@@ -11,13 +10,13 @@ export type NewNotificationRecord = {
   output: Response<202, NewNotificationResponse> | Response<401>;
 };
 
-export const makeNewNotificationResponse = (input: NewNotificationRequest) => (notificationRequestId: string): NewNotificationResponse => {
-  return {
+export const makeNewNotificationResponse =
+  (input: NewNotificationRequest) =>
+  (notificationRequestId: string): NewNotificationResponse => ({
     idempotenceToken: input.idempotenceToken,
     paProtocolNumber: input.paProtocolNumber,
-    notificationRequestId: notificationRequestId,
-  };
-};
+    notificationRequestId,
+  });
 
 export const makeNewNotificationRecord = (record: Omit<NewNotificationRecord, 'type'>): NewNotificationRecord => ({
   type: 'NewNotificationRecord',
