@@ -14,12 +14,10 @@ export type Config = {
 
 const EnvCodec = t.type({
   PORT: t.string.pipe(tt.NumberFromString),
-  HOSTNAME: t.string
+  HOSTNAME: t.string,
 });
 
-export const parseConfig = (
-  envs: Record<string, undefined | string>
-): E.Either<string, Config> =>
+export const parseConfig = (envs: Record<string, undefined | string>): E.Either<string, Config> =>
   pipe(
     EnvCodec.decode(envs),
     E.bimap(
@@ -28,8 +26,8 @@ export const parseConfig = (
         server: {
           port: envs.PORT,
           hostname: envs.HOSTNAME,
-          uploadToS3URL: new URL(`http://${envs.HOSTNAME}:${envs.PORT}/uploadS3`)
-        }
+          uploadToS3URL: new URL(`http://${envs.HOSTNAME}:${envs.PORT}/uploadS3`),
+        },
       })
     )
   );

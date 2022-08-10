@@ -1,7 +1,12 @@
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 import { Logger } from '../logger';
-import { makePreLoadRecord, makePreLoadResponse, PreLoadRecord, PreLoadRecordRepository } from '../domain/PreLoadRepository';
+import {
+  makePreLoadRecord,
+  makePreLoadResponse,
+  PreLoadRecord,
+  PreLoadRecordRepository,
+} from '../domain/PreLoadRepository';
 import * as crypto from 'crypto';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
@@ -12,14 +17,13 @@ export const PreLoadUseCase =
   (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> => {
     const input = { apiKey, body };
     const url = uploadToS3URL.href;
-    const returned = body
-      .map((req) => {
-        // TODO: Move into an adapter
-        const [key, secret] = [crypto.randomUUID(), crypto.randomUUID()];
-        return makePreLoadResponse(key, secret, url, req)
-      });
+    const returned = body.map((req) => {
+      // TODO: Move into an adapter
+      const [key, secret] = [crypto.randomUUID(), crypto.randomUUID()];
+      return makePreLoadResponse(key, secret, url, req);
+    });
     const output =
-      (apiKey === "key-value")
+      apiKey === 'key-value'
         ? { statusCode: 200 as const, returned: returned }
         : { statusCode: 401 as const, returned: undefined };
     const record = makePreLoadRecord({ input, output });
@@ -27,9 +31,9 @@ export const PreLoadUseCase =
       repository.insert(record),
       TE.map((_) => {
         logger.debug(record);
-        return _.output
+        return _.output;
       })
-    )
+    );
   };
 
 export type PreLoadUseCase = ReturnType<typeof PreLoadUseCase>;

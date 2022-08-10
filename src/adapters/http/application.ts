@@ -9,7 +9,7 @@ import { makeUploadToS3Router } from './uploadToS3/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
-  uploadToS3UseCase: UploadToS3UseCase,
+  uploadToS3UseCase: UploadToS3UseCase
 ): express.Application => {
   const app = express();
   app.use(express.json());
@@ -19,11 +19,7 @@ export const makeApplication = (
   return app;
 };
 
-export const startApplication = (
-  logger: Logger,
-  config: Config,
-  application: express.Application
-) => {
+export const startApplication = (logger: Logger, config: Config, application: express.Application) => {
   const server = http.createServer(application);
   const [hostname, port] = [config.server.hostname, config.server.port];
   server.listen(port, hostname, () => {
