@@ -1,30 +1,20 @@
-import { flow } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import { Repository } from '../../domain/Repository';
 import { Logger } from '../../logger';
 
-export const insertEntityTE =
-  <E>(store: E[]) =>
-  (entity: E): TE.TaskEither<Error, E> => {
-    // eslint-disable-next-line functional/immutable-data
-    store.push(entity);
-    return TE.right(entity);
-  };
-
-const makeRepository =
+// TODO: Instead of mutable variable, try to use the State Monad (or STM)
+export const makeRepository =
   (logger: Logger) =>
   <T>(snapshot: ReadonlyArray<T>): Repository<T> => {
-    const store = [...snapshot];
+    // TODO: For now we are simulating a database using a mutable variable
+    // eslint-disable-next-line functional/no-let
+    let store = [...snapshot];
     return {
-      insert: flow(
-        insertEntityTE(store),
-        TE.chainFirst((item) => TE.of(logger.debug(`Record item: ${item}`)))
-      ),
+      insert: (element) => {
+        store = [...store, element];
+        logger.debug(`Record item: ${JSON.stringify(element)}`);
+        return TE.of(element);
+      },
       list: () => TE.of(store),
     };
   };
-export const makePreLoadRepository = makeRepository;
-
-export const makeUploadToS3Repository = makeRepository;
-
-export const makeNewNotificationRepository = makeRepository;

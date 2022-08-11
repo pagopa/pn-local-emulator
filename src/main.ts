@@ -13,9 +13,9 @@ pipe(
   E.map((config) => {
     const logger = makeLogger();
     /* put here the driven adapters (e.g.: Repositories ) */
-    const preLoadRecordRepository = inMemory.makePreLoadRepository(logger)([]);
-    const uploadToS3RecordRepository = inMemory.makeUploadToS3Repository(logger)([]);
-    const newNotificationRepository = inMemory.makeNewNotificationRepository(logger)([]);
+    const preLoadRecordRepository = inMemory.makeRepository(logger)([]);
+    const uploadToS3RecordRepository = inMemory.makeRepository(logger)([]);
+    const newNotificationRepository = inMemory.makeRepository(logger)([]);
     /* init the use cases */
     const preLoadUseCase = PreLoadUseCase(logger, config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
