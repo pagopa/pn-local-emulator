@@ -2,6 +2,7 @@ import express from 'express';
 import * as f from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
+import { lookup } from 'fp-ts/lib/ReadonlyRecord';
 import { HTTP_STATUS, sendError, sendSucces } from '../utils';
 import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { NewNotificationRequest } from '../../../generated/definitions/NewNotificationRequest';
@@ -16,7 +17,7 @@ const handler =
       E.ap(NewNotificationRequest.decode(req.body)),
       E.fold(
         sendError('Input error', HTTP_STATUS[400])(res),
-        TE.fold(sendError('Input error', HTTP_STATUS[400])(res), sendSucces(HTTP_STATUS[200])(res))
+        TE.fold(sendError('Input error', HTTP_STATUS[400])(res), (_) => sendSucces(HTTP_STATUS[202])(res)(_.returned))
       )
     )();
 
