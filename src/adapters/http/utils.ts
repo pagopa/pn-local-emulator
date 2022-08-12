@@ -17,10 +17,9 @@ export const toProblem =
   });
 
 export const sendError = (message: string, status: Problem['status']) => (res: Response) =>
-  flow(toProblem(message, status), res.status(status).send, Promise.resolve, T.of);
+  flow(toProblem(message, status), res.status(status).send, T.of);
 
-export const sendSucces = (status: Problem['status']) => (res: Response) =>
-  flow(res.status(status).send, Promise.resolve, T.of);
+export const sendSucces = (status: Problem['status']) => (res: Response) => flow(res.status(status).send, T.of);
 
 // TODO: find a smarter way to do this
 export const HTTP_STATUS: Record<number, Problem['status']> = {
