@@ -1,7 +1,8 @@
 import express from 'express';
 import * as f from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
-import * as utils from '../utils';
+import * as TE from 'fp-ts/TaskEither';
+import { HTTP_STATUS, sendError, sendSucces } from '../utils';
 import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { NewNotificationRequest } from '../../../generated/definitions/NewNotificationRequest';
 import { SendNotificationUseCase } from '../../../useCases/SendNotificationUseCase';
@@ -13,11 +14,11 @@ const handler =
       E.of(sendNotificationUseCase),
       E.ap(ApiKey.decode(req.headers['x-api-key'])),
       E.ap(NewNotificationRequest.decode(req.body)),
-      utils.sendResponse(res)(
-        (_error) => res.status(500).send(utils.makeAPIProblem(500, 'Internal Server Error')(undefined)),
-        (_) => res.status(202).send(_.returned)
+      E.fold(
+        sendError('Input error', HTTP_STATUS[400])(res),
+        TE.fold(sendError('Input error', HTTP_STATUS[400])(res), sendSucces(HTTP_STATUS[200])(res))
       )
-    );
+    )();
 
 export const makeSendNotificationRouter = (sendNotificationUseCase: SendNotificationUseCase): express.Router => {
   const router = express.Router();
