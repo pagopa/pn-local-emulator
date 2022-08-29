@@ -3,7 +3,6 @@ info:
   title: 'Internal HTTP API'
   version: '0.0.0'
 paths:
-  # empty because we don't use them
   "/checklistresult":
     get:
       description: >-
