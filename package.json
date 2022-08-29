@@ -4,7 +4,9 @@
   "description": "A system that emulates some features of Piattaforma Notifiche platform.",
   "main": "dist/main.js",
   "scripts": {
-    "generate": "shx rm -rf ./src/generated/definitions && shx mkdir -p ./src/generated/definitions && gen-api-models --api-spec ./openapi/index.yaml --no-strict --out-dir ./src/generated/definitions",
+    "generate": "pnpm generate:pn && pnpm generate:internal",
+    "generate:pn": "shx rm -rf ./src/generated/definitions && shx mkdir -p ./src/generated/definitions && gen-api-models --api-spec ./openapi/index.yaml --no-strict --out-dir ./src/generated/definitions",
+    "generate:internal": "shx rm -rf ./src/generated/codec && shx mkdir -p ./src/generated/codec && gen-api-models --api-spec ./openapi/internal.yaml --no-strict --out-dir ./src/generated/codec",
     "clean": "tsc --build --clean",
     "compile": "tsc",
     "lint": "eslint src",
