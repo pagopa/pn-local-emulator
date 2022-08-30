@@ -1,5 +1,5 @@
 import express from 'express';
-import { flow, pipe } from 'fp-ts/lib/function';
+import { flow, pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { AmzDocumentKey } from '../../../generated/definitions/AmzDocumentKey';
