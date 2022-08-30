@@ -1,7 +1,8 @@
 import express from 'express';
-import { pipe, flow } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
+import * as T from 'fp-ts/Task';
 import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { NewNotificationRequest } from '../../../generated/definitions/NewNotificationRequest';
 import { SendNotificationUseCase } from '../../../useCases/SendNotificationUseCase';
@@ -17,12 +18,9 @@ const handler =
       E.ap(NewNotificationRequest.decode(req.body)),
       // Create response
       E.map(
-        flow(
-          TE.bimap(
-            (_) => res.status(500).send(makeProblem(500)),
-            (_) => res.status(_.statusCode).send(_.returned)
-          ),
-          TE.toUnion
+        TE.fold(
+          (_) => T.of(res.status(500).send(makeProblem(500))),
+          (_) => T.of(res.status(_.statusCode).send(_.returned))
         )
       )
     );

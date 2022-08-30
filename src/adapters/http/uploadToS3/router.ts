@@ -1,7 +1,8 @@
 import express from 'express';
-import { flow, pipe } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
+import * as T from 'fp-ts/Task';
 import { AmzDocumentKey } from '../../../generated/definitions/AmzDocumentKey';
 import { AmzSdkChecksumAlg } from '../../../generated/definitions/AmzSdkChecksumAlg';
 import { AmzMetaSecret } from '../../../generated/definitions/AmzMetaSecret';
@@ -21,12 +22,9 @@ const handler =
       E.ap(AmzChecksumSHA256.decode(req.headers['x-amz-checksum-sha256'])),
       // Create response
       E.map(
-        flow(
-          TE.bimap(
-            (_) => res.status(500).send(makeProblem(500)),
-            (_) => res.status(200).header('x-amz-version-id', _.toString()).send()
-          ),
-          TE.toUnion
+        TE.fold(
+          (_) => T.of(res.status(500).send(makeProblem(500))),
+          (_) => T.of(res.status(200).header('x-amz-version-id', _.toString()).send())
         )
       )
     );
