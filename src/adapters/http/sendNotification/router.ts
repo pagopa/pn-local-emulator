@@ -3,11 +3,11 @@ import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
+import * as Problem from '../Problem';
 import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { NewNotificationRequest } from '../../../generated/definitions/NewNotificationRequest';
 import { SendNotificationUseCase } from '../../../useCases/SendNotificationUseCase';
 import { Handler, toExpressHandler } from '../Handler';
-import { makeProblem } from '../codec';
 
 const handler =
   (sendNotificationUseCase: SendNotificationUseCase): Handler =>
@@ -19,7 +19,7 @@ const handler =
       // Create response
       E.map(
         TE.fold(
-          (_) => T.of(res.status(500).send(makeProblem(500))),
+          (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
           (_) => T.of(res.status(_.statusCode).send(_.returned))
         )
       )

@@ -3,10 +3,10 @@ import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
 import * as TE from 'fp-ts/TaskEither';
+import * as Problem from '../Problem';
 import { PreLoadUseCase } from '../../../useCases/PreLoadUseCase';
 import { PreLoadRequestBody } from '../../../generated/definitions/PreLoadRequestBody';
 import { ApiKey } from '../../../generated/definitions/ApiKey';
-import { makeProblem } from '../codec';
 import { Handler, toExpressHandler } from '../Handler';
 
 const preloadHandler =
@@ -19,7 +19,7 @@ const preloadHandler =
       // Create response
       E.map(
         TE.fold(
-          (_) => T.of(res.status(500).send(makeProblem(500))),
+          (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
           (_) => T.of(res.status(_.statusCode).send(_.returned))
         )
       )

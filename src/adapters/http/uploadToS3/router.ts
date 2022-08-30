@@ -3,12 +3,12 @@ import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
+import * as Problem from '../Problem';
 import { AmzDocumentKey } from '../../../generated/definitions/AmzDocumentKey';
 import { AmzSdkChecksumAlg } from '../../../generated/definitions/AmzSdkChecksumAlg';
 import { AmzMetaSecret } from '../../../generated/definitions/AmzMetaSecret';
 import { AmzChecksumSHA256 } from '../../../generated/definitions/AmzChecksumSHA256';
 import { UploadToS3UseCase } from '../../../useCases/UploadToS3UseCase';
-import { makeProblem } from '../codec';
 import { Handler, toExpressHandler } from '../Handler';
 
 const handler =
@@ -23,7 +23,7 @@ const handler =
       // Create response
       E.map(
         TE.fold(
-          (_) => T.of(res.status(500).send(makeProblem(500))),
+          (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
           (_) => T.of(res.status(200).header('x-amz-version-id', _.toString()).send())
         )
       )
