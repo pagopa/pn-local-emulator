@@ -9,24 +9,17 @@ import {
   NewNotificationRecord,
   NewNotificationRepository,
 } from '../domain/NewNotificationRepository';
-import { Logger } from '../logger';
-import { onValidApiKey } from './utils';
+import { makeResponse } from './utils';
 
 export const SendNotificationUseCase =
-  (logger: Logger, repository: NewNotificationRepository) =>
+  (repository: NewNotificationRepository) =>
   (apiKey: ApiKey) =>
-  (body: NewNotificationRequest): TE.TaskEither<Error, NewNotificationRecord['output']> => {
-    const input = { apiKey, body };
-    const returned = makeNewNotificationResponse(body)(crypto.randomUUID());
-    const output = onValidApiKey(apiKey)({ statusCode: 202 as const, returned });
-    const record = makeNewNotificationRecord({ input, output });
-    return pipe(
-      repository.insert(record),
-      TE.map((_) => {
-        logger.debug(record);
-        return record.output;
-      })
+  (body: NewNotificationRequest): TE.TaskEither<Error, NewNotificationRecord['output']> =>
+    pipe(
+      TE.of(makeNewNotificationResponse(body)(crypto.randomUUID())),
+      TE.chain(makeResponse(apiKey)(202)),
+      TE.map((output) => makeNewNotificationRecord({ input: { apiKey, body }, output })),
+      TE.chain(repository.insert),
+      TE.map((record) => record.output)
     );
-  };
-
 export type SendNotificationUseCase = ReturnType<typeof SendNotificationUseCase>;
