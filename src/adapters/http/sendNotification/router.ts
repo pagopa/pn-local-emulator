@@ -1,5 +1,5 @@
 import express from 'express';
-import { pipe, flow } from 'fp-ts/lib/function';
+import { pipe, flow } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { ApiKey } from '../../../generated/definitions/ApiKey';
