@@ -22,7 +22,7 @@ const makeResponse = (apiKey: string) => (returned: PreLoadResponse[]) =>
   pipe({ statusCode: 200 as const, returned }, onValidApiKey(apiKey), TE.fromEither, TE.toUnion, TE.fromTask);
 
 // log the content of the record inserted into the repository
-const logPreloadRecord = (logger: Logger) => (record: PreLoadRecord) => pipe(record, logger.debug, TE.right);
+const logPreloadRecord = (logger: Logger) => (record: PreLoadRecord) => TE.right(logger.debug(record));
 
 export const PreLoadUseCase =
   (logger: Logger, uploadToS3URL: URL, repository: PreLoadRecordRepository) =>
