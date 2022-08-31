@@ -17,10 +17,11 @@ export const PreLoadUseCase =
   (apiKey: ApiKey) =>
   (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> => {
     const input = { apiKey, body };
-    const url = uploadToS3URL.href;
+    const baseURL = uploadToS3URL.href;
     const returned = body.map((req) => {
       // TODO: Move into an adapter
       const [key, secret] = [crypto.randomUUID(), crypto.randomUUID()];
+      const url = `${baseURL}/${key}`;
       return makePreLoadResponse(key, secret, url, req);
     });
     const output = onValidApiKey(apiKey)({ statusCode: 200 as const, returned });
