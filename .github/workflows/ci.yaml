@@ -1,13 +1,6 @@
 name: CI
 
-on:
-  pull_request:
-    types:
-      - opened
-      - edited
-      - reopened
-      - ready_for_review
-      - synchronize
+on: pull_request
 
 jobs:
   build:
