@@ -22,6 +22,21 @@ npm run generate
 npm run start
 ```
 
+## Run with Docker
+
+The repository comes with a Dockerfile that you can use to run the application with Docker.
+First, build the image:
+
+``` sh
+docker build -t pnemulator .
+```
+
+Then, run the application:
+
+``` sh
+docker run -p 3000:3000 pnemulator
+```
+
 ### Example
 
 ``` sh
