@@ -1,4 +1,4 @@
-# PnValidator
+# PnValidator [![CI](https://github.com/pagopa/pn-local-emulator-poc/actions/workflows/ci.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator-poc/actions/workflows/ci.yaml)
 
 A system that emulates some features of Piattaforma Notifiche platform.
 
