@@ -14,8 +14,10 @@ import { PreLoadResponse } from '../generated/definitions/PreLoadResponse';
 import { authorizeApiKey } from './utils';
 
 // build response payload from the given request body
-const makeResponsePayload = (url: string, body: PreLoadRequestBody): ReadonlyArray<PreLoadResponse> =>
-  body.map((req) => makePreLoadResponse(crypto.randomUUID(), crypto.randomUUID(), url, req));
+const makeResponsePayload = (baseUrl: string, body: PreLoadRequestBody): ReadonlyArray<PreLoadResponse> =>
+  body.map((req) =>
+    pipe(crypto.randomUUID(), (key) => makePreLoadResponse(key, crypto.randomUUID(), `${baseUrl}/${key}`, req))
+  );
 
 export const PreLoadUseCase =
   (uploadToS3URL: URL, repository: PreLoadRecordRepository) =>

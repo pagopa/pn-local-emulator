@@ -21,7 +21,7 @@ pipe(
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
     const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
-      const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository);
+    const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
