@@ -1,0 +1,30 @@
+name: CI
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.node-version'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate code
+        run: npm run generate
+
+      - name: Compile
+        run: npm run compile
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Execute tests
+        run: npm test

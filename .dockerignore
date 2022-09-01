@@ -1,0 +1,12 @@
+.git/
+.github/
+.husky/
+**/node_modules/
+.adr-dir
+.env.default
+.eslintrc.json
+.gitignore
+.prettierrc
+README.md
+CODEOWNERS
+LICENSE
