@@ -20,7 +20,7 @@ const body = [
 
 describe('PreLoadUseCase', () => {
   it('should return the key into url for each elements', async () => {
-    const actual = await PreLoadUseCase(logger, config.server.uploadToS3URL, repository)(apiKey)(body)();
+    const actual = await PreLoadUseCase(config.server.uploadToS3URL, repository)(apiKey)(body)();
     const checkKey = pipe(
       actual,
       E.exists(
