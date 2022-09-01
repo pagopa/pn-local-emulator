@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 import { NewNotificationRequest } from '../generated/definitions/NewNotificationRequest';
@@ -9,24 +10,19 @@ import {
   NewNotificationRecord,
   NewNotificationRepository,
 } from '../domain/NewNotificationRepository';
-import { Logger } from '../logger';
-import { onValidApiKey } from './utils';
+import { authorizeApiKey } from './utils';
 
 export const SendNotificationUseCase =
-  (logger: Logger, repository: NewNotificationRepository) =>
+  (repository: NewNotificationRepository) =>
   (apiKey: ApiKey) =>
-  (body: NewNotificationRequest): TE.TaskEither<Error, NewNotificationRecord['output']> => {
-    const input = { apiKey, body };
-    const returned = makeNewNotificationResponse(body)(crypto.randomUUID());
-    const output = onValidApiKey(apiKey)({ statusCode: 202 as const, returned });
-    const record = makeNewNotificationRecord({ input, output });
-    return pipe(
-      repository.insert(record),
-      TE.map((_) => {
-        logger.debug(record);
-        return record.output;
-      })
+  (body: NewNotificationRequest): TE.TaskEither<Error, NewNotificationRecord['output']> =>
+    pipe(
+      // authorize the key
+      authorizeApiKey(apiKey),
+      // create the response on valid key
+      E.map((_) => ({ statusCode: 202 as const, returned: makeNewNotificationResponse(body)(crypto.randomUUID()) })),
+      E.toUnion,
+      (output) => repository.insert(makeNewNotificationRecord({ input: { apiKey, body }, output })),
+      TE.map((record) => record.output)
     );
-  };
-
 export type SendNotificationUseCase = ReturnType<typeof SendNotificationUseCase>;

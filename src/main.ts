@@ -17,9 +17,9 @@ pipe(
     const uploadToS3RecordRepository = inMemory.makeRepository(logger)([]);
     const newNotificationRepository = inMemory.makeRepository(logger)([]);
     /* init the use cases */
-    const preLoadUseCase = PreLoadUseCase(logger, config.server.uploadToS3URL, preLoadRecordRepository);
+    const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
-    const sendNotificationUseCase = SendNotificationUseCase(logger, newNotificationRepository);
+    const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(preLoadUseCase, uploadToS3UseCase, sendNotificationUseCase);
