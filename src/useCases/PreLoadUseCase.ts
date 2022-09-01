@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
-import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
-import { Logger } from '../logger';
+import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
 import {
   makePreLoadRecord,
   makePreLoadResponse,
@@ -10,27 +10,28 @@ import {
 } from '../domain/PreLoadRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
-import { onValidApiKey } from './utils';
+import { PreLoadResponse } from '../generated/definitions/PreLoadResponse';
+import { authorizeApiKey } from '../domain/authorize';
+
+// build response payload from the given request body
+const makeResponsePayload = (baseUrl: string, body: PreLoadRequestBody): ReadonlyArray<PreLoadResponse> =>
+  body.map((req) =>
+    pipe(crypto.randomUUID(), (key) => makePreLoadResponse(key, crypto.randomUUID(), `${baseUrl}/${key}`, req))
+  );
 
 export const PreLoadUseCase =
-  (logger: Logger, uploadToS3URL: URL, repository: PreLoadRecordRepository) =>
+  (uploadToS3URL: URL, repository: PreLoadRecordRepository) =>
   (apiKey: ApiKey) =>
-  (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> => {
-    const input = { apiKey, body };
-    const baseURL = uploadToS3URL.href;
-    const returned = body.map((req) => {
-      // TODO: Move into an adapter
-      const [key, secret] = [crypto.randomUUID(), crypto.randomUUID()];
-      const url = `${baseURL}/${key}`;
-      return makePreLoadResponse(key, secret, url, req);
-    });
-    const output = onValidApiKey(apiKey)({ statusCode: 200 as const, returned });
-    const record = makePreLoadRecord({ input, output });
-    return pipe(
-      repository.insert(record),
-      TE.chainFirst(() => TE.of(logger.debug(record))),
-      TE.map((_) => record.output)
+  (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> =>
+    pipe(
+      // authorize the key
+      authorizeApiKey(apiKey),
+      E.map((_) => makeResponsePayload(uploadToS3URL.href, body)),
+      E.map((returned) => ({ statusCode: 200 as const, returned })),
+      E.map((output) => makePreLoadRecord({ input: { apiKey, body }, output })),
+      E.toUnion,
+      repository.insert,
+      TE.map((record) => record.output)
     );
-  };
 
 export type PreLoadUseCase = ReturnType<typeof PreLoadUseCase>;
