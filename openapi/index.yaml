@@ -30,7 +30,7 @@ components:
     headerAmzSdkChecksumAlgParam:
       name: x-amz-sdk-checksum-algorithm
       in: header
-      required: true
+      required: false
       schema:
         $ref: '#/components/schemas/AmzSdkChecksumAlg'
     headerAmzMetaSecretParam:

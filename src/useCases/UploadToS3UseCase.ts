@@ -1,4 +1,5 @@
 import { pipe } from 'fp-ts/lib/function';
+import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import { UploadToS3RecordRepository } from '../domain/UploadToS3RecordRepository';
 import { AmzChecksumSHA256 } from '../generated/definitions/AmzChecksumSHA256';
@@ -10,7 +11,7 @@ import { AmzDocumentKey } from '../generated/definitions/AmzDocumentKey';
 export const UploadToS3UseCase =
   (uploadToS3Repository: UploadToS3RecordRepository) =>
   (key: AmzDocumentKey) =>
-  (checksumAlg: AmzSdkChecksumAlg) =>
+  (checksumAlg: O.Option<AmzSdkChecksumAlg>) =>
   (secret: AmzMetaSecret) =>
   (checksum: AmzChecksumSHA256): TE.TaskEither<Error, AmzVersionId> => {
     const input = { key, checksumAlg, secret, checksum };
