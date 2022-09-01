@@ -10,7 +10,7 @@ import {
   NewNotificationRecord,
   NewNotificationRepository,
 } from '../domain/NewNotificationRepository';
-import { authorizeApiKey } from './utils';
+import { authorizeApiKey } from '../domain/authorize';
 
 export const SendNotificationUseCase =
   (repository: NewNotificationRepository) =>

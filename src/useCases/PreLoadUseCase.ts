@@ -11,7 +11,7 @@ import {
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 import { PreLoadResponse } from '../generated/definitions/PreLoadResponse';
-import { authorizeApiKey } from './utils';
+import { authorizeApiKey } from '../domain/authorize';
 
 // build response payload from the given request body
 const makeResponsePayload = (baseUrl: string, body: PreLoadRequestBody): ReadonlyArray<PreLoadResponse> =>
