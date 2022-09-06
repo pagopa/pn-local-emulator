@@ -63,4 +63,10 @@ curl --request POST 'http://localhost:8080/delivery/attachments/preload' \
 # Get the report, as you can see some result are 'ok'
 curl --location --request GET 'localhost:8080/checklistresult'
 
+curl --request PUT 'http://localhost:8080/uploadS3/use-the-key-taken-from-preload' \
+--header 'x-amz-meta-secret: put-here-the-secret-taken-from-preload' \
+--header 'x-amz-checksum-sha256: jezIVxlG1M1woCSUngM6KipUN3/a8cG5RMIPnuEanlE='
+
+# Get the report, as you can see some result are 'ok'
+curl --location --request GET 'localhost:8080/checklistresult'
 ```
