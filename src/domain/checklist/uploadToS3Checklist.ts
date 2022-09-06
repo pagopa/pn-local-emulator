@@ -1,5 +1,5 @@
-import { pipe } from 'fp-ts/lib/function';
-import * as E from 'fp-ts/Either';
+import { pipe, tuple } from 'fp-ts/lib/function';
+import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { AnyRecord } from '../AnyRecord';
 import { PreLoadRecord } from '../PreLoadRepository';
@@ -11,13 +11,13 @@ export const check0 = {
   eval: RA.some((record: AnyRecord) => record.output.statusCode === 200 && record.type === 'UploadToS3Record'),
 };
 
-const match = (uploadToS3Record: UploadToS3Record, preLoadRecord: PreLoadRecord): boolean =>
+const match = (preLoadRecord: PreLoadRecord, uploadToS3Record: UploadToS3Record): boolean =>
   preLoadRecord.output.statusCode === 200 &&
   pipe(
     RA.zip(preLoadRecord.output.returned)(preLoadRecord.input.body),
     RA.some(
       ([body, result]) =>
-        // TODO: Add insert date and check that uploadToS3Record.createdAt is bigger than preLoadRecord
+        // TODO: Add insert date and check that uploadToS3Record.createdAt is bigger than the one of preLoadRecord
         body.sha256 === uploadToS3Record.input.checksum &&
         result.secret === uploadToS3Record.input.secret &&
         result.key === uploadToS3Record.input.key
@@ -26,21 +26,20 @@ const match = (uploadToS3Record: UploadToS3Record, preLoadRecord: PreLoadRecord)
 
 export const check1 = {
   name: `Exists a request that matches checksum, secret, key and url returned in any previous request of step 'Request an "upload slot"'`,
-  eval: (recordList: ReadonlyArray<UploadToS3Record | PreLoadRecord>) =>
-    pipe(
+  eval: (recordList: ReadonlyArray<AnyRecord>) => {
+    const preLoadRecords = pipe(
       recordList,
-      RA.partitionMap((_) => (_.type === 'PreLoadRecord' ? E.right(_) : E.left(_))),
-      ({ left, right }) =>
-        pipe(
-          left,
-          RA.some((upload) =>
-            pipe(
-              right,
-              RA.some((preload) => match(upload, preload))
-            )
-          )
-        )
-    ),
+      RA.filterMap((record) => (record.type === 'PreLoadRecord' ? O.some(record) : O.none))
+    );
+    const uploadToS3Records = pipe(
+      recordList,
+      RA.filterMap((record) => (record.type === 'UploadToS3Record' ? O.some(record) : O.none))
+    );
+    return pipe(
+      RA.comprehension([preLoadRecords, uploadToS3Records], tuple),
+      RA.some(([preload, upload]) => match(preload, upload))
+    );
+  },
 };
 
 const group = {
