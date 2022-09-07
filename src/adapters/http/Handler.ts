@@ -3,8 +3,8 @@ import * as t from 'io-ts';
 import * as T from 'fp-ts/Task';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
-import * as Problem from './Problem';
 import { isObject } from '@pagopa/ts-commons/lib/types';
+import * as Problem from './Problem';
 
 export type Handler = (req: express.Request, res: express.Response) => t.Validation<T.Task<express.Response>>;
 
