@@ -33,4 +33,4 @@ Publish the image to [Docker Hub](https://hub.docker.com/).
 
 ## Decision
 
-We decided for **[Option 1](#option-1)** because it is simpler to use in GitHub and has no limits.
+We decided for **[Option 1](#option-1)** because it is simpler to use on GitHub and has no limits.
