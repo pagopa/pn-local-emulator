@@ -7,7 +7,7 @@ import * as Problem from '../Problem';
 import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { NewNotificationRequest } from '../../../generated/definitions/NewNotificationRequest';
 import { SendNotificationUseCase } from '../../../useCases/SendNotificationUseCase';
-import {Handler, toExpressHandler, withoutNullValues} from '../Handler';
+import { Handler, toExpressHandler, withoutNullValues } from '../Handler';
 
 const handler =
   (sendNotificationUseCase: SendNotificationUseCase): Handler =>
