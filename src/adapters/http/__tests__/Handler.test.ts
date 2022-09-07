@@ -1,6 +1,6 @@
-import { withoutNullValues } from '../Handler';
+import { removeNullValues } from '../Handler';
 
-describe('Handler', () => {
+describe('withoutNullValues', () => {
   it('should filter out null properties recursively', async () => {
     const obj = {
       a: 1,
@@ -10,7 +10,7 @@ describe('Handler', () => {
         e: null,
       },
     };
-    const actual = withoutNullValues(obj);
+    const actual = removeNullValues(obj);
     const expected = {
       a: 1,
       c: {
