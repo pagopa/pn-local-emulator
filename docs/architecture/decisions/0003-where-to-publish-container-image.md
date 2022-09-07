@@ -1,4 +1,4 @@
-# 1. Where to publish the container image
+# 3. Where to publish the container image
 
 Date: 2022-09-07
 
