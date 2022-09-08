@@ -21,15 +21,14 @@ export const toExpressHandler =
 /**
  * Return an object filtering out keys that point to null values.
  */
-export const removeNullValues = <T, K extends keyof T>(obj: T): T => {
-  const keys = Object.keys(obj);
-  return keys.reduce((acc, key) => {
-    const value = obj[key as K];
-    return value !== null
-      ? {
-          ...acc,
-          [key]: isObject(value) ? removeNullValues(value) : value,
-        }
-      : acc;
-  }, {} as T);
+export const removeNullValues = <T, K extends keyof T>(input: T): T => {
+  if (Array.isArray(input)) {
+    return input.map(removeNullValues) as T;
+  } else if (isObject(input)) {
+    return Object.keys(input)
+      .filter((key) => input[key as K] !== null)
+      .reduce((acc, k) => ({ ...acc, [k]: removeNullValues(input[k]) }), {} as T);
+  } else {
+    return input;
+  }
 };
