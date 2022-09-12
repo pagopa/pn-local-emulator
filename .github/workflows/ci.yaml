@@ -28,3 +28,13 @@ jobs:
 
       - name: Execute tests
         run: npm test
+
+  build_image:
+    needs:
+      - build
+    uses: pagopa/pn-local-emulator-poc/.github/workflows/build_push_image.yaml@main
+    with:
+      image_name: ${{ github.repository }}
+      push: false
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
