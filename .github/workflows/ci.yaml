@@ -43,6 +43,6 @@ jobs:
     name: Scan for vulnerabilities
     needs:
       - build_image
-    uses: pagopa/pn-local-emulator-poc/.github/workflows/trivy.yml@features/cd-docker-image
+    uses: pagopa/pn-local-emulator-poc/.github/workflows/trivy.yaml@features/cd-docker-image
     with:
       container_image: ${{ needs.build_image.outputs.full_image_name }}
