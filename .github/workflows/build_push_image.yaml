@@ -1,0 +1,60 @@
+name: Build container image and maybe push it to the registry
+on:
+  workflow_call:
+    # Parameters of the workflow
+    inputs:
+      registry:
+        description: 'The registry to use. Default: ghcr.io'
+        type: string
+        required: false
+        default: 'ghcr.io'
+      image_name:
+        description: 'The name of the image.'
+        type: string
+        required: true
+      push:
+        description: 'If true, push the image to the registry. Default: false'
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      token:
+        description: 'The token to use for authentication.'
+        required: true
+
+jobs:
+  reusable_workflow_job:
+    runs-on: ubuntu-latest
+
+    # Sets the permissions granted to the GITHUB_TOKEN for the actions in this job.
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # https://github.com/docker/login-action#github-container-registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.token }}
+
+      # https://github.com/docker/metadata-action#tags-input
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ inputs.registry }}/${{ inputs.image_name }}
+
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: ${{ inputs.push }}
+          tags: ${{ steps.meta.outputs.tags }}
+
