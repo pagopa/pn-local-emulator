@@ -16,13 +16,18 @@ on:
         type: boolean
         required: false
         default: false
+    outputs:
+      full_image_name:
+        description: 'The full container image name, containing the registry, the image name and the version.'
+        value: ${{ inputs.registry }}/${{ inputs.image_name }}:${{ jobs.build_push_image.steps.meta.outputs.version }}
     secrets:
       token:
         description: 'The token to use for authentication against the container registry.'
         required: true
 
 jobs:
-  reusable_workflow_job:
+  build_push_image:
+    name: Build container image and push it to the container registry (if push parameter is true)
     runs-on: ubuntu-latest
 
     # Sets the permissions granted to the GITHUB_TOKEN for the actions in this job.
