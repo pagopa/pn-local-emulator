@@ -1,25 +1,24 @@
-name: Build container image and maybe push it to the registry
+name: Build container image and push it to the container registry, according to the value of the push parameter
 on:
   workflow_call:
-    # Parameters of the workflow
     inputs:
       registry:
-        description: 'The registry to use. Default: ghcr.io'
+        description: 'The container registry to use. Default: ghcr.io'
         type: string
         required: false
         default: 'ghcr.io'
       image_name:
-        description: 'The name of the image.'
+        description: 'The name of the container image.'
         type: string
         required: true
       push:
-        description: 'If true, push the image to the registry. Default: false'
+        description: 'If true, push the container image to the container registry. Default: false'
         type: boolean
         required: false
         default: false
     secrets:
       token:
-        description: 'The token to use for authentication.'
+        description: 'The token to use for authentication against the container registry.'
         required: true
 
 jobs:
@@ -51,7 +50,7 @@ jobs:
           images: ${{ inputs.registry }}/${{ inputs.image_name }}
 
       # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
+      - name: Build and push container image
         uses: docker/build-push-action@v3
         with:
           context: .
