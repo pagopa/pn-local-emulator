@@ -45,4 +45,4 @@ jobs:
       - build_image
     uses: pagopa/pn-local-emulator-poc/.github/workflows/trivy.yaml@features/cd-docker-image
     with:
-      container_image: ${{ needs.build_image.outputs.full_image_name }}
+      container_image_name: ${{ needs.build_image.outputs.full_image_name }}
