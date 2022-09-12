@@ -31,7 +31,6 @@ export const CheckNotificationStatusUseCase =
   (apiKey: ApiKey) =>
   (input: CheckNotificationStatusRecord['input']): TE.TaskEither<Error, CheckNotificationStatusRecord['output']> =>
     pipe(
-      // authorize the key
       authorizeApiKey(apiKey),
       E.map((_) =>
         pipe(
