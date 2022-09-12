@@ -1,0 +1,15 @@
+name: Create and publish a container image
+
+on:
+  push:
+    tags:
+      - '*' # Create container image and publish it on tag creation
+
+jobs:
+  push_image:
+    uses: pagopa/pn-local-emulator-poc/.github/workflows/build_push_image.yaml@main
+    with:
+      image_name: ${{ github.repository }}
+      push: true
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
