@@ -8,7 +8,7 @@ Proposed
 
 ## Context
 
-This project is packaged as a container image, we have to allow anonymous users to pull it. Choose the container registry where deliver the image.
+This project is packaged as a container image, we have to allow anonymous users to pull it. Choose the container registry where deliver the container image.
 
 ### Option 1
 
