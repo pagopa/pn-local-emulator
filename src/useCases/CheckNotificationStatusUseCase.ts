@@ -46,7 +46,7 @@ export const CheckNotificationStatusUseCase =
       TE.map(E.toUnion),
       TE.map((output) => ({ type: 'CheckNotificationStatusRecord' as const, input, output })),
       TE.chain(checkNotificationStatusRecordRepository.insert),
-      TE.map((_) => _.output)
+      TE.map((record) => record.output)
     );
 
 export type CheckNotificationStatusUseCase = ReturnType<typeof CheckNotificationStatusUseCase>;
