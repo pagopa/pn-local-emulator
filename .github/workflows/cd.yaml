@@ -7,7 +7,7 @@ on:
 
 jobs:
   push_image:
-    uses: pagopa/pn-local-emulator-poc/.github/workflows/build_push_image.yaml@main
+    uses: pagopa/pn-local-emulator-poc/.github/workflows/build_push_image.yaml@features/cd-docker-image
     with:
       image_name: ${{ github.repository }}
       push: true
