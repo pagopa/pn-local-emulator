@@ -23,12 +23,7 @@ export const toExpressHandler =
  */
 export const removeNullValues = <T, K extends keyof T>(input: T): T => {
   if (Array.isArray(input)) {
-    return (
-      input
-        .map(removeNullValues)
-        // Remove object without keys within the array
-        .filter((elem) => (isObject(elem) ? Object.keys(elem).length > 0 : elem)) as T
-    );
+    return input.map(removeNullValues) as T;
   } else if (isObject(input)) {
     return Object.keys(input)
       .filter((key) => input[key as K] !== null)
