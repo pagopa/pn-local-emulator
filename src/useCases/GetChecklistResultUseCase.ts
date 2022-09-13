@@ -17,9 +17,9 @@ export const GetChecklistResultUseCase =
       TE.ap(uploadToS3RecordRepository.list()),
       TE.map(evalChecklist(uploadToS3Checklist))
     );
-    // TODO: Figure out how to improve this part, the pipe should be writtable as following
+    // TODO: Figure out how to improve this part, the pipe should be writtable as follows:
     // pipe(TE.of(RA.concat), TE.ap(preLoadChecklistResult), TE.ap(uploadToS3ChecklistResult));
-    // without the need to explicit bind the type of RA.contact
+    // without explicit the type of RA.contact
     return pipe(TE.of(RA.concat<Result>), TE.ap(preLoadChecklistResult), TE.ap(uploadToS3ChecklistResult));
   };
 
