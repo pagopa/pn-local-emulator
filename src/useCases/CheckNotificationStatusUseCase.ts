@@ -20,7 +20,8 @@ const match = (input: CheckNotificationStatusRecord['input']) => (record: NewNot
       )
     : pipe(
         makeNewNotificationRequestStatusResponse(record),
-        O.filter((x) => x.paProtocolNumber === input.paProtocolNumber)
+        O.filter((record) => record.paProtocolNumber === input.paProtocolNumber),
+        O.filter((record) => record.idempotenceToken === input.idempotenceToken)
       );
 
 export const CheckNotificationStatusUseCase =
