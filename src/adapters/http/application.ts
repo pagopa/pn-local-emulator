@@ -6,15 +6,18 @@ import { PreLoadUseCase } from '../../useCases/PreLoadUseCase';
 import { UploadToS3UseCase } from '../../useCases/UploadToS3UseCase';
 import { SendNotificationUseCase } from '../../useCases/SendNotificationUseCase';
 import { GetChecklistResultUseCase } from '../../useCases/GetChecklistResultUseCase';
+import { CreateEventStreamUseCase } from '../../useCases/CreateEventStreamUseCase';
 import { makePreLoadRouter } from './preLoad/router';
 import { makeUploadToS3Router } from './uploadToS3/router';
 import { makeSendNotificationRouter } from './sendNotification/router';
 import { makeChecklistRouter } from './checklist/router';
+import { makeCreateEventStreamRouter } from './createEventStream/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
   uploadToS3UseCase: UploadToS3UseCase,
   sendNotificationUseCase: SendNotificationUseCase,
+  createEventStreamUseCase: CreateEventStreamUseCase,
   getChecklistResultUseCase: GetChecklistResultUseCase
 ): express.Application => {
   const app = express();
@@ -23,6 +26,7 @@ export const makeApplication = (
   app.use(makePreLoadRouter(preLoadUseCase));
   app.use(makeUploadToS3Router(uploadToS3UseCase));
   app.use(makeSendNotificationRouter(sendNotificationUseCase));
+  app.use(makeCreateEventStreamRouter(createEventStreamUseCase));
   app.use(makeChecklistRouter(getChecklistResultUseCase));
   return app;
 };
