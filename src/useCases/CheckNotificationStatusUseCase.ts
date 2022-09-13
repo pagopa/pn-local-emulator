@@ -16,7 +16,7 @@ const match = (input: CheckNotificationStatusRecord['input']) => (record: NewNot
   'notificationRequestId' in input
     ? pipe(
         makeNewNotificationRequestStatusResponse(record),
-        O.filter((x) => x.notificationRequestId === input.notificationRequestId)
+        O.filter((record) => record.notificationRequestId === input.notificationRequestId)
       )
     : pipe(
         makeNewNotificationRequestStatusResponse(record),
