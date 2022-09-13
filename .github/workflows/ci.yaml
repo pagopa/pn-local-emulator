@@ -38,11 +38,3 @@ jobs:
       push: false
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-
-  vulnerabilities_scan:
-    name: Scan for vulnerabilities
-    needs:
-      - build_image
-    uses: pagopa/pn-local-emulator-poc/.github/workflows/trivy.yaml@features/cd-docker-image
-    with:
-      container_image_name: ${{ needs.build_image.outputs.full_image_name }}
