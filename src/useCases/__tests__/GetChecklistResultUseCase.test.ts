@@ -4,6 +4,7 @@ import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as inMemory from '../../adapters/inMemory';
 import { makeLogger } from '../../logger';
+import { UploadToS3Record } from '../../domain/UploadToS3RecordRepository';
 import * as uploadToS3Checklist from '../../domain/checklist/uploadToS3Checklist';
 import * as data from '../../domain/__tests__/data';
 
@@ -19,7 +20,7 @@ describe('GetChecklistResultUseCase', () => {
         const { group, name } = uploadToS3Checklist.check0;
         const useCase = GetChecklistResultUseCase(
           inMemory.makeRepository(logger)([data.preLoadRecord]),
-          inMemory.makeRepository(logger)([])
+          inMemory.makeRepository(logger)<UploadToS3Record>([])
         );
         const actual = await useCase()();
         const actualCheck = pipe(

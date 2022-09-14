@@ -19,9 +19,7 @@ describe('preLoadChecklist', () => {
       { ...basePreloadRecord, output: { ...basePreloadRecord.output, statusCode: 401, returned: undefined } },
     ]);
     expect(actualOK.result).toStrictEqual('ok');
-    const actualKO = check([
-      { ...basePreloadRecord, output: { ...basePreloadRecord.output, statusCode: 200, returned: undefined } },
-    ]);
+    const actualKO = check([{ ...basePreloadRecord }]);
     expect(actualKO.result).toStrictEqual('ko');
   });
 
@@ -29,11 +27,6 @@ describe('preLoadChecklist', () => {
     const check = evalCheck({ ...check1, group });
     const actualOK = check([{ ...basePreloadRecord, input: { ...basePreloadRecord.input, apiKey: 'an-api-key' } }]);
     expect(actualOK.result).toStrictEqual('ok');
-
-    const actualKO = check([{ ...basePreloadRecord, input: { ...basePreloadRecord.input, apiKey: null } }]);
-    const actualKO_1 = check([{ ...basePreloadRecord, input: { ...basePreloadRecord.input, apiKey: undefined } }]);
-    expect(actualKO.result).toStrictEqual('ko');
-    expect(actualKO_1.result).toStrictEqual('ko');
   });
   it('should exist a request with unique preloadIdx values within the body', () => {
     const check = evalCheck({ ...check2, group });

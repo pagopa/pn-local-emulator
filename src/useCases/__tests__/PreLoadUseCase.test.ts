@@ -6,6 +6,7 @@ import { makeLogger } from '../../logger';
 import { config } from '../../__tests__/data';
 import * as inMemory from '../../adapters/inMemory';
 import * as data from '../../domain/__tests__/data';
+import { PreLoadRecord } from '../../domain/PreLoadRepository';
 
 const logger = makeLogger();
 const body = [
@@ -18,7 +19,7 @@ const body = [
 
 describe('PreLoadUseCase', () => {
   it('should return the key into url for each elements', async () => {
-    const useCase = PreLoadUseCase(config.server.uploadToS3URL, inMemory.makeRepository(logger)([]));
+    const useCase = PreLoadUseCase(config.server.uploadToS3URL, inMemory.makeRepository(logger)<PreLoadRecord>([]));
     const actual = await useCase(data.apiKey.valid)(body)();
     const checkKey = pipe(
       actual,
@@ -27,7 +28,7 @@ describe('PreLoadUseCase', () => {
           element.statusCode === 200 &&
           pipe(
             element.returned,
-            RA.every((_) => _.url.endsWith(_.key))
+            RA.every((_) => (_.url && _.key ? _.url.endsWith(_.key) : false))
           )
       )
     );

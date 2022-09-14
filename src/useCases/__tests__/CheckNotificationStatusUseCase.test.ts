@@ -3,14 +3,16 @@ import * as E from 'fp-ts/Either';
 import * as data from '../../domain/__tests__/data';
 import * as inMemory from '../../adapters/inMemory';
 import { makeLogger } from '../../logger';
+import { NewNotificationRecord } from '../../domain/NewNotificationRepository';
+import { CheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRepository';
 
 const logger = makeLogger();
 
 describe('CheckNotificationStatusUseCase', () => {
   it('should return 404', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      inMemory.makeRepository(logger)([]),
-      inMemory.makeRepository(logger)([])
+      inMemory.makeRepository(logger)<NewNotificationRecord>([]),
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
     );
     const input = { notificationRequestId: data.notificationId.valid };
 
@@ -22,8 +24,11 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the notificationId', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      inMemory.makeRepository(logger)([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken]),
-      inMemory.makeRepository(logger)([])
+      inMemory.makeRepository(logger)<NewNotificationRecord>([
+        data.newNotificationRecord,
+        data.newNotificationRecordWithIdempotenceToken,
+      ]),
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
     );
     const input = { notificationRequestId: data.notificationId.valid };
 
@@ -35,8 +40,11 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      inMemory.makeRepository(logger)([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken]),
-      inMemory.makeRepository(logger)([])
+      inMemory.makeRepository(logger)<NewNotificationRecord>([
+        data.newNotificationRecord,
+        data.newNotificationRecordWithIdempotenceToken,
+      ]),
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
     );
     const input = { paProtocolNumber: data.paProtocolNumber.valid };
 
@@ -48,8 +56,11 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber and idempotenceToken', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      inMemory.makeRepository(logger)([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken]),
-      inMemory.makeRepository(logger)([])
+      inMemory.makeRepository(logger)<NewNotificationRecord>([
+        data.newNotificationRecord,
+        data.newNotificationRecordWithIdempotenceToken,
+      ]),
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
     );
     const input = {
       idempotenceToken: data.idempotenceToken.valid,

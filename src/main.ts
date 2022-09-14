@@ -10,17 +10,22 @@ import { UploadToS3UseCase } from './useCases/UploadToS3UseCase';
 import { SendNotificationUseCase } from './useCases/SendNotificationUseCase';
 import { CreateEventStreamUseCase } from './useCases/CreateEventStreamUseCase';
 import { CheckNotificationStatusUseCase } from './useCases/CheckNotificationStatusUseCase';
+import { PreLoadRecord } from './domain/PreLoadRepository';
+import { UploadToS3Record } from './domain/UploadToS3RecordRepository';
+import { NewNotificationRecord } from './domain/NewNotificationRepository';
+import { CheckNotificationStatusRecord } from './domain/CheckNotificationStatusRepository';
+import { CreateEventStreamRecord } from './domain/CreateEventStreamRecordRepository';
 
 pipe(
   parseConfig(process.env),
   E.map((config) => {
     const logger = makeLogger();
     /* put here the driven adapters (e.g.: Repositories ) */
-    const preLoadRecordRepository = inMemory.makeRepository(logger)([]);
-    const uploadToS3RecordRepository = inMemory.makeRepository(logger)([]);
-    const newNotificationRepository = inMemory.makeRepository(logger)([]);
-    const createEventStreamRecordRepository = inMemory.makeRepository(logger)([]);
-    const checkNotificationStatusRepository = inMemory.makeRepository(logger)([]);
+    const preLoadRecordRepository = inMemory.makeRepository(logger)<PreLoadRecord>([]);
+    const uploadToS3RecordRepository = inMemory.makeRepository(logger)<UploadToS3Record>([]);
+    const newNotificationRepository = inMemory.makeRepository(logger)<NewNotificationRecord>([]);
+    const createEventStreamRecordRepository = inMemory.makeRepository(logger)<CreateEventStreamRecord>([]);
+    const checkNotificationStatusRepository = inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]);
     /* init the use cases */
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);

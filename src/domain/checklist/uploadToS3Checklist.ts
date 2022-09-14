@@ -12,7 +12,9 @@ const group = {
 export const check0 = {
   group,
   name: 'Exists a response with status code 200',
-  eval: RA.some((record: UploadToS3Record) => record.output.statusCode === 200 && record.type === 'UploadToS3Record'),
+  eval: RA.some(
+    (record: PreLoadRecord | UploadToS3Record) => record.output.statusCode === 200 && record.type === 'UploadToS3Record'
+  ),
 };
 
 const match = (preLoadRecord: PreLoadRecord, uploadToS3Record: UploadToS3Record): boolean =>
