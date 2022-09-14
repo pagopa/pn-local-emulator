@@ -63,4 +63,14 @@ curl --request POST 'http://localhost:8080/delivery/attachments/preload' \
 # Get the report, as you can see some result are 'ok'
 curl --location --request GET 'localhost:8080/checklistresult'
 
+curl --request POST 'http://localhost:8080/delivery-progresses/streams' \
+  --header 'x-api-key: key-value' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "title": "string",
+  "eventType": "STATUS",
+  "filterValues": [
+    "string"
+  ]
+}'
 ```
