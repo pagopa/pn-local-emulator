@@ -4,24 +4,24 @@
 A system that emulates some features of the Piattaforma Notifiche platform.
 
 ## Prerequisites
+If you want to run the emulator locally, starting from the source code, you need to follow the next steps.
+
 The first thing to do is to clone the repository using the preferred method (the next command uses SSH):
 
 ```shell
 git clone git@github.com:pagopa/pn-local-emulator-poc.git
 ```
 
-This project runs using [Node.js](https://nodejs.org/en/). It is possible to see the version of Node.js used in the [`.node_version`](.node-version) file.
-You should download the version specified in that file to be sure to have the same environment as the one used by the developers.
+This project runs using [Node.js](https://nodejs.org/en/) and it has been developed with the version specified in the [`.node_version`](.node-version) file.
 
-A fancy tool that can help you to manage multiple versions of Node.js is [nvm](https://github.com/nvm-sh/nvm).
-In case you want to use it, after installing it, you can run the following command to install the correct version of Node.js:
+You could [install nvm](https://github.com/nvm-sh/nvm) and use the next commands to install and set the same version
+of Node.js specified in the `.node_version` file.
 
 ```shell
+# Install the version of Node.js specified in the .node_version file
 nvm install `cat .node-version`
-```
-and after the installation has completed, run the following command to make sure you are using the proper version of Node.js:
 
-```shell
+# Set the version of Node.js specified in the .node_version file
 nvm use `cat .node-version`
 ```
 Make sure that the path of `.node_version` is correct because the example commands assume you are in the repository folder.
@@ -30,36 +30,35 @@ Make sure that the path of `.node_version` is correct because the example comman
 
 ### Run using Node.js
 
-Before running the project, you should install the dependencies using the following command:
+Install the dependencies.
 
 ```shell
 npm install
 ```
 
-After that, the project requires some code that is going to be generated starting from the [OpenAPI](./openapi/index.yaml) specification.  
-You can accomplish that by running:
+Generates code from the [OpenAPI](./openapi/index.yaml) specification.
 
 ```shell
 npm run generate
 ```
 
-Now, you are ready to run the project using the following command:
+Start the application.
 
 ```shell
-# start the application
 npm run start
 ```
 
 ### Run using Docker (Dockerfile)
 
 The repository comes with a Dockerfile that you can use to run the application with Docker.
-First, build the image:
+
+Build the image.
 
 ```shell
 docker build -t pnemulator .
 ```
 
-Then, run the application:
+Run the emulator.
 
 ```shell
 docker run -p 3000:3000 pnemulator
@@ -69,13 +68,14 @@ The [Dockerfile](./Dockerfile) exposes port `3000` of the container, so you can 
 ### Run using the public container image
 
 Another option is to run the container image available in the container registry.
-First, pull the image:
+
+Pull the image from the container registry.
 
 ```shell
 docker pull ghcr.io/pagopa/pn-local-emulator-poc:latest
 ```
 
-Then, run the application:
+Run the application.
 
 ```shell
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator-poc:latest
