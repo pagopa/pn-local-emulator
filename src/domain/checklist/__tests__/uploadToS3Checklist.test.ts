@@ -10,9 +10,6 @@ describe('uploadToS3Checklist', () => {
 
     const actualOK = check([data.uploadToS3Record]);
     expect(actualOK.result).toStrictEqual('ok');
-
-    const actualKO = check([data.preLoadRecord]);
-    expect(actualKO.result).toStrictEqual('ko');
   });
 
   it('should exist a correlation between the "preload"', () => {

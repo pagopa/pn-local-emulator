@@ -1,14 +1,18 @@
 import { pipe, tuple } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { AnyRecord } from '../AnyRecord';
 import { PreLoadRecord } from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
 import { Checklist } from './types';
 
+const group = {
+  name: 'The upload to S3 request',
+};
+
 export const check0 = {
+  group,
   name: 'Exists a response with status code 200',
-  eval: RA.some((record: AnyRecord) => record.output.statusCode === 200 && record.type === 'UploadToS3Record'),
+  eval: RA.some((record: UploadToS3Record) => record.output.statusCode === 200 && record.type === 'UploadToS3Record'),
 };
 
 const match = (preLoadRecord: PreLoadRecord, uploadToS3Record: UploadToS3Record): boolean =>
@@ -25,8 +29,9 @@ const match = (preLoadRecord: PreLoadRecord, uploadToS3Record: UploadToS3Record)
   );
 
 export const check1 = {
+  group,
   name: `Exists a request that matches checksum, secret, key and url returned in any previous request of step 'Request an "upload slot"'`,
-  eval: (recordList: ReadonlyArray<AnyRecord>) => {
+  eval: (recordList: ReadonlyArray<PreLoadRecord | UploadToS3Record>) => {
     const preLoadRecords = pipe(
       recordList,
       RA.filterMap((record) => (record.type === 'PreLoadRecord' ? O.some(record) : O.none))
@@ -42,11 +47,4 @@ export const check1 = {
   },
 };
 
-const group = {
-  name: 'The upload to S3 request',
-};
-
-export const uploadToS3Checklist: Checklist<ReadonlyArray<AnyRecord>> = pipe(
-  [check0, check1],
-  RA.map((check) => ({ ...check, group }))
-);
+export const uploadToS3Checklist: Checklist<ReadonlyArray<PreLoadRecord | UploadToS3Record>> = [check0, check1];
