@@ -7,7 +7,7 @@ import * as Problem from '../Problem';
 import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { NewNotificationRequest } from '../../../generated/definitions/NewNotificationRequest';
 import { SendNotificationUseCase } from '../../../useCases/SendNotificationUseCase';
-import { Handler, toExpressHandler } from '../Handler';
+import { Handler, toExpressHandler, removeNullValues } from '../Handler';
 
 const handler =
   (sendNotificationUseCase: SendNotificationUseCase): Handler =>
@@ -15,7 +15,7 @@ const handler =
     pipe(
       E.of(sendNotificationUseCase),
       E.ap(ApiKey.decode(req.headers['x-api-key'])),
-      E.ap(NewNotificationRequest.decode(req.body)),
+      E.ap(NewNotificationRequest.decode(removeNullValues(req.body))),
       // Create response
       E.map(
         TE.fold(

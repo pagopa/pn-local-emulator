@@ -1,15 +1,13 @@
+import { PreLoadUseCase } from '../PreLoadUseCase';
+import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { makeLogger } from '../../logger';
-import { PreLoadUseCase } from '../PreLoadUseCase';
 import { config } from '../../__tests__/data';
 import * as inMemory from '../../adapters/inMemory';
-import { pipe } from 'fp-ts/lib/function';
+import * as data from '../../domain/__tests__/data';
 
-// TODO: Remove this hardcoded value; the valid api-key at some point will be taken from envs
-const apiKey = 'key-value';
 const logger = makeLogger();
-const repository = inMemory.makeRepository(logger)([]);
 const body = [
   {
     preloadIdx: '0',
@@ -20,7 +18,8 @@ const body = [
 
 describe('PreLoadUseCase', () => {
   it('should return the key into url for each elements', async () => {
-    const actual = await PreLoadUseCase(config.server.uploadToS3URL, repository)(apiKey)(body)();
+    const useCase = PreLoadUseCase(config.server.uploadToS3URL, inMemory.makeRepository(logger)([]));
+    const actual = await useCase(data.apiKey.valid)(body)();
     const checkKey = pipe(
       actual,
       E.exists(
