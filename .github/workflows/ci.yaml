@@ -4,6 +4,7 @@ on: pull_request
 
 jobs:
   build:
+    name: Compile and test
     runs-on: ubuntu-latest
 
     steps:
@@ -30,6 +31,7 @@ jobs:
         run: npm test
 
   build_image:
+    name: Build the container image
     needs:
       - build
     uses: pagopa/pn-local-emulator-poc/.github/workflows/build_push_image.yaml@features/cd-docker-image
