@@ -7,7 +7,7 @@ A system that emulates some features of Piattaforma Notifiche platform.
 The first thing to do is to clone the repository using the preferred method (the next command uses SSH):
 
 ```shell
-git@github.com:pagopa/pn-local-emulator-poc.git
+git clone git@github.com:pagopa/pn-local-emulator-poc.git
 ```
 
 This project runs using [Node.js](https://nodejs.org/en/). It is possible to see the version of Node.js used in the [`.node_version`](.node-version) file.
