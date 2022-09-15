@@ -62,6 +62,12 @@ components:
       type: string
     AmzVersionId:
       type: integer
+    NotificationRequestId:
+      type: string
+    PaProtocolNumber:
+      type: string
+    IdempotenceToken:
+      type: string
     PreLoadRequestBody:
       type: array
       items:
@@ -153,6 +159,8 @@ components:
       $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/NewNotificationResponse"
     Problem:
       $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/7ed97786292fd6274c720eaccdc6d590f95606f0/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/Problem"
+    ProblemError:
+      $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/7ed97786292fd6274c720eaccdc6d590f95606f0/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/ProblemError"
     NotificationDocument:
       description: >-
         Un documento da notifcare
@@ -195,6 +203,37 @@ components:
           description: tipo di contenuto dell'allegato, supportato application/pdf
         ref:
           $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationAttachmentBodyRef"
+    NewNotificationRequestStatusResponse:
+      allOf:
+        - $ref: "#/components/schemas/NewNotificationRequest"
+        - type: object
+          required:
+            - notificationRequestId
+            - notificationRequestStatus
+          properties:
+            notificationRequestId:
+              description: >-
+                identificativo univoco di una richiesta di invio notifica, non è lo IUN
+              type: string
+            notificationRequestStatus:
+              description: >-
+                - __WAITING__: in attesa di essere valutata
+                - __ACCEPTED__: richiesta di notifica accettata, lo IUN è valorizzato
+                - __REFUSED__: richiesta di notifica rifiutata, è valorizzato il campo _errors_
+              type: string
+            retryAfter:
+              type: number
+              description: >-
+                Numero di secondi da attendere prima di effettuare una nuova richiesta per
+                la stessa entità; valorizzato quando lo status è __WAITING__.
+            iun:
+              $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/IUN"
+            errors:
+              description: >-
+                Elenco degli errori che hanno causato il rifiuto della richiesta di notifica
+              type: array
+              items:
+                $ref: '#/components/schemas/ProblemError'
 
   responses:
     200UploadS3Response:
