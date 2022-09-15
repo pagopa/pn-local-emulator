@@ -1,7 +1,7 @@
-# PnValidator 
+# PnValidator
 [![CI](https://github.com/pagopa/pn-local-emulator-poc/actions/workflows/ci.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator-poc/actions/workflows/ci.yaml)
 
-A system that emulates some features of Piattaforma Notifiche platform.
+A system that emulates some features of the Piattaforma Notifiche platform.
 
 ## Prerequisites
 The first thing to do is to clone the repository using the preferred method (the next command uses SSH):
@@ -19,12 +19,12 @@ In case you want to use it, after installing it, you can run the following comma
 ```shell
 nvm install `cat .node-version`
 ```
-and after the installation has been completed, run the following command to make sure you are using the proper version of Node.js:
+and after the installation has completed, run the following command to make sure you are using the proper version of Node.js:
 
 ```shell
 nvm use `cat .node-version`
 ```
-Make sure that the path of `.node_version` is correct, because the example commands assumes you are in the repository folder.
+Make sure that the path of `.node_version` is correct because the example commands assume you are in the repository folder.
 
 ## How to run
 
@@ -64,11 +64,11 @@ Then, run the application:
 ```shell
 docker run -p 3000:3000 pnemulator
 ```
-The [Dockerfile](./Dockerfile) exposes the port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
+The [Dockerfile](./Dockerfile) exposes port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
 
 ### Run using the public container image
 
-Another option is to run the container image availeble in the container registry.
+Another option is to run the container image available in the container registry.
 First, pull the image:
 
 ```shell
@@ -104,6 +104,6 @@ curl --request POST 'http://localhost:8080/delivery/attachments/preload' \
     }
 ]'
 
-# Get the report, as you can see some result are 'ok'
+# Get the report, as you can see some results are 'ok'
 curl --location --request GET 'localhost:8080/checklistresult'
 ```
