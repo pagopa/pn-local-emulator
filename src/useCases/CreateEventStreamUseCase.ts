@@ -11,12 +11,16 @@ import { ApiKey } from '../generated/definitions/ApiKey';
 import { StreamCreationRequest } from '../generated/streams/StreamCreationRequest';
 
 export const CreateEventStreamUseCase =
-  (repository: CreateEventStreamRecordRepository) =>
+  (
+    repository: CreateEventStreamRecordRepository,
+    streamIdGenerator: () => string = () => crypto.randomUUID(),
+    nowDate: () => Date = () => new Date()
+  ) =>
   (apiKey: ApiKey) =>
   (input: StreamCreationRequest): TE.TaskEither<Error, CreateEventStreamRecord['output']> =>
     pipe(
       authorizeApiKey(apiKey),
-      E.map((_) => ({ ...input, streamId: crypto.randomUUID(), activationDate: new Date() })),
+      E.map((_) => ({ ...input, streamId: streamIdGenerator(), activationDate: nowDate() })),
       E.map((streamMetadataResponse) => ({ statusCode: 200 as const, returned: streamMetadataResponse })),
       E.toUnion,
       (output) => ({
