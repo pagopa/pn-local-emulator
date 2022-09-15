@@ -1,3 +1,4 @@
+import * as O from 'fp-ts/Option';
 import {
   NewNotificationRequest,
   NotificationFeePolicyEnum,
@@ -5,6 +6,8 @@ import {
 } from '../../generated/definitions/NewNotificationRequest';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRepository';
 import { makeNewNotificationRecord } from '../NewNotificationRepository';
+import { PreLoadRecord } from '../PreLoadRepository';
+import { UploadToS3Record } from '../UploadToS3RecordRepository';
 
 export const apiKey = {
   valid: 'key-value',
@@ -20,6 +23,30 @@ export const paProtocolNumber = {
 
 export const idempotenceToken = {
   valid: 'idempotenceToken',
+};
+
+// PreLoadRecord //////////////////////////////////////////////////////////////
+
+const preLoadBody = { preloadIdx: '0', contentType: 'application/pdf', sha256: 'a-sha256' };
+const preLoadResponse = { preloadIdx: '0', secret: 'a-secret', url: 'a-url', key: 'a-key' };
+
+export const preLoadRecord: PreLoadRecord = {
+  type: 'PreLoadRecord',
+  input: { apiKey: apiKey.valid, body: [preLoadBody] },
+  output: { statusCode: 200, returned: [preLoadResponse] },
+};
+
+// UploadToS3Record ///////////////////////////////////////////////////////////
+
+export const uploadToS3Record: UploadToS3Record = {
+  type: 'UploadToS3Record',
+  input: {
+    key: preLoadResponse.key,
+    checksumAlg: O.none,
+    secret: preLoadResponse.secret,
+    checksum: preLoadBody.sha256,
+  },
+  output: { statusCode: 200, returned: 10 },
 };
 
 // NewNotificationRecord //////////////////////////////////////////////////////
