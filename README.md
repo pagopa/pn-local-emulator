@@ -67,6 +67,16 @@ curl --request PUT 'http://localhost:8080/uploadS3/use-the-key-taken-from-preloa
 --header 'x-amz-meta-secret: put-here-the-secret-taken-from-preload' \
 --header 'x-amz-checksum-sha256: jezIVxlG1M1woCSUngM6KipUN3/a8cG5RMIPnuEanlE='
 
-# Get the report, as you can see some result are 'ok'
 curl --location --request GET 'localhost:8080/checklistresult'
+
+curl --request POST 'http://localhost:8080/delivery-progresses/streams' \
+  --header 'x-api-key: key-value' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "title": "string",
+  "eventType": "STATUS",
+  "filterValues": [
+    "string"
+  ]
+}'
 ```
