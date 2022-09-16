@@ -30,7 +30,7 @@ pipe(
       newNotificationRepository,
       checkNotificationStatusRepository
     );
-    const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository);
+    const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
