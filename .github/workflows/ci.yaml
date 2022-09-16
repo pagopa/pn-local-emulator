@@ -34,7 +34,7 @@ jobs:
     name: Build the container image
     needs:
       - build
-    uses: pagopa/pn-local-emulator-poc/.github/workflows/build_push_image.yaml@features/cd-docker-image
+    uses: pagopa/pn-local-emulator/.github/workflows/build_push_image.yaml@features/cd-docker-image
     with:
       image_name: ${{ github.repository }}
       push: false
