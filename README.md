@@ -1,5 +1,5 @@
 # PnValidator
-[![CI](https://github.com/pagopa/pn-local-emulator-poc/actions/workflows/ci.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator-poc/actions/workflows/ci.yaml)
+[![CI](https://github.com/pagopa/pn-local-emulator/actions/workflows/ci.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator/actions/workflows/ci.yaml)
 
 A system that emulates some features of the Piattaforma Notifiche platform.
 
@@ -9,7 +9,7 @@ If you want to run the emulator locally, starting from the source code, you need
 The first thing to do is to clone the repository using the preferred method (the next command uses SSH):
 
 ```shell
-git clone git@github.com:pagopa/pn-local-emulator-poc.git
+git clone git@github.com:pagopa/pn-local-emulator.git
 ```
 
 This project runs using [Node.js](https://nodejs.org/en/) and it has been developed with the version specified in the [`.node_version`](.node-version) file.
@@ -72,11 +72,11 @@ Another option is to run the container image available in the container registry
 Pull the image from the container registry.
 
 ```shell
-docker pull ghcr.io/pagopa/pn-local-emulator-poc:latest
+docker pull ghcr.io/pagopa/pn-local-emulator:latest
 ```
 
 Run the application.
 
 ```shell
-docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator-poc:latest
+docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
