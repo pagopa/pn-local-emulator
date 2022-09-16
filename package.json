@@ -4,8 +4,9 @@
   "description": "A system that emulates some features of Piattaforma Notifiche platform.",
   "main": "dist/main.js",
   "scripts": {
-    "generate": "npm run generate:pn && npm run generate:internal",
+    "generate": "npm run generate:pn && npm run generate:pnstream && npm run generate:internal",
     "generate:pn": "shx rm -rf ./src/generated/definitions && shx mkdir -p ./src/generated/definitions && gen-api-models --api-spec ./openapi/index.yaml --no-strict --out-dir ./src/generated/definitions",
+    "generate:pnstream": "shx rm -rf ./src/generated/streams && shx mkdir -p ./src/generated/streams && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pn-delivery-push/d2b3854f646064740666cbe60fec5e77f9dfb4b7/docs/openapi/api-external-b2b-webhook-v1.yaml --no-strict --out-dir ./src/generated/streams",
     "generate:internal": "shx rm -rf ./src/generated/codec && shx mkdir -p ./src/generated/codec && gen-api-models --api-spec ./openapi/internal.yaml --no-strict --out-dir ./src/generated/codec",
     "clean": "tsc --build --clean",
     "compile": "tsc",
