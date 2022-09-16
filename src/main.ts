@@ -8,6 +8,7 @@ import { GetChecklistResultUseCase } from './useCases/GetChecklistResultUseCase'
 import { PreLoadUseCase } from './useCases/PreLoadUseCase';
 import { UploadToS3UseCase } from './useCases/UploadToS3UseCase';
 import { SendNotificationUseCase } from './useCases/SendNotificationUseCase';
+import { CreateEventStreamUseCase } from './useCases/CreateEventStreamUseCase';
 import { CheckNotificationStatusUseCase } from './useCases/CheckNotificationStatusUseCase';
 
 pipe(
@@ -18,11 +19,13 @@ pipe(
     const preLoadRecordRepository = inMemory.makeRepository(logger)([]);
     const uploadToS3RecordRepository = inMemory.makeRepository(logger)([]);
     const newNotificationRepository = inMemory.makeRepository(logger)([]);
+    const createEventStreamRecordRepository = inMemory.makeRepository(logger)([]);
     const checkNotificationStatusRepository = inMemory.makeRepository(logger)([]);
     /* init the use cases */
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
     const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
+    const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(
       newNotificationRepository,
       checkNotificationStatusRepository
@@ -34,6 +37,7 @@ pipe(
       preLoadUseCase,
       uploadToS3UseCase,
       sendNotificationUseCase,
+      createEventStreamUseCase,
       checkNotificationStatusUseCase,
       getChecklistResultUseCase
     );

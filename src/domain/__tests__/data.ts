@@ -4,6 +4,7 @@ import {
   PhysicalCommunicationTypeEnum,
 } from '../../generated/definitions/NewNotificationRequest';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRepository';
+import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
 import { makeNewNotificationRecord } from '../NewNotificationRepository';
 
 export const apiKey = {
@@ -87,4 +88,21 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
       notificationRequestStatus: '__WAITING__',
     },
   },
+};
+
+// CreateEventStreamRecord ////////////////////////////////////////////////////
+
+const streamCreationRequest = {
+  title: 'Stream Title',
+};
+
+export const createEventStreamResponse = {
+  statusCode: 200 as const,
+  returned: { ...streamCreationRequest, streamId: 'stream-id', activationDate: new Date() },
+};
+
+export const createEventStreamRecord: CreateEventStreamRecord = {
+  type: 'CreateEventStreamRecord',
+  input: { apiKey: apiKey.valid, body: streamCreationRequest },
+  output: createEventStreamResponse,
 };
