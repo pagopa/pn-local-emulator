@@ -30,4 +30,5 @@ assumes the `package.json` has version `1.0.0`
 ```bash
 npm version minor
 ```
-will update the package.json to version `1.1.0` and create a Git tag with the message `"Release v1.1.0"`.
+will update the `package.json` and `package-lock.json` version field to `1.1.0` and create a Git tag with the message 
+`"Release v1.1.0"`.
