@@ -13,14 +13,14 @@ We need to decide what format to use for those tags.
 
 ### Option 1
 
-Use the same format as the [semver](https://semver.org/) specification.
+Use the [semver](https://semver.org/) specification (e.g.: `1.0.0-alpha+001`).
 
 ### Option 2
 
-Use any string as a tag.
+Use the [semver](https://semver.org/) specification with the prefix `v` (e.g.: `v1.0.0-alpha+001`), as specified 
+[here](https://semver.org/#is-v123-a-semantic-version), even if it doesn't produce a semantic version 
 
 ## Decision
 
-We decided for **[Option 1](#option-1)** because it is widely used and has many rules that define an order between versions.  
-We are going to add the `v` prefix to the Git tag, which is accepted as explained 
-[here](https://semver.org/spec/v2.0.0.html#is-v123-a-semantic-version).
+We decided for **[Option 1](#option-1)** because it is widely used and has many rules that define an order between 
+versions.
