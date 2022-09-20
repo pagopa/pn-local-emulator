@@ -158,9 +158,9 @@ components:
     NewNotificationResponse:
       $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/NewNotificationResponse"
     Problem:
-      $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/7ed97786292fd6274c720eaccdc6d590f95606f0/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/Problem"
+      $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/a0bb195953fd0b8a01d50b029991df4e903720b7/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/Problem"
     ProblemError:
-      $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/7ed97786292fd6274c720eaccdc6d590f95606f0/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/ProblemError"
+      $ref: "https://raw.githubusercontent.com/pagopa/validator-pn-delivery/a0bb195953fd0b8a01d50b029991df4e903720b7/docs/openapi/schemas-pn-errors-v1.yaml#/components/schemas/ProblemError"
     NotificationDocument:
       description: >-
         Un documento da notifcare
