@@ -6,6 +6,9 @@ export const fromErrors = (errors: ts.Errors): Problem => ({
   ...fromNumber(400),
   title: 'Bad Request',
   detail: PR.failure(errors),
+  timestamp: new Date(),
+  traceId: 'aTraceId',
+  type: 'aType',
 });
 
 export const fromNumber = (statusCode: number): Problem => ({
