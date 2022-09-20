@@ -8,7 +8,6 @@ export const fromErrors = (errors: ts.Errors): Problem => ({
   detail: PR.failure(errors),
   timestamp: new Date(),
   traceId: 'aTraceId',
-  type: 'aType',
 });
 
 export const fromNumber = (statusCode: number): Problem => ({
