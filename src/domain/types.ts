@@ -5,6 +5,7 @@ export type Response<A extends StatusCode, B = void> = {
   returned: B;
 };
 
+// TODO: This should be generated from the OpenAPI spec
 export type UnauthorizedMessageBody = {
   message: string;
 };
