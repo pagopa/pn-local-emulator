@@ -1,7 +1,7 @@
 import { PreLoadRecord } from '../../PreLoadRepository';
 import { evalCheck, Group } from '../types';
 import { check0, check1, check2, check3 } from '../preLoadChecklist';
-import { unauthorizedMessage } from '../../authorize';
+import { unauthorizedResponse } from '../../types';
 
 const basePreloadRecord: PreLoadRecord = {
   type: 'PreLoadRecord',
@@ -19,7 +19,7 @@ describe('preLoadChecklist', () => {
     const actualOK = check([
       {
         ...basePreloadRecord,
-        output: { ...basePreloadRecord.output, statusCode: 403, returned: unauthorizedMessage },
+        output: { ...basePreloadRecord.output, statusCode: 403, returned: unauthorizedResponse.returned },
       },
     ]);
     expect(actualOK.result).toStrictEqual('ok');

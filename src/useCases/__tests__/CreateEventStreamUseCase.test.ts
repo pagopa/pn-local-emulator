@@ -4,7 +4,7 @@ import * as inMemory from '../../adapters/inMemory';
 import { makeLogger } from '../../logger';
 import * as data from '../../domain/__tests__/data';
 import { CreateEventStreamRecord } from '../../domain/CreateEventStreamRecordRepository';
-import { unauthorizedMessage } from '../../domain/authorize';
+import { unauthorizedResponse } from '../../domain/types';
 
 describe('CreateEventStreamUseCase', () => {
   it('should return 200', async () => {
@@ -23,6 +23,6 @@ describe('CreateEventStreamUseCase', () => {
 
     const actual = await useCase('invalid-api-key')(data.createEventStreamRecord.input.body)();
 
-    expect(actual).toStrictEqual(E.right({ statusCode: 403, returned: unauthorizedMessage }));
+    expect(actual).toStrictEqual(E.right(unauthorizedResponse));
   });
 });
