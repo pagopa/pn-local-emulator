@@ -4,12 +4,12 @@ import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequest } from '../generated/definitions/PreLoadRequest';
 import { HttpMethodEnum, PreLoadResponse } from '../generated/definitions/PreLoadResponse';
 import { Repository } from './Repository';
-import { Response } from './types';
+import { Response, UnauthorizedMessageBody } from './types';
 
 export type PreLoadRecord = {
   type: 'PreLoadRecord';
   input: { apiKey: ApiKey; body: PreLoadRequestBody };
-  output: Response<200, PreLoadResponseBody> | Response<401>;
+  output: Response<200, PreLoadResponseBody> | Response<403, UnauthorizedMessageBody>;
 };
 
 export const makePreLoadResponse = (

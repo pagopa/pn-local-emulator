@@ -6,8 +6,8 @@ import { PreLoadRecord } from '../PreLoadRepository';
 import { Checklist } from './types';
 
 export const check0 = {
-  name: 'Exists a response with status code 401',
-  eval: RA.some((record: PreLoadRecord) => record.output.statusCode === 401),
+  name: 'Exists a response with status code 403',
+  eval: RA.some((record: PreLoadRecord) => record.output.statusCode === 403),
 };
 export const check1 = {
   name: 'Contains an api-key',

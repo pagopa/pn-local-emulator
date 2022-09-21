@@ -12,6 +12,6 @@ export const fromNumber = (statusCode: number): Problem => ({
   type: `https://www.webfx.com/web-development/glossary/http-status-codes/what-is-a-${statusCode}-status-code/`,
   // TODO: fix this bad cast
   status: statusCode as never,
-  title: '${statusCode}',
+  title: `${statusCode}`,
   errors: [],
 });
