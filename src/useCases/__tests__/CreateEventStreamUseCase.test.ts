@@ -4,6 +4,7 @@ import * as inMemory from '../../adapters/inMemory';
 import { makeLogger } from '../../logger';
 import * as data from '../../domain/__tests__/data';
 import { CreateEventStreamRecord } from '../../domain/CreateEventStreamRecordRepository';
+import { unauthorizedMessage } from '../../domain/authorize';
 
 describe('CreateEventStreamUseCase', () => {
   it('should return 200', async () => {
@@ -17,11 +18,11 @@ describe('CreateEventStreamUseCase', () => {
 
     expect(actual).toStrictEqual(E.right(data.createEventStreamRecord.output));
   });
-  it('should return 401', async () => {
+  it('should return 403', async () => {
     const useCase = CreateEventStreamUseCase(inMemory.makeRepository(makeLogger())<CreateEventStreamRecord>([]));
 
     const actual = await useCase('invalid-api-key')(data.createEventStreamRecord.input.body)();
 
-    expect(actual).toStrictEqual(E.right({ statusCode: 401, returned: undefined }));
+    expect(actual).toStrictEqual(E.right({ statusCode: 403, returned: unauthorizedMessage }));
   });
 });
