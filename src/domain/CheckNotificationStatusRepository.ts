@@ -12,7 +12,7 @@ export type CheckNotificationStatusRecord = {
   input:
     | { paProtocolNumber: PaProtocolNumber; idempotenceToken?: IdempotenceToken }
     | { notificationRequestId: NotificationRequestId };
-  output: Response<200, NewNotificationRequestStatusResponse> | Response<401>;
+  output: Response<200, NewNotificationRequestStatusResponse> | Response<401> | Response<404>;
 };
 
 export const makeNewNotificationRequestStatusResponse = (

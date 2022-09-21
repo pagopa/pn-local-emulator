@@ -5,7 +5,7 @@ import { makeLogger } from '../../../logger';
 describe('Repository', () => {
   it('should insert the given element', async () => {
     const element = 0;
-    const service = i.makeRepository(makeLogger())([]);
+    const service = i.makeRepository(makeLogger())<number>([]);
 
     await service.insert(element)();
 

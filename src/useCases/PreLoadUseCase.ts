@@ -28,8 +28,8 @@ export const PreLoadUseCase =
       authorizeApiKey(apiKey),
       E.map((_) => makeResponsePayload(uploadToS3URL.href, body)),
       E.map((returned) => ({ statusCode: 200 as const, returned })),
-      E.map((output) => makePreLoadRecord({ input: { apiKey, body }, output })),
       E.toUnion,
+      (output) => makePreLoadRecord({ input: { apiKey, body }, output }),
       repository.insert,
       TE.map((record) => record.output)
     );
