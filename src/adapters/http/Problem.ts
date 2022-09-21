@@ -7,7 +7,8 @@ export const fromErrors = (errors: ts.Errors): Problem => ({
   title: 'Bad Request',
   detail: PR.failure(errors),
   timestamp: new Date(),
-  traceId: 'aTraceId',
+  traceId:
+    'Self=1-631b10db-2c591f3f79954187229939e5;Root=1-631b11db-39caf6636f4ed15618461d95;Parent=6e2ef00e703981ac;Sampled=1',
 });
 
 export const fromNumber = (statusCode: number): Problem => ({
