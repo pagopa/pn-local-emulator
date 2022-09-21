@@ -28,6 +28,11 @@ export const CreateEventStreamUseCase =
         input: { apiKey, body: input },
         output,
       }),
+      // this effect here (inserting the record into the repository) may be better handled
+      // by the caller: you may consider to extract the insert operation
+      // making this method returning the needed structure
+      // to the caller that can invoke the use-case within a wrapper, ie:
+      // withRepository(<repository>)(CreateEventStreamUseCase)
       repository.insert,
       TE.map(({ output }) => output)
     );
