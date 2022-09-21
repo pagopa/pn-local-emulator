@@ -15,6 +15,8 @@ import { UploadToS3Record } from './domain/UploadToS3RecordRepository';
 import { NewNotificationRecord } from './domain/NewNotificationRepository';
 import { CheckNotificationStatusRecord } from './domain/CheckNotificationStatusRepository';
 import { CreateEventStreamRecord } from './domain/CreateEventStreamRecordRepository';
+import { ConsumeEventStreamRecord } from './domain/ConsumeEventStreamRecordRepository';
+import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 
 pipe(
   parseConfig(process.env),
@@ -26,6 +28,7 @@ pipe(
     const newNotificationRepository = inMemory.makeRepository(logger)<NewNotificationRecord>([]);
     const createEventStreamRecordRepository = inMemory.makeRepository(logger)<CreateEventStreamRecord>([]);
     const checkNotificationStatusRepository = inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]);
+    const consumeEventStreamRepository = inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]);
     /* init the use cases */
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
@@ -34,6 +37,11 @@ pipe(
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(
       newNotificationRepository,
       checkNotificationStatusRepository
+    );
+    const consumeEventStreamUseCase = ConsumeEventStreamUseCase(
+      2, // TODO: minNumberOfWaitingBeforeDelivering move this value into configuration
+      consumeEventStreamRepository,
+      newNotificationRepository
     );
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
 
@@ -44,6 +52,7 @@ pipe(
       sendNotificationUseCase,
       createEventStreamUseCase,
       checkNotificationStatusUseCase,
+      consumeEventStreamUseCase,
       getChecklistResultUseCase
     );
     http.startApplication(logger, config, application);

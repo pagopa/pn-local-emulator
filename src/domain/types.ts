@@ -1,4 +1,4 @@
-export type StatusCode = 200 | 202 | 403 | 404;
+export type StatusCode = 200 | 202 | 403 | 404 | 419;
 
 // TODO: This should be generated from the OpenAPI spec
 export type UnauthorizedMessageBody = {
