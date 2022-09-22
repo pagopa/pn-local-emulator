@@ -21,8 +21,8 @@ export const SendNotificationUseCase =
       authorizeApiKey(apiKey),
       E.map((_) => makeNewNotificationResponse(body)(crypto.randomUUID())),
       E.map((returned) => ({ statusCode: 202 as const, returned })),
-      E.map((output) => makeNewNotificationRecord({ input: { apiKey, body }, output })),
       E.toUnion,
+      (output) => makeNewNotificationRecord({ input: { apiKey, body }, output }),
       repository.insert,
       TE.map((record) => record.output)
     );

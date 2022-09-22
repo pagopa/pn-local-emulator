@@ -77,6 +77,7 @@ docker pull ghcr.io/pagopa/pn-local-emulator:latest
 
 Run the application.
 
+
 ```shell
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
