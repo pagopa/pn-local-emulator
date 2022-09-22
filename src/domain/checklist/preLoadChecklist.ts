@@ -14,7 +14,7 @@ import { Checklist } from './types';
 // IDE support, moreover the devs operates with patterns with which they are confident
 // and you don't have to call these checks *inside* the recording server so
 // the DX is better since devs don't have to restart the server and re-run everything
-// in order to add of change some tests. Finally, you don't have to write
+// in order to add or change some tests. Finally, you don't have to write
 // your own logic to implement a test suite.
 
 export const check0 = {

@@ -33,6 +33,9 @@ export const CreateEventStreamUseCase =
       // making this method returning the needed structure
       // to the caller that can invoke the use-case within a wrapper, ie:
       // withRepository(<repository>)(CreateEventStreamUseCase)
+      //
+      // Another option would be to write a simple express middleware
+      // that records request and response
       repository.insert,
       TE.map(({ output }) => output)
     );
