@@ -8,12 +8,14 @@ import { SendNotificationUseCase } from '../../useCases/SendNotificationUseCase'
 import { CheckNotificationStatusUseCase } from '../../useCases/CheckNotificationStatusUseCase';
 import { GetChecklistResultUseCase } from '../../useCases/GetChecklistResultUseCase';
 import { CreateEventStreamUseCase } from '../../useCases/CreateEventStreamUseCase';
+import { GetNotificationDetailUseCase } from '../../useCases/GetNotificationDetailUseCase';
 import { makePreLoadRouter } from './preLoad/router';
 import { makeUploadToS3Router } from './uploadToS3/router';
 import { makeSendNotificationRouter } from './sendNotification/router';
 import { makeChecklistRouter } from './checklist/router';
 import { makeCreateEventStreamRouter } from './createEventStream/router';
 import { makeNotificationStatusRouter } from './checkNotificationStatus/router';
+import { makeGetNotificationDetailRouter } from './getNotificationDetail/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
@@ -21,7 +23,8 @@ export const makeApplication = (
   sendNotificationUseCase: SendNotificationUseCase,
   createEventStreamUseCase: CreateEventStreamUseCase,
   checkNotificationStatusUseCase: CheckNotificationStatusUseCase,
-  getChecklistResultUseCase: GetChecklistResultUseCase
+  getChecklistResultUseCase: GetChecklistResultUseCase,
+  getNotificationDetailUseCase: GetNotificationDetailUseCase
 ): express.Application => {
   const app = express();
   app.use(express.json());
@@ -32,6 +35,7 @@ export const makeApplication = (
   app.use(makeCreateEventStreamRouter(createEventStreamUseCase));
   app.use(makeNotificationStatusRouter(checkNotificationStatusUseCase));
   app.use(makeChecklistRouter(getChecklistResultUseCase));
+  app.use(makeGetNotificationDetailRouter(getNotificationDetailUseCase));
   return app;
 };
 
