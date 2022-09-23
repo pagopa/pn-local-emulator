@@ -68,6 +68,8 @@ components:
       type: string
     IdempotenceToken:
       type: string
+    Iun:
+      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/IUN"
     PreLoadRequestBody:
       type: array
       items:
