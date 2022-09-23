@@ -236,6 +236,158 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/ProblemError'
+    FullSentNotification:
+      description: >-
+        Le informazioni riguardanti una notifica (richiesta di notifica accettata) e il 
+        processo di inoltro della notifica verso il cittadino.
+      allOf:
+        - $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/develop/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/SentNotification'
+        - type: object
+          required:
+            - notificationStatus
+            - notificationStatusHistory
+            - timeline
+          properties:
+            notificationStatus:
+              $ref: '#/components/schemas/NotificationStatus'
+            notificationStatusHistory:
+              $ref: '#/components/schemas/NotificationStatusHistory'
+            timeline:
+              description: >-
+                elenco dettagliato di tutto ciò che è accaduto durrante il processo di notifica
+              type: array
+              items:
+                $ref: '#/components/schemas/TimelineElement'
+    TimelineElement:
+      type: object
+      additionalProperties: false
+      properties:
+        elementId:
+          type: string
+          description: >-
+            Identificativo dell'elemento di timeline: insieme allo IUN della notifica definisce in 
+            maniera univoca l'elemento di timeline
+        timestamp:
+          type: string
+          description: Momento in cui avviene l'evento desritto in questo elemento
+            di timeline
+          format: date-time
+        legalFactsIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/LegalFactsId"
+          description: >-
+            Chiavi dei documenti che provano l'effettivo accadimento dell'evento descritto in timeline.
+            Questo elemento
+        category:
+          $ref: '#/components/schemas/TimelineElementCategory'
+        details:
+          $ref: '#/components/schemas/TimelineElementDetails'
+    LegalFactsId:
+      description: Chiavi dei documenti generati durante il processo di consegna cartacea
+      type: object
+      required:
+        - key
+        - category
+      properties:
+        key:
+          description: >-
+            Chiave dell'atto opponibile a terzi generato durante il processo di consegna
+          type: string
+        category:
+          $ref: '#/components/schemas/LegalFactCategory'
+    LegalFactCategory:
+      title: Tipi di atti opponibili a terzi
+      description: >-
+        Tipi di atti opponibili a terzi che Piattaforam Notiiche mette a disposizione dei suoi utenti.
+          - _SENDER_ACK_: atto di "presa in carico" di una notifica
+          - _DIGITAL_DELIVERY_: ...
+      type: string
+      enum:
+        - SENDER_ACK
+        - DIGITAL_DELIVERY
+        - ANALOG_DELIVERY
+        - RECIPIENT_ACCESS
+    TimelineElementCategory:
+      type: string
+      enum:
+        - REQUEST_ACCEPTED
+        - SEND_COURTESY_MESSAGE
+        - GET_ADDRESS
+        - PUBLIC_REGISTRY_CALL
+        - PUBLIC_REGISTRY_RESPONSE
+        - SCHEDULE_ANALOG_WORKFLOW
+        - SCHEDULE_DIGITAL_WORKFLOW
+        - SEND_DIGITAL_DOMICILE
+        - SEND_DIGITAL_DOMICILE_FEEDBACK
+        - SEND_DIGITAL_FEEDBACK
+        - REFINEMENT
+        - SCHEDULE_REFINEMENT
+        - DIGITAL_SUCCESS_WORKFLOW
+        - DIGITAL_FAILURE_WORKFLOW
+        - ANALOG_SUCCESS_WORKFLOW
+        - ANALOG_FAILURE_WORKFLOW
+        - SEND_SIMPLE_REGISTERED_LETTER
+        - NOTIFICATION_VIEWED
+        - SEND_ANALOG_DOMICILE
+        - SEND_PAPER_FEEDBACK
+        - PAYMENT
+        - COMPLETELY_UNREACHABLE
+        - REQUEST_REFUSED
+        - AAR_GENERATION
+        - NOT_HANDLED
+    TimelineElementDetails:
+      description: The raw event payload that will be different based on the event.
+      oneOf:
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/NotificationRequestAcceptedDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/AnalogFailureWorkflowDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/AnalogSuccessWorkflowDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/CompletelyUnreachableDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/DigitalFailureWorkflowDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/DigitalSuccessWorkflowDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/GetAddressInfoDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/NotificationViewedDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/PublicRegistryCallDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/PublicRegistryResponseDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/RefinementDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/RequestRefusedDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/ScheduleAnalogWorkflowDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/ScheduleDigitalWorkflowDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/ScheduleRefinementDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/SendCourtesyMessageDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/SendDigitalDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/SendDigitalFeedbackDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/SendAnalogDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/SendAnalogFeedbackDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/SimpleRegisteredLetterDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/AarGenerationDetails"
+        - "$ref": "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/NotHandledDetails"
+    NotificationStatus:
+      $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-status-v1.yaml#/components/schemas/NotificationStatus'
+    NotificationStatusHistory:
+      description: elenco degli avanzamenti effettuati dal processo di notifica
+      type: array
+      items:
+        $ref: "#/components/schemas/NotificationStatusHistoryElement"
+    NotificationStatusHistoryElement:
+      description: elenco degli avanzamenti effettuati dal processo di notifica
+      type: object
+      required:
+        - status
+        - activeFrom
+        - relatedTimelineElements
+      properties:
+        status:
+          $ref: "#/components/schemas/NotificationStatus"
+        activeFrom:
+          type: string
+          description: data e ora di raggiungimento dello stato di avanzamento
+          format: date-time
+        relatedTimelineElements:
+          type: array
+          description: Eventi avvenuti nello stato
+          items:
+            $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery-push/c8b449ac03503aa67e0bbd699c416b6c8266aeea/docs/openapi/schemas-pn-timeline-v1.yaml#/components/schemas/TimelineElementId"
 
   responses:
     200UploadS3Response:
