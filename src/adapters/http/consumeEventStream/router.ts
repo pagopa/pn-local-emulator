@@ -21,7 +21,7 @@ export const consumeEventStreamHandler =
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(200).send())
+          (_) => T.of(res.status(_.statusCode).send(_.returned))
         )
       )
     );
@@ -30,7 +30,7 @@ export const makeConsumeEventStreamRouter = (consumeEventStreamUseCase: ConsumeE
   const router = express.Router();
 
   router.get(
-    '/delivery-progresses/streams/{streamId}/events',
+    '/delivery-progresses/streams/:streamId/events',
     toExpressHandler(consumeEventStreamHandler(consumeEventStreamUseCase))
   );
 
