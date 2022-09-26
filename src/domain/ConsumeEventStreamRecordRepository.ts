@@ -33,8 +33,7 @@ const makeProgressResponseElement = (
         RA.findLast(({ newStatus }) => newStatus !== NewStatusEnum.IN_VALIDATION),
         O.getOrElse(() => {
           const element: ProgressResponseElement = {
-            // TODO: use a date as eventId
-            eventId: 'eventIdValue',
+            eventId: '0',
             timestamp: nowDate(),
             notificationRequestId: response.notificationRequestId,
             newStatus: NewStatusEnum.IN_VALIDATION,
@@ -56,18 +55,19 @@ export const makeProgressResponse = (
 ): ProgressResponse =>
   pipe(
     newNotificationRecordList,
-    RA.filterMap((record) =>
+    RA.filterMapWithIndex((i, record) =>
       pipe(
         record.output.statusCode === 202 ? O.of(record.output.returned) : O.none,
-        O.map((response) =>
-          makeProgressResponseElement(
+        O.map((response) => ({
+          ...makeProgressResponseElement(
             minNumberOfWaitingBeforeDelivering,
             response,
             consumeEventStreamRecordList,
             nowDate,
             iunGenerator
-          )
-        )
+          ),
+          eventId: i.toString(),
+        }))
       )
     )
   );

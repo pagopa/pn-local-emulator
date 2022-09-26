@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
+import * as RA from 'fp-ts/ReadonlyArray';
 import * as TE from 'fp-ts/TaskEither';
 import { authorizeApiKey } from '../domain/authorize';
 import {
@@ -27,7 +28,12 @@ export const ConsumeEventStreamUseCase =
       TE.apS('cesrList', consumeEventStreamRepository.list()),
       TE.apS('nnrList', newNotificationRecordRepository.list()),
       TE.map(({ cesrList, nnrList }) =>
-        makeProgressResponse(minNumberOfWaitingBeforeDelivering, nnrList, cesrList, nowDate, iunGenerator)
+        pipe(
+          makeProgressResponse(minNumberOfWaitingBeforeDelivering, nnrList, cesrList, nowDate, iunGenerator),
+          // Implement a simple cursor based pagination
+          RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
+          RA.filterWithIndex((i, _) => i > parseInt(lastEventId || '-1', 10))
+        )
       ),
       TE.map((output) =>
         pipe(

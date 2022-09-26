@@ -152,7 +152,7 @@ export const consumeEventStreamResponse = {
   statusCode: 200 as const,
   returned: [
     {
-      eventId: 'eventIdValue',
+      eventId: '0',
       timestamp: aDate,
       notificationRequestId: notificationId.valid,
       newStatus: NewStatusEnum.IN_VALIDATION,
