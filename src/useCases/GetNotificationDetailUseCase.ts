@@ -1,13 +1,13 @@
 import * as TE from 'fp-ts/TaskEither';
 import { ApiKey } from '../generated/definitions/ApiKey';
+import { Iun } from '../generated/definitions/Iun';
 import {
   GetNotificationDetailRecord,
-  GetNotificationDetailRepository,
+  GetNotificationDetailRecordRepository,
 } from '../domain/GetNotificationDetailRepository';
-import { Iun } from '../generated/definitions/Iun';
 
 export const GetNotificationDetailUseCase =
-  (_repository: GetNotificationDetailRepository) =>
+  (_repository: GetNotificationDetailRecordRepository) =>
   (_apiKey: ApiKey) =>
   (_iun: Iun): TE.TaskEither<Error, GetNotificationDetailRecord['output']> =>
     TE.left(new Error('Not implemented'));

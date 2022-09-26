@@ -15,8 +15,8 @@ import { UploadToS3Record } from './domain/UploadToS3RecordRepository';
 import { NewNotificationRecord } from './domain/NewNotificationRepository';
 import { CheckNotificationStatusRecord } from './domain/CheckNotificationStatusRepository';
 import { CreateEventStreamRecord } from './domain/CreateEventStreamRecordRepository';
-import { GetNotificationDetailRecord } from './domain/GetNotificationDetailRepository';
 import { GetNotificationDetailUseCase } from './useCases/GetNotificationDetailUseCase';
+import { GetNotificationDetailRecord } from './domain/GetNotificationDetailRepository';
 
 pipe(
   parseConfig(process.env),

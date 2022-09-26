@@ -10,4 +10,4 @@ export type GetNotificationDetailRecord = {
   output: Response<200, FullSentNotification> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 
-export type GetNotificationDetailRepository = Repository<GetNotificationDetailRecord>;
+export type GetNotificationDetailRecordRepository = Repository<GetNotificationDetailRecord>;
