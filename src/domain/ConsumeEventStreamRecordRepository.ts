@@ -29,7 +29,7 @@ const makeProgressResponseElement = (
     (list) =>
       pipe(
         list,
-        // if exist an element not in pending return it
+        // if a non pending element exists then return it
         RA.findLast(({ newStatus }) => newStatus !== NewStatusEnum.IN_VALIDATION),
         O.getOrElse(() => {
           const element: ProgressResponseElement = {

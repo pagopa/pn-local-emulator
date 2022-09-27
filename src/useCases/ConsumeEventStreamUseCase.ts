@@ -32,7 +32,7 @@ export const ConsumeEventStreamUseCase =
           makeProgressResponse(minNumberOfWaitingBeforeDelivering, nnrList, cesrList, nowDate, iunGenerator),
           // Implement a simple cursor based pagination
           RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
-          RA.filterWithIndex((i, _) => i > parseInt(lastEventId || '-1', 10))
+          RA.filterWithIndex((i) => i > parseInt(lastEventId || '-1', 10))
         )
       ),
       TE.map((output) =>
