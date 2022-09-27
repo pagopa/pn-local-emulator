@@ -39,7 +39,7 @@ const makeProgressResponseElement = (
             newStatus: NewStatusEnum.IN_VALIDATION,
           };
           const completed = { ...element, newStatus: NewStatusEnum.DELIVERED, iun: iunGenerator() };
-          // if the resource was required more times
+          // if the resource was requested more times
           // than the threshold then return it as completed
           return RA.size(list) >= minNumberOfWaitingBeforeDelivering ? completed : element;
         })
