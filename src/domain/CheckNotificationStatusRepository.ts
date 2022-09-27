@@ -1,4 +1,6 @@
+import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
+import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
 import { PaProtocolNumber } from '../generated/definitions/PaProtocolNumber';
 import { IdempotenceToken } from '../generated/definitions/IdempotenceToken';
@@ -15,20 +17,43 @@ export type CheckNotificationStatusRecord = {
   output: Response<200, NewNotificationRequestStatusResponse> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 
+const WAITING = 'WAITING';
+
 export const makeNewNotificationRequestStatusResponse = (
-  record: NewNotificationRecord
-): O.Option<NewNotificationRequestStatusResponse> => {
-  // eslint-disable-next-line sonarjs/no-small-switch
-  switch (record.output.statusCode) {
-    case 202:
-      return O.some({
-        ...record.output.returned,
-        ...record.input.body,
-        notificationRequestStatus: '__WAITING__',
-      });
-    default:
-      return O.none;
-  }
-};
+  minNumberOfWaitingBeforeDelivering: number,
+  notification: NewNotificationRecord,
+  checkNotificationStatusRecordList: ReadonlyArray<CheckNotificationStatusRecord>,
+  iunGenerator: () => string
+): O.Option<NewNotificationRequestStatusResponse> =>
+  pipe(
+    notification.output.statusCode === 202
+      ? O.some({ ...notification.input.body, ...notification.output.returned })
+      : O.none,
+    O.map((notification) =>
+      pipe(
+        // find all records that match the given notification
+        checkNotificationStatusRecordList,
+        RA.filterMap(({ output }) => (output.statusCode === 200 ? O.some(output.returned) : O.none)),
+        RA.filter(({ notificationRequestId: id }) => id === notification.notificationRequestId),
+        (list) =>
+          pipe(
+            list,
+            // if a non pending element exists then return it
+            RA.findLast(({ notificationRequestStatus }) => notificationRequestStatus !== WAITING),
+            // if doesn't exist
+            O.getOrElse(() => {
+              const response = {
+                ...notification,
+                notificationRequestStatus: WAITING,
+              };
+              const completed = { ...response, notificationRequestStatus: 'ACCEPTED', iun: iunGenerator() };
+              // if the resource was requested more times
+              // than the threshold then return it as completed
+              return RA.size(list) >= minNumberOfWaitingBeforeDelivering ? completed : response;
+            })
+          )
+      )
+    )
+  );
 
 export type CheckNotificationStatusRecordRepository = Repository<CheckNotificationStatusRecord>;

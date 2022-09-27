@@ -32,6 +32,7 @@ pipe(
     const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
     const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(
+      2, // TODO: minNumberOfWaitingBeforeDelivering move this value into configuration
       newNotificationRepository,
       checkNotificationStatusRepository
     );
