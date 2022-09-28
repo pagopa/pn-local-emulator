@@ -49,7 +49,7 @@ export const makeNewNotificationRequestStatusResponse = (
               const completed = { ...response, notificationRequestStatus: 'ACCEPTED', iun: iunGenerator() };
               // if the resource was requested more times
               // than the threshold then return it as completed
-              return RA.size(list) >= minNumberOfWaitingBeforeDelivering ? completed : response;
+              return list.length >= minNumberOfWaitingBeforeDelivering ? completed : response;
             })
           )
       )
