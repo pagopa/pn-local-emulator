@@ -43,7 +43,7 @@ export const uploadToS3Record: UploadToS3Record = {
   type: 'UploadToS3Record',
   input: {
     key: preLoadResponse.key,
-    checksumAlg: O.none,
+    checksumAlg: undefined,
     secret: preLoadResponse.secret,
     checksum: preLoadBody.sha256,
   },
