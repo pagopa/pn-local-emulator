@@ -1,82 +1,83 @@
-# PnValidator [![CI](https://github.com/pagopa/pn-local-emulator-poc/actions/workflows/ci.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator-poc/actions/workflows/ci.yaml)
+# PnValidator
+[![CI](https://github.com/pagopa/pn-local-emulator/actions/workflows/ci.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator/actions/workflows/ci.yaml)
 
-A system that emulates some features of Piattaforma Notifiche platform.
+A system that emulates some features of the Piattaforma Notifiche platform.
 
-## Generate the code
+## Prerequisites
+If you want to run the emulator locally, starting from the source code, you need to follow the next steps.
 
-Some code is generated from `openapi/index.yaml` file, the first time and when the content of `openapi/index.yaml` changes you should run the following command:
+The first thing to do is to clone the repository using the preferred method (the next command uses SSH):
 
-``` sh
-npm run generate
+```shell
+git clone git@github.com:pagopa/pn-local-emulator.git
 ```
+
+This project runs using [Node.js](https://nodejs.org/en/) and it has been developed with the version specified in the [`.node_version`](.node-version) file.
+
+You could [install nvm](https://github.com/nvm-sh/nvm) and use the next commands to install and set the same version
+of Node.js specified in the `.node_version` file.
+
+```shell
+# Install the version of Node.js specified in the .node_version file
+nvm install `cat .node-version`
+
+# Set the version of Node.js specified in the .node_version file
+nvm use `cat .node-version`
+```
+Make sure that the path of `.node_version` is correct because the example commands assume you are in the repository folder.
 
 ## How to run
 
-To run the tool run the following command:
+### Run using Node.js
 
-``` sh
-# if needed run generate
+Install the dependencies.
+
+```shell
+npm install
+```
+
+Generates code from the [OpenAPI](./openapi/index.yaml) specification.
+
+```shell
 npm run generate
+```
 
-# start the application
+Start the application.
+
+```shell
 npm run start
 ```
 
-## Run with Docker
+### Run using Docker (Dockerfile)
 
 The repository comes with a Dockerfile that you can use to run the application with Docker.
-First, build the image:
 
-``` sh
+Build the image.
+
+```shell
 docker build -t pnemulator .
 ```
 
-Then, run the application:
+Run the emulator.
 
-``` sh
+```shell
 docker run -p 3000:3000 pnemulator
 ```
+The [Dockerfile](./Dockerfile) exposes port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
 
-### Example
+### Run using the public container image
 
-``` sh
-# Get the report, initially it shows all 'ko'
-curl --location --request GET 'localhost:8080/checklistresult'
+Another option is to run the container image available in the container registry.
 
-# Require an upload slot
-curl --request POST 'http://localhost:8080/delivery/attachments/preload' \
---header 'x-api-key: key-value' \
---header 'Content-Type: application/json' \
---data-raw '[
-    {
-        "preloadIdx": "1",
-        "contentType": "application/pdf",
-        "sha256": "jezIVxlG1M1woCSUngM6KipUN3/a8cG5RMIPnuEanlE="
-    },
-    {
-        "preloadIdx": "2",
-        "contentType": "application/pdf",
-        "sha256": "jezIVxlG1M1woCSUngM6KipUN3/a8cG5RMIPnuEanlE="
-    }
-]'
+Pull the image from the container registry.
 
-# Get the report, as you can see some result are 'ok'
-curl --location --request GET 'localhost:8080/checklistresult'
+```shell
+docker pull ghcr.io/pagopa/pn-local-emulator:latest
+```
 
-curl --request PUT 'http://localhost:8080/uploadS3/use-the-key-taken-from-preload' \
---header 'x-amz-meta-secret: put-here-the-secret-taken-from-preload' \
---header 'x-amz-checksum-sha256: jezIVxlG1M1woCSUngM6KipUN3/a8cG5RMIPnuEanlE='
+Run the application.
 
-curl --location --request GET 'localhost:8080/checklistresult'
 
-curl --request POST 'http://localhost:8080/delivery-progresses/streams' \
-  --header 'x-api-key: key-value' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "title": "string",
-  "eventType": "STATUS",
-  "filterValues": [
-    "string"
-  ]
-}'
+```shell
+docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
