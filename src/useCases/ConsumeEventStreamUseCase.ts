@@ -7,44 +7,55 @@ import { authorizeApiKey } from '../domain/authorize';
 import {
   ConsumeEventStreamRecord,
   ConsumeEventStreamRecordRepository,
-  makeProgressResponse,
+  getProgressResponseList,
+  makeProgressResponseElement,
 } from '../domain/ConsumeEventStreamRecordRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
-import { NewNotificationRepository } from '../domain/NewNotificationRepository';
+import { getNotifications, NewNotificationRepository } from '../domain/NewNotificationRepository';
+import {
+  CheckNotificationStatusRecordRepository,
+  getNotificationStatusList,
+} from '../domain/CheckNotificationStatusRepository';
 
 export const ConsumeEventStreamUseCase =
   (
-    minNumberOfWaitingBeforeDelivering: number,
+    numberOfWaitingBeforeComplete: number,
     consumeEventStreamRepository: ConsumeEventStreamRecordRepository,
     newNotificationRecordRepository: NewNotificationRepository,
+    checkNotificationStatusRecordRepository: CheckNotificationStatusRecordRepository,
     nowDate: () => Date = () => new Date(),
-    iunGenerator: () => string = () => crypto.randomUUID()
+    iunGenerator: () => string = crypto.randomUUID
   ) =>
   (apiKey: ApiKey) =>
   (streamId: string) =>
   (lastEventId?: string): TE.TaskEither<Error, ConsumeEventStreamRecord['output']> =>
     pipe(
-      TE.of(makeProgressResponse(minNumberOfWaitingBeforeDelivering, nowDate, iunGenerator)),
-      TE.ap(newNotificationRecordRepository.list()),
-      TE.ap(consumeEventStreamRepository.list()),
-      TE.map(
-        flow(
-          RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
-          RA.filterWithIndex((i) => i > parseInt(lastEventId || '-1', 10))
-        )
-      ),
-      TE.map((output) =>
+      authorizeApiKey(apiKey),
+      E.map(() =>
         pipe(
-          authorizeApiKey(apiKey),
-          E.map(() => ({ statusCode: 200 as const, returned: output })),
-          E.toUnion
+          TE.of(makeProgressResponseElement(numberOfWaitingBeforeComplete, nowDate, iunGenerator)),
+          TE.ap(pipe(checkNotificationStatusRecordRepository.list(), TE.map(getNotificationStatusList))),
+          TE.ap(pipe(consumeEventStreamRepository.list(), TE.map(getProgressResponseList))),
+          TE.map(RA.map),
+          TE.ap(pipe(newNotificationRecordRepository.list(), TE.map(getNotifications))),
+          TE.map(
+            flow(
+              // override the eventId to create a simple cursor based pagination
+              RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
+              RA.filterWithIndex((i) => i > parseInt(lastEventId || '-1', 10)),
+              (output) => ({ statusCode: 200 as const, returned: output })
+            )
+          )
         )
       ),
-      TE.map((output) => ({
-        type: 'ConsumeEventStreamRecord' as const,
-        input: { apiKey, streamId, lastEventId },
-        output,
-      })),
+      E.sequence(TE.ApplicativePar),
+      TE.map(
+        flow(E.toUnion, (output) => ({
+          type: 'ConsumeEventStreamRecord' as const,
+          input: { apiKey, streamId, lastEventId },
+          output,
+        }))
+      ),
       TE.chain(consumeEventStreamRepository.insert),
       TE.map(({ output }) => output)
     );

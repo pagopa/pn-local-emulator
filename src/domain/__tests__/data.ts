@@ -171,7 +171,8 @@ export const consumeEventStreamResponse = {
       eventId: '0',
       timestamp: aDate,
       notificationRequestId: notificationId.valid,
-      newStatus: NewStatusEnum.IN_VALIDATION,
+      iun: undefined,
+      newStatus: undefined,
     },
   ],
 };
@@ -188,7 +189,7 @@ export const consumeEventStreamRecordDelivered = {
     ...consumeEventStreamResponse,
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
-      newStatus: NewStatusEnum.DELIVERED,
+      newStatus: NewStatusEnum.ACCEPTED,
       iun: aIun.valid,
     })),
   },

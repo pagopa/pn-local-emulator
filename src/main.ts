@@ -35,14 +35,16 @@ pipe(
     const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
     const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(
-      2, // TODO: minNumberOfWaitingBeforeDelivering move this value into configuration
+      2, // TODO: numberOfWaitingBeforeComplete move this value into configuration
       newNotificationRepository,
-      checkNotificationStatusRepository
+      checkNotificationStatusRepository,
+      consumeEventStreamRepository
     );
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(
-      2, // TODO: minNumberOfWaitingBeforeDelivering move this value into configuration
+      2, // TODO: numberOfWaitingBeforeComplete move this value into configuration
       consumeEventStreamRepository,
-      newNotificationRepository
+      newNotificationRepository,
+      checkNotificationStatusRepository
     );
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
 

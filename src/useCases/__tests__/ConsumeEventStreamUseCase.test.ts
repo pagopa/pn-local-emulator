@@ -8,16 +8,18 @@ import * as data from '../../domain/__tests__/data';
 import { makeLogger } from '../../logger';
 import { NewNotificationRecord } from '../../domain/NewNotificationRepository';
 import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecordRepository';
+import { CheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRepository';
 
-const minNumberOfWaitingBeforeDelivering = 2;
+const numberOfWaitingBeforeComplete = 2;
 
 describe('ConsumeEventStreamUseCase', () => {
   describe('200 response', () => {
     it('should return empty array', async () => {
       const useCase = ConsumeEventStreamUseCase(
-        minNumberOfWaitingBeforeDelivering,
+        numberOfWaitingBeforeComplete,
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([]),
-        inMemory.makeRepository(makeLogger())<NewNotificationRecord>([])
+        inMemory.makeRepository(makeLogger())<NewNotificationRecord>([]),
+        inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
       );
 
       const actual = await useCase(data.apiKey.valid)(data.streamId.valid)(undefined)();
@@ -26,9 +28,10 @@ describe('ConsumeEventStreamUseCase', () => {
     });
     it('should return waiting status', async () => {
       const useCase = ConsumeEventStreamUseCase(
-        minNumberOfWaitingBeforeDelivering,
+        numberOfWaitingBeforeComplete,
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([]),
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>([data.newNotificationRecord]),
+        inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         () => data.aDate
       );
 
@@ -39,12 +42,13 @@ describe('ConsumeEventStreamUseCase', () => {
 
     it('should return delivery status after reaching the threshold limit', async () => {
       const useCase = ConsumeEventStreamUseCase(
-        minNumberOfWaitingBeforeDelivering,
+        numberOfWaitingBeforeComplete,
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([
           data.consumeEventStreamRecord,
           data.consumeEventStreamRecord,
         ]),
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>([data.newNotificationRecord]),
+        inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         () => data.aDate,
         () => data.aIun.valid
       );
@@ -55,12 +59,13 @@ describe('ConsumeEventStreamUseCase', () => {
     });
     it('should return last delivered response if any', async () => {
       const useCase = ConsumeEventStreamUseCase(
-        minNumberOfWaitingBeforeDelivering,
+        numberOfWaitingBeforeComplete,
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([
           data.consumeEventStreamRecord,
           data.consumeEventStreamRecordDelivered,
         ]),
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>([data.newNotificationRecord]),
+        inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         () => data.aDate,
         () => data.aIun.valid
       );
@@ -85,9 +90,10 @@ describe('ConsumeEventStreamUseCase', () => {
         }))
       );
       const useCase = ConsumeEventStreamUseCase(
-        minNumberOfWaitingBeforeDelivering,
+        numberOfWaitingBeforeComplete,
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([]),
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>(records),
+        inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         () => data.aDate,
         () => data.aIun.valid
       );

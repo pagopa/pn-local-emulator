@@ -14,20 +14,22 @@ import {
 import { getNotifications, NewNotificationRepository } from '../domain/NewNotificationRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
+import {
+  ConsumeEventStreamRecordRepository,
+  getProgressResponseList,
+} from '../domain/ConsumeEventStreamRecordRepository';
 
 const matchRecord = (input: CheckNotificationStatusRecord['input']) => (record: NewNotificationRequestStatusResponse) =>
   'notificationRequestId' in input
     ? record.notificationRequestId === input.notificationRequestId
     : record.paProtocolNumber === input.paProtocolNumber && record.idempotenceToken === input.idempotenceToken;
 
-const makeResponse = (minNumberOfWaitingBeforeDelivering: number, iunGenerator: () => string) =>
-  flow(makeNewNotificationRequestStatusResponse(minNumberOfWaitingBeforeDelivering, iunGenerator), RA.map);
-
 export const CheckNotificationStatusUseCase =
   (
-    minNumberOfWaitingBeforeDelivering: number,
+    numberOfWaitingBeforeComplete: number,
     newNotificationRepository: NewNotificationRepository,
     checkNotificationStatusRecordRepository: CheckNotificationStatusRecordRepository,
+    consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository,
     iunGenerator: () => string = crypto.randomUUID
   ) =>
   (apiKey: ApiKey) =>
@@ -36,8 +38,10 @@ export const CheckNotificationStatusUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(makeResponse(minNumberOfWaitingBeforeDelivering, iunGenerator)),
+          TE.of(makeNewNotificationRequestStatusResponse(numberOfWaitingBeforeComplete, iunGenerator)),
           TE.ap(pipe(checkNotificationStatusRecordRepository.list(), TE.map(getNotificationStatusList))),
+          TE.ap(pipe(consumeEventStreamRecordRepository.list(), TE.map(getProgressResponseList))),
+          TE.map(RA.map),
           TE.ap(pipe(newNotificationRepository.list(), TE.map(getNotifications))),
           TE.map(
             flow(

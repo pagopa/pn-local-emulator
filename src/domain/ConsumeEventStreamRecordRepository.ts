@@ -1,11 +1,12 @@
-import { pipe } from 'fp-ts/lib/function';
+import { flow, pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { Notification } from '../domain/NewNotificationRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
-import { NewNotificationResponse } from '../generated/definitions/NewNotificationResponse';
+import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
 import { ProgressResponse } from '../generated/streams/ProgressResponse';
 import { NewStatusEnum, ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
-import { NewNotificationRecord } from './NewNotificationRepository';
+import { makeNewNotificationRequestStatusResponse } from './CheckNotificationStatusRepository';
 import { Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
@@ -15,56 +16,35 @@ export type ConsumeEventStreamRecord = {
   output: Response<200, ProgressResponse> | Response<403, UnauthorizedMessageBody> | Response<419>;
 };
 
-const makeProgressResponseElement = (
-  minNumberOfWaitingBeforeDelivering: number,
-  response: NewNotificationResponse,
-  consumeEventStreamRecordList: ReadonlyArray<ConsumeEventStreamRecord>,
-  nowDate: () => Date,
-  iunGenerator: () => string
-): ProgressResponseElement =>
-  pipe(
-    consumeEventStreamRecordList,
-    RA.filterMap(({ output }) => (output.statusCode === 200 ? O.some(output.returned) : O.none)),
-    RA.chain(RA.filter(({ notificationRequestId }) => notificationRequestId === response.notificationRequestId)),
-    (list) =>
-      pipe(
-        list,
-        // if a non pending element exists then return it
-        RA.findLast(({ newStatus }) => newStatus !== NewStatusEnum.IN_VALIDATION),
-        O.getOrElse(() => {
-          const element: ProgressResponseElement = {
+const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
+  record.output.statusCode === 200 ? O.some(record.output.returned) : O.none;
+
+export const getProgressResponseList = flow(RA.filterMap(getProgressResponse), RA.flatten);
+
+export const makeProgressResponseElement =
+  (numberOfWaitingBeforeAccepted: number, nowDate: () => Date, iunGenerator: () => string) =>
+  (notificationRequestList: ReadonlyArray<NewNotificationRequestStatusResponse>) =>
+  (progressResponseElementList: ProgressResponse) =>
+  (notification: Notification): ProgressResponseElement =>
+    pipe(
+      progressResponseElementList,
+      // find a response with a valid status
+      RA.findLast(({ newStatus }) => newStatus !== undefined),
+      // otherwise create a new response
+      O.getOrElse<ProgressResponseElement>(() =>
+        pipe(
+          // compose the NotificationRequest
+          makeNewNotificationRequestStatusResponse(
+            numberOfWaitingBeforeAccepted,
+            iunGenerator
+          )(notificationRequestList)(progressResponseElementList)(notification),
+          (notification) => ({
             eventId: '0',
             timestamp: nowDate(),
-            notificationRequestId: response.notificationRequestId,
-            newStatus: NewStatusEnum.IN_VALIDATION,
-          };
-          const completed = { ...element, newStatus: NewStatusEnum.DELIVERED, iun: iunGenerator() };
-          // if the resource was requested more times
-          // than the threshold then return it as completed
-          return RA.size(list) >= minNumberOfWaitingBeforeDelivering ? completed : element;
-        })
-      )
-  );
-
-export const makeProgressResponse =
-  (minNumberOfWaitingBeforeDelivering: number, nowDate: () => Date, iunGenerator: () => string) =>
-  (newNotificationRecordList: ReadonlyArray<NewNotificationRecord>) =>
-  (consumeEventStreamRecordList: ReadonlyArray<ConsumeEventStreamRecord>): ProgressResponse =>
-    pipe(
-      newNotificationRecordList,
-      RA.filterMapWithIndex((i, record) =>
-        pipe(
-          record.output.statusCode === 202 ? O.of(record.output.returned) : O.none,
-          O.map((response) => ({
-            ...makeProgressResponseElement(
-              minNumberOfWaitingBeforeDelivering,
-              response,
-              consumeEventStreamRecordList,
-              nowDate,
-              iunGenerator
-            ),
-            eventId: i.toString(),
-          }))
+            notificationRequestId: notification.notificationRequestId,
+            iun: notification.iun,
+            newStatus: notification.notificationRequestStatus === 'ACCEPTED' ? NewStatusEnum.ACCEPTED : undefined,
+          })
         )
       )
     );
