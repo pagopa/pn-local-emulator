@@ -34,7 +34,7 @@ jobs:
     name: Build the container image
     needs:
       - build
-    uses: ./.github/workflows/actions/build_push_image.yaml
+    uses: ./.github/workflows/build_push_image.yaml
     with:
       image_name: ${{ github.repository }}
       push: false
