@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { pipe } from 'fp-ts/lib/function';
+import { pipe, flow } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as TE from 'fp-ts/TaskEither';

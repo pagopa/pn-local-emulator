@@ -50,23 +50,23 @@ export const makeProgressResponse =
   (minNumberOfWaitingBeforeDelivering: number, nowDate: () => Date, iunGenerator: () => string) =>
   (newNotificationRecordList: ReadonlyArray<NewNotificationRecord>) =>
   (consumeEventStreamRecordList: ReadonlyArray<ConsumeEventStreamRecord>): ProgressResponse =>
-  pipe(
-    newNotificationRecordList,
-    RA.filterMapWithIndex((i, record) =>
-      pipe(
-        record.output.statusCode === 202 ? O.of(record.output.returned) : O.none,
-        O.map((response) => ({
-          ...makeProgressResponseElement(
-            minNumberOfWaitingBeforeDelivering,
-            response,
-            consumeEventStreamRecordList,
-            nowDate,
-            iunGenerator
-          ),
-          eventId: i.toString(),
-        }))
+    pipe(
+      newNotificationRecordList,
+      RA.filterMapWithIndex((i, record) =>
+        pipe(
+          record.output.statusCode === 202 ? O.of(record.output.returned) : O.none,
+          O.map((response) => ({
+            ...makeProgressResponseElement(
+              minNumberOfWaitingBeforeDelivering,
+              response,
+              consumeEventStreamRecordList,
+              nowDate,
+              iunGenerator
+            ),
+            eventId: i.toString(),
+          }))
+        )
       )
-    )
-  );
+    );
 
 export type ConsumeEventStreamRecordRepository = Repository<ConsumeEventStreamRecord>;
