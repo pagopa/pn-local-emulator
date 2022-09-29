@@ -17,7 +17,7 @@ export type CheckNotificationStatusRecord = {
   output: Response<200, NewNotificationRequestStatusResponse> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 
-export const getNewNotificationRequestStatusResponse = (
+const getNewNotificationRequestStatusResponse = (
   record: CheckNotificationStatusRecord
 ): O.Option<NewNotificationRequestStatusResponse> =>
   record.output.statusCode === 200 ? O.some(record.output.returned) : O.none;

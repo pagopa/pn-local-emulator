@@ -14,7 +14,7 @@ export type NewNotificationRecord = {
   output: Response<202, NewNotificationResponse> | Response<403, UnauthorizedMessageBody>;
 };
 
-export const getNotification = (record: NewNotificationRecord): O.Option<Notification> =>
+const getNotification = (record: NewNotificationRecord): O.Option<Notification> =>
   record.output.statusCode === 202 ? O.some({ ...record.input.body, ...record.output.returned }) : O.none;
 
 export const getNotifications = RA.filterMap(getNotification);
