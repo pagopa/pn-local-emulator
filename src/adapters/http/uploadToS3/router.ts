@@ -1,6 +1,6 @@
 import express from 'express';
 import { pipe } from 'fp-ts/function';
-import * as tt from 'io-ts-types';
+import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
@@ -18,7 +18,7 @@ const handler =
     pipe(
       E.of(uploadToS3UseCase),
       E.ap(AmzDocumentKey.decode(req.params.key)),
-      E.ap(tt.optionFromNullable(AmzSdkChecksumAlg).decode(req.headers['x-amz-sdk-checksum-algorithm'])),
+      E.ap(t.union([t.undefined, AmzSdkChecksumAlg]).decode(req.headers['x-amz-sdk-checksum-algorithm'])),
       E.ap(AmzMetaSecret.decode(req.headers['x-amz-meta-secret'])),
       E.ap(AmzChecksumSHA256.decode(req.headers['x-amz-checksum-sha256'])),
       // Create response

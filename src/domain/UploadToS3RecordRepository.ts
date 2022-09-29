@@ -1,4 +1,3 @@
-import { Option } from 'fp-ts/Option';
 import { AmzChecksumSHA256 } from '../generated/definitions/AmzChecksumSHA256';
 import { AmzMetaSecret } from '../generated/definitions/AmzMetaSecret';
 import { AmzSdkChecksumAlg } from '../generated/definitions/AmzSdkChecksumAlg';
@@ -11,7 +10,7 @@ export type UploadToS3Record = {
   type: 'UploadToS3Record';
   input: {
     key: AmzDocumentKey;
-    checksumAlg: Option<AmzSdkChecksumAlg>;
+    checksumAlg?: AmzSdkChecksumAlg;
     secret: AmzMetaSecret;
     checksum: AmzChecksumSHA256;
   };

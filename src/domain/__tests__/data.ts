@@ -26,6 +26,10 @@ export const idempotenceToken = {
   valid: 'idempotenceToken',
 };
 
+export const aIun = {
+  valid: 'aIunValue',
+};
+
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
 const preLoadBody = { preloadIdx: '0', contentType: 'application/pdf', sha256: 'a-sha256' };
@@ -43,7 +47,7 @@ export const uploadToS3Record: UploadToS3Record = {
   type: 'UploadToS3Record',
   input: {
     key: preLoadResponse.key,
-    checksumAlg: O.none,
+    checksumAlg: undefined,
     secret: preLoadResponse.secret,
     checksum: preLoadBody.sha256,
   },
@@ -97,7 +101,23 @@ export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
       idempotenceToken: undefined,
       paProtocolNumber: paProtocolNumber.valid,
       notificationRequestId: notificationId.valid,
-      notificationRequestStatus: '__WAITING__',
+      notificationRequestStatus: 'WAITING',
+    },
+  },
+};
+
+export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecord = {
+  type: 'CheckNotificationStatusRecord',
+  input: { notificationRequestId: notificationId.valid },
+  output: {
+    statusCode: 200,
+    returned: {
+      ...newNotificationRecord.input.body,
+      idempotenceToken: undefined,
+      paProtocolNumber: paProtocolNumber.valid,
+      notificationRequestId: notificationId.valid,
+      notificationRequestStatus: 'ACCEPTED',
+      iun: aIun.valid,
     },
   },
 };
@@ -112,7 +132,7 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
       idempotenceToken: idempotenceToken.valid,
       paProtocolNumber: paProtocolNumber.valid,
       notificationRequestId: notificationId.valid,
-      notificationRequestStatus: '__WAITING__',
+      notificationRequestStatus: 'WAITING',
     },
   },
 };
