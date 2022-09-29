@@ -16,7 +16,7 @@ describe('CheckNotificationStatusUseCase', () => {
       numberOfWaitingBeforeComplete,
       inMemory.makeRepository(logger)<NewNotificationRecord>([]),
       inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
     );
     const input = { notificationRequestId: data.notificationId.valid };
 
@@ -34,7 +34,7 @@ describe('CheckNotificationStatusUseCase', () => {
         data.newNotificationRecordWithIdempotenceToken,
       ]),
       inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
     );
     const input = { notificationRequestId: data.notificationId.valid };
 
@@ -52,7 +52,7 @@ describe('CheckNotificationStatusUseCase', () => {
         data.newNotificationRecordWithIdempotenceToken,
       ]),
       inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
     );
     const input = { paProtocolNumber: data.paProtocolNumber.valid };
 
@@ -70,7 +70,7 @@ describe('CheckNotificationStatusUseCase', () => {
         data.newNotificationRecordWithIdempotenceToken,
       ]),
       inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
     );
     const input = {
       idempotenceToken: data.idempotenceToken.valid,

@@ -19,7 +19,7 @@ describe('ConsumeEventStreamUseCase', () => {
         numberOfWaitingBeforeComplete,
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([]),
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>([]),
-        inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
+        inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([])
       );
 
       const actual = await useCase(data.apiKey.valid)(data.streamId.valid)(undefined)();
