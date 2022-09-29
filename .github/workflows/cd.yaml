@@ -9,7 +9,7 @@ on:
 jobs:
   build_image:
     name: Build the container image
-    uses: pagopa/pn-local-emulator/.github/workflows/build_push_image.yaml@features/cd-docker-image
+    uses: ./.github/workflows/build_push_image.yaml
     with:
       image_name: ${{ github.repository }}
     secrets:
@@ -19,7 +19,7 @@ jobs:
     name: Scan for vulnerabilities
     needs:
       - build_image
-    uses: pagopa/pn-local-emulator/.github/workflows/trivy.yaml@features/cd-docker-image
+    uses: ./.github/workflows/trivy.yaml
     with:
       container_image_name: ${{ needs.build_image.outputs.full_image_name }}
 
@@ -27,7 +27,7 @@ jobs:
     name: Push the container image to the container registry
     needs:
       - vulnerabilities_scan
-    uses: pagopa/pn-local-emulator/.github/workflows/build_push_image.yaml@features/cd-docker-image
+    uses: ./.github/workflows/build_push_image.yaml
     with:
       image_name: ${{ github.repository }}
       push: true
