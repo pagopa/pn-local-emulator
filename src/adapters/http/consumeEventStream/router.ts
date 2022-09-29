@@ -1,5 +1,5 @@
 import express from 'express';
-import { pipe } from 'fp-ts/lib/function';
+import { pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';

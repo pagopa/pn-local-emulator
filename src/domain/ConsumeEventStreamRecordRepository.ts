@@ -46,13 +46,10 @@ const makeProgressResponseElement = (
       )
   );
 
-export const makeProgressResponse = (
-  minNumberOfWaitingBeforeDelivering: number,
-  newNotificationRecordList: ReadonlyArray<NewNotificationRecord>,
-  consumeEventStreamRecordList: ReadonlyArray<ConsumeEventStreamRecord>,
-  nowDate: () => Date,
-  iunGenerator: () => string
-): ProgressResponse =>
+export const makeProgressResponse =
+  (minNumberOfWaitingBeforeDelivering: number, nowDate: () => Date, iunGenerator: () => string) =>
+  (newNotificationRecordList: ReadonlyArray<NewNotificationRecord>) =>
+  (consumeEventStreamRecordList: ReadonlyArray<ConsumeEventStreamRecord>): ProgressResponse =>
   pipe(
     newNotificationRecordList,
     RA.filterMapWithIndex((i, record) =>

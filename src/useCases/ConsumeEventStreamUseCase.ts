@@ -24,13 +24,11 @@ export const ConsumeEventStreamUseCase =
   (streamId: string) =>
   (lastEventId?: string): TE.TaskEither<Error, ConsumeEventStreamRecord['output']> =>
     pipe(
-      TE.Do,
-      TE.apS('cesrList', consumeEventStreamRepository.list()),
-      TE.apS('nnrList', newNotificationRecordRepository.list()),
-      TE.map(({ cesrList, nnrList }) =>
-        pipe(
-          makeProgressResponse(minNumberOfWaitingBeforeDelivering, nnrList, cesrList, nowDate, iunGenerator),
-          // Implement a simple cursor based pagination
+      TE.of(makeProgressResponse(minNumberOfWaitingBeforeDelivering, nowDate, iunGenerator)),
+      TE.ap(newNotificationRecordRepository.list()),
+      TE.ap(consumeEventStreamRepository.list()),
+      TE.map(
+        flow(
           RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
           RA.filterWithIndex((i) => i > parseInt(lastEventId || '-1', 10))
         )
