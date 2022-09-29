@@ -7,10 +7,12 @@ import { NewNotificationRecord } from '../../domain/NewNotificationRepository';
 import { CheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRepository';
 
 const logger = makeLogger();
+const minNumberOfWaitingBeforeDelivering = 2;
 
 describe('CheckNotificationStatusUseCase', () => {
   it('should return 404', async () => {
     const useCase = CheckNotificationStatusUseCase(
+      minNumberOfWaitingBeforeDelivering,
       inMemory.makeRepository(logger)<NewNotificationRecord>([]),
       inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
     );
@@ -24,6 +26,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the notificationId', async () => {
     const useCase = CheckNotificationStatusUseCase(
+      minNumberOfWaitingBeforeDelivering,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
@@ -40,6 +43,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber', async () => {
     const useCase = CheckNotificationStatusUseCase(
+      minNumberOfWaitingBeforeDelivering,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
@@ -56,6 +60,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber and idempotenceToken', async () => {
     const useCase = CheckNotificationStatusUseCase(
+      minNumberOfWaitingBeforeDelivering,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
@@ -68,6 +73,29 @@ describe('CheckNotificationStatusUseCase', () => {
     };
 
     const expected = E.right(data.checkNotificationStatusRecordWithIdempotenceToken.output);
+    const actual = await useCase(data.apiKey.valid)(input)();
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  it('should return the status ACCEPTED after reaching the threshold limit', async () => {
+    const useCase = CheckNotificationStatusUseCase(
+      minNumberOfWaitingBeforeDelivering,
+      inMemory.makeRepository(logger)<NewNotificationRecord>([
+        data.newNotificationRecord,
+        data.newNotificationRecordWithIdempotenceToken,
+      ]),
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([
+        data.checkNotificationStatusRecord,
+        data.checkNotificationStatusRecord,
+      ]),
+      () => data.aIun.valid
+    );
+    const input = {
+      paProtocolNumber: data.paProtocolNumber.valid,
+    };
+
+    const expected = E.right(data.checkNotificationStatusRecordAccepted.output);
     const actual = await useCase(data.apiKey.valid)(input)();
 
     expect(actual).toStrictEqual(expected);
