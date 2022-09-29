@@ -28,28 +28,25 @@ const WAITING = 'WAITING';
 
 export const makeNewNotificationRequestStatusResponse =
   (minNumberOfWaitingBeforeDelivering: number, iunGenerator: () => string) =>
-  (previousResponseList: ReadonlyArray<NewNotificationRequestStatusResponse>) =>
+  (responseList: ReadonlyArray<NewNotificationRequestStatusResponse>) =>
   (notification: Notification): NewNotificationRequestStatusResponse =>
     pipe(
-      previousResponseList,
-      // find all records that match the given notification
+      responseList,
+      // find all responses that match the given notification
       RA.filter(({ notificationRequestId: id }) => id === notification.notificationRequestId),
       (list) =>
         pipe(
           list,
-          // if a non pending element exists then return it
+          // if a non pending response already exists then return it
           RA.findLast(({ notificationRequestStatus }) => notificationRequestStatus !== WAITING),
-          // if doesn't exist
-          O.getOrElse(() => {
-            const response = {
-              ...notification,
-              notificationRequestStatus: WAITING,
-            };
-            const completed = { ...response, notificationRequestStatus: 'ACCEPTED', iun: iunGenerator() };
+          // otherwise create a new response
+          O.getOrElse(() => ({ ...notification, notificationRequestStatus: WAITING })),
+          (response) =>
             // if the resource was requested more times
             // than the threshold then return it as completed
-            return list.length >= minNumberOfWaitingBeforeDelivering ? completed : response;
-          })
+            list.length >= minNumberOfWaitingBeforeDelivering
+              ? { ...response, notificationRequestStatus: 'ACCEPTED', iun: iunGenerator() }
+              : response
         )
     );
 
