@@ -4,7 +4,9 @@ import {
   NotificationFeePolicyEnum,
   PhysicalCommunicationTypeEnum,
 } from '../../generated/definitions/NewNotificationRequest';
+import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRepository';
+import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
 import { makeNewNotificationRecord } from '../NewNotificationRepository';
 import { PreLoadRecord } from '../PreLoadRepository';
@@ -29,6 +31,12 @@ export const idempotenceToken = {
 export const aIun = {
   valid: 'aIunValue',
 };
+
+export const streamId = {
+  valid: 'streamId',
+};
+
+export const aDate = new Date();
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
@@ -145,11 +153,42 @@ const streamCreationRequest = {
 
 export const createEventStreamResponse = {
   statusCode: 200 as const,
-  returned: { ...streamCreationRequest, streamId: 'stream-id', activationDate: new Date() },
+  returned: { ...streamCreationRequest, streamId: streamId.valid, activationDate: aDate },
 };
 
 export const createEventStreamRecord: CreateEventStreamRecord = {
   type: 'CreateEventStreamRecord',
   input: { apiKey: apiKey.valid, body: streamCreationRequest },
   output: createEventStreamResponse,
+};
+
+// ConsumeEventStreamRecord ///////////////////////////////////////////////////
+
+export const consumeEventStreamResponse = {
+  statusCode: 200 as const,
+  returned: [
+    {
+      eventId: '0',
+      timestamp: aDate,
+      notificationRequestId: notificationId.valid,
+    },
+  ],
+};
+
+export const consumeEventStreamRecord: ConsumeEventStreamRecord = {
+  type: 'ConsumeEventStreamRecord',
+  input: { apiKey: apiKey.valid, streamId: streamId.valid },
+  output: consumeEventStreamResponse,
+};
+
+export const consumeEventStreamRecordDelivered = {
+  ...consumeEventStreamRecord,
+  output: {
+    ...consumeEventStreamResponse,
+    returned: consumeEventStreamResponse.returned.map((returned) => ({
+      ...returned,
+      newStatus: NewStatusEnum.ACCEPTED,
+      iun: aIun.valid,
+    })),
+  },
 };

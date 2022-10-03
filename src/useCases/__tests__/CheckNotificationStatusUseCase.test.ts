@@ -5,16 +5,18 @@ import * as inMemory from '../../adapters/inMemory';
 import { makeLogger } from '../../logger';
 import { NewNotificationRecord } from '../../domain/NewNotificationRepository';
 import { CheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRepository';
+import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecordRepository';
 
 const logger = makeLogger();
-const minNumberOfWaitingBeforeDelivering = 2;
+const numberOfWaitingBeforeComplete = 2;
 
 describe('CheckNotificationStatusUseCase', () => {
   it('should return 404', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      minNumberOfWaitingBeforeDelivering,
+      numberOfWaitingBeforeComplete,
       inMemory.makeRepository(logger)<NewNotificationRecord>([]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
     );
     const input = { notificationRequestId: data.notificationId.valid };
 
@@ -26,12 +28,13 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the notificationId', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      minNumberOfWaitingBeforeDelivering,
+      numberOfWaitingBeforeComplete,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
       ]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
     );
     const input = { notificationRequestId: data.notificationId.valid };
 
@@ -43,12 +46,13 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      minNumberOfWaitingBeforeDelivering,
+      numberOfWaitingBeforeComplete,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
       ]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
     );
     const input = { paProtocolNumber: data.paProtocolNumber.valid };
 
@@ -60,12 +64,13 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber and idempotenceToken', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      minNumberOfWaitingBeforeDelivering,
+      numberOfWaitingBeforeComplete,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
       ]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([])
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
     );
     const input = {
       idempotenceToken: data.idempotenceToken.valid,
@@ -80,7 +85,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return the status ACCEPTED after reaching the threshold limit', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      minNumberOfWaitingBeforeDelivering,
+      numberOfWaitingBeforeComplete,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
@@ -89,6 +94,7 @@ describe('CheckNotificationStatusUseCase', () => {
         data.checkNotificationStatusRecord,
         data.checkNotificationStatusRecord,
       ]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]),
       () => data.aIun.valid
     );
     const input = {
