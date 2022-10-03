@@ -1,4 +1,4 @@
-import { pipe, flow } from 'fp-ts/lib/function';
+import { pipe, flow } from 'fp-ts/function';
 import * as M from 'fp-ts/Monoid';
 import * as n from 'fp-ts/number';
 import * as O from 'fp-ts/Option';
@@ -51,7 +51,7 @@ const countFromConsume = (notificationRequestId: string) =>
  * Compose a NotificationRequest starting from a list of records
  */
 export const makeNotification =
-  (occurencesAfterComplete: number, iunGenerator: () => string) =>
+  (occurrencesAfterComplete: number, iunGenerator: () => string) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
   (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>) =>
   (notificationRequest: NotificationRequest): O.Option<Notification> =>
@@ -67,8 +67,8 @@ export const makeNotification =
             pipe(findNotificationRequestRecord, countFromFind(notificationRequest.notificationRequestId)),
             pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
           ]),
-          (occurences) =>
-            occurences >= occurencesAfterComplete ? O.some({ ...notificationRequest, iun: iunGenerator() }) : O.none
+          (occurrences) =>
+            occurrences >= occurrencesAfterComplete ? O.some({ ...notificationRequest, iun: iunGenerator() }) : O.none
         )
       )
     );
