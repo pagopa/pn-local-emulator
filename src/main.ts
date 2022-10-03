@@ -33,25 +33,33 @@ pipe(
     const getNotificationDetailRepository = inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]);
     const consumeEventStreamRepository = inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]);
 
+    const numberOfWaitingBeforeComplete = 2; // TODO: numberOfWaitingBeforeComplete move this value into configuration
+
     /* init the use cases */
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
     const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
     const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(
-      2, // TODO: numberOfWaitingBeforeComplete move this value into configuration
+      numberOfWaitingBeforeComplete,
       newNotificationRepository,
       checkNotificationStatusRepository,
       consumeEventStreamRepository
     );
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(
-      2, // TODO: numberOfWaitingBeforeComplete move this value into configuration
+      numberOfWaitingBeforeComplete,
       newNotificationRepository,
       checkNotificationStatusRepository,
       consumeEventStreamRepository
     );
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
-    const getNotificationDetailUseCase = GetNotificationDetailUseCase(getNotificationDetailRepository);
+    const getNotificationDetailUseCase = GetNotificationDetailUseCase(
+      numberOfWaitingBeforeComplete,
+      getNotificationDetailRepository,
+      newNotificationRepository,
+      checkNotificationStatusRepository,
+      consumeEventStreamRepository
+    );
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
