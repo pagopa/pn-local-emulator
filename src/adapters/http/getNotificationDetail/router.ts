@@ -29,7 +29,7 @@ export const makeGetNotificationDetailRouter = (
 ): express.Router => {
   const router = express.Router();
 
-  router.post('/delivery/notifications/sent/:iun', toExpressHandler(handler(getNotificationDetailUseCase)));
+  router.get('/delivery/notifications/sent/:iun', toExpressHandler(handler(getNotificationDetailUseCase)));
 
   return router;
 };
