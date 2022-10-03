@@ -171,8 +171,6 @@ export const consumeEventStreamResponse = {
       eventId: '0',
       timestamp: aDate,
       notificationRequestId: notificationId.valid,
-      iun: undefined,
-      newStatus: undefined,
     },
   ],
 };

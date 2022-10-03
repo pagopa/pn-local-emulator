@@ -42,9 +42,9 @@ pipe(
     );
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(
       2, // TODO: numberOfWaitingBeforeComplete move this value into configuration
-      consumeEventStreamRepository,
       newNotificationRepository,
-      checkNotificationStatusRepository
+      checkNotificationStatusRepository,
+      consumeEventStreamRepository
     );
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
 

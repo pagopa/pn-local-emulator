@@ -7,22 +7,19 @@ import { authorizeApiKey } from '../domain/authorize';
 import {
   ConsumeEventStreamRecord,
   ConsumeEventStreamRecordRepository,
-  getProgressResponseList,
-  makeProgressResponseElement,
+  makeProgressResponse,
 } from '../domain/ConsumeEventStreamRecordRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
-import { getNotifications, NewNotificationRepository } from '../domain/NewNotificationRepository';
-import {
-  CheckNotificationStatusRecordRepository,
-  getNotificationStatusList,
-} from '../domain/CheckNotificationStatusRepository';
+import { NewNotificationRepository } from '../domain/NewNotificationRepository';
+import { CheckNotificationStatusRecordRepository } from '../domain/CheckNotificationStatusRepository';
+import { makeDatabase } from '../domain/Database';
 
 export const ConsumeEventStreamUseCase =
   (
     numberOfWaitingBeforeComplete: number,
-    consumeEventStreamRepository: ConsumeEventStreamRecordRepository,
-    newNotificationRecordRepository: NewNotificationRepository,
-    checkNotificationStatusRecordRepository: CheckNotificationStatusRecordRepository,
+    createNotificationRequestRecordRepository: NewNotificationRepository,
+    findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository,
+    consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository,
     nowDate: () => Date = () => new Date(),
     iunGenerator: () => string = crypto.randomUUID
   ) =>
@@ -33,13 +30,14 @@ export const ConsumeEventStreamUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(makeProgressResponseElement(numberOfWaitingBeforeComplete, nowDate, iunGenerator)),
-          TE.ap(pipe(checkNotificationStatusRecordRepository.list(), TE.map(getNotificationStatusList))),
-          TE.ap(pipe(consumeEventStreamRepository.list(), TE.map(getProgressResponseList))),
-          TE.map(RA.map),
-          TE.ap(pipe(newNotificationRecordRepository.list(), TE.map(getNotifications))),
+          TE.of(makeDatabase(numberOfWaitingBeforeComplete, iunGenerator)),
+          TE.ap(createNotificationRequestRecordRepository.list()),
+          TE.ap(findNotificationRequestRecordRepository.list()),
+          TE.ap(consumeEventStreamRecordRepository.list()),
           TE.map(
             flow(
+              // create ProgressResponse
+              makeProgressResponse(nowDate()),
               // override the eventId to create a simple cursor based pagination
               RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
               RA.filterWithIndex((i) => i > parseInt(lastEventId || '-1', 10)),
@@ -56,7 +54,7 @@ export const ConsumeEventStreamUseCase =
           output,
         }))
       ),
-      TE.chain(consumeEventStreamRepository.insert),
+      TE.chain(consumeEventStreamRecordRepository.insert),
       TE.map(({ output }) => output)
     );
 
