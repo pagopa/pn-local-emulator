@@ -16,7 +16,7 @@ import { makeDatabase } from '../domain/Database';
 
 export const ConsumeEventStreamUseCase =
   (
-    numberOfWaitingBeforeComplete: number,
+    occurencesAfterComplete: number,
     createNotificationRequestRecordRepository: NewNotificationRepository,
     findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository,
     consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository,
@@ -30,7 +30,7 @@ export const ConsumeEventStreamUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(makeDatabase(numberOfWaitingBeforeComplete, iunGenerator)),
+          TE.of(makeDatabase(occurencesAfterComplete, iunGenerator)),
           TE.ap(createNotificationRequestRecordRepository.list()),
           TE.ap(findNotificationRequestRecordRepository.list()),
           TE.ap(consumeEventStreamRecordRepository.list()),
