@@ -12,7 +12,7 @@ import {
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRepository } from '../domain/NewNotificationRepository';
 import { CheckNotificationStatusRecordRepository } from '../domain/CheckNotificationStatusRepository';
-import { makeDatabase } from '../domain/Database';
+import { computeSnapshot } from '../domain/Snapshot';
 
 export const ConsumeEventStreamUseCase =
   (
@@ -30,7 +30,7 @@ export const ConsumeEventStreamUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(makeDatabase(occurencesAfterComplete, iunGenerator)),
+          TE.of(computeSnapshot(occurencesAfterComplete, iunGenerator)),
           TE.ap(createNotificationRequestRecordRepository.list()),
           TE.ap(findNotificationRequestRecordRepository.list()),
           TE.ap(consumeEventStreamRecordRepository.list()),

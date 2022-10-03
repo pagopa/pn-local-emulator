@@ -12,9 +12,9 @@ import {
 import { NewNotificationRepository } from '../domain/NewNotificationRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { ConsumeEventStreamRecordRepository } from '../domain/ConsumeEventStreamRecordRepository';
-import { Database, makeDatabase } from '../domain/Database';
+import { Snapshot, computeSnapshot } from '../domain/Snapshot';
 
-const findFromDatabase = (input: CheckNotificationStatusRecord['input']) => (db: Database) =>
+const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db: Snapshot) =>
   pipe(
     db,
     RA.findFirst(
@@ -41,13 +41,13 @@ export const CheckNotificationStatusUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(makeDatabase(occurencesAfterComplete, iunGenerator)),
+          TE.of(computeSnapshot(occurencesAfterComplete, iunGenerator)),
           TE.ap(createNotificationRequestRecordRepository.list()),
           TE.ap(findNotificationRequestRecordRepository.list()),
           TE.ap(consumeEventStreamRecordRepository.list()),
           TE.map(
             flow(
-              findFromDatabase(input),
+              findFromSnapshot(input),
               O.map(
                 E.fold(
                   (nr) => ({ ...nr, notificationRequestStatus: 'WAITING' }),

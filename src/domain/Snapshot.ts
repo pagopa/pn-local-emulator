@@ -8,13 +8,14 @@ import { NewNotificationRecord } from './NewNotificationRepository';
 import { makeNotificationRequestFromCreate, NotificationRequest } from './NotificationRequest';
 import { makeNotification, Notification } from './Notification';
 
-export type Database = ReadonlyArray<E.Either<NotificationRequest, Notification>>;
+export type Snapshot = ReadonlyArray<E.Either<NotificationRequest, Notification>>;
 
-export const makeDatabase =
+// TODO: Use the State monad
+export const computeSnapshot =
   (occurencesAfterComplete: number, iunGenerator: () => string) =>
   (createNotificationRequestRecord: ReadonlyArray<NewNotificationRecord>) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
-  (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>): Database =>
+  (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>): Snapshot =>
     pipe(
       // create all the NotificationRequest
       createNotificationRequestRecord,
