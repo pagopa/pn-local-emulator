@@ -55,6 +55,7 @@ pipe(
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(
       numberOfWaitingBeforeComplete,
+      'senderPaId', // TODO: senderPAId move this value into configuration
       getNotificationDetailRepository,
       newNotificationRepository,
       checkNotificationStatusRepository,
