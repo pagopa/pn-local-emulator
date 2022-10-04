@@ -1,4 +1,3 @@
-import * as O from 'fp-ts/Option';
 import {
   NewNotificationRequest,
   NotificationFeePolicyEnum,
