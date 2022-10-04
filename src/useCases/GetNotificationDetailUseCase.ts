@@ -20,6 +20,7 @@ import { ConsumeEventStreamRecordRepository } from '../domain/ConsumeEventStream
 export const GetNotificationDetailUseCase =
   (
     occurrencesAfterComplete: number,
+    senderPAId: string,
     repository: GetNotificationDetailRecordRepository,
     createNotificationRequestRecordRepository: NewNotificationRepository,
     findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository,
@@ -38,7 +39,7 @@ export const GetNotificationDetailUseCase =
           TE.ap(consumeEventStreamRecordRepository.list()),
           TE.map(RA.filterMap(O.fromEither)),
           TE.map(RA.findFirstMap((notification) => (notification.iun === iun ? O.some(notification) : O.none))),
-          TE.map(O.map(makeFullSentNotification)),
+          TE.map(O.map(makeFullSentNotification(senderPAId)(new Date()))), // TODO
           TE.map(O.map((response) => ({ returned: response, statusCode: 200 as const }))),
           TE.map(O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined })))
         )
