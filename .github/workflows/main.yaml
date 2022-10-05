@@ -41,38 +41,23 @@ jobs:
       - name: Execute tests
         run: npm test
 
-  container:
+  build-container:
     name: Build container image
     needs: build
     runs-on: ubuntu-latest
+    env:
+      image_tag: ${{ github.repository }}:${{ github.sha }}
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Login to GitHub Package
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.CONTAINER_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.CONTAINER_REGISTRY }}/${{ github.repository }}
-
       - name: Build and export image
         uses: docker/build-push-action@v3
         with:
-          context: .
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.image_tag }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.7.1
         with:
-          image-ref: ${{ steps.meta.outputs.tags }}
+          image-ref: ${{ env.image_tag }}
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
