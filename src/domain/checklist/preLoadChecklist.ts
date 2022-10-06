@@ -10,11 +10,11 @@ export const check0 = {
   eval: RA.some((record: PreLoadRecord) => record.output.statusCode === 403),
 };
 export const check1 = {
-  name: 'Contains an api-key',
+  name: 'Exists a request that contains an api-key',
   eval: RA.some((record: PreLoadRecord) => pipe(record.input.apiKey, O.fromNullable, O.isSome)),
 };
 export const check2 = {
-  name: 'preloadIdx values are unique within the body',
+  name: 'Exists a request whose preloadIdx values are unique within the body',
   eval: RA.some((record: PreLoadRecord) =>
     pipe(
       record.input.body,
@@ -25,7 +25,7 @@ export const check2 = {
   ),
 };
 export const check3 = {
-  name: "contentType is always 'application/pdf'",
+  name: "Exists a request whose contentType are always 'application/pdf'",
   eval: RA.some((record: PreLoadRecord) =>
     pipe(
       record.input.body,
