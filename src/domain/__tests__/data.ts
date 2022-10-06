@@ -10,6 +10,7 @@ import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
 import { makeNewNotificationRecord } from '../NewNotificationRepository';
 import { PreLoadRecord } from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
+import { makeFullSentNotification } from '../GetNotificationDetailRepository';
 
 export const apiKey = {
   valid: 'key-value',
@@ -35,7 +36,9 @@ export const streamId = {
   valid: 'streamId',
 };
 
-export const aDate = new Date();
+export const aDate = new Date(0);
+
+export const aSenderPaId = 'aSenderPaId';
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
@@ -77,7 +80,6 @@ export const newNotificationRecord = makeNewNotificationRecord({
   output: {
     statusCode: 202,
     returned: {
-      idempotenceToken: undefined,
       paProtocolNumber: paProtocolNumber.valid,
       notificationRequestId: notificationId.valid,
     },
@@ -105,7 +107,6 @@ export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
     statusCode: 200,
     returned: {
       ...newNotificationRecord.input.body,
-      idempotenceToken: undefined,
       paProtocolNumber: paProtocolNumber.valid,
       notificationRequestId: notificationId.valid,
       notificationRequestStatus: 'WAITING',
@@ -120,7 +121,6 @@ export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecor
     statusCode: 200,
     returned: {
       ...newNotificationRecord.input.body,
-      idempotenceToken: undefined,
       paProtocolNumber: paProtocolNumber.valid,
       notificationRequestId: notificationId.valid,
       notificationRequestStatus: 'ACCEPTED',
@@ -191,3 +191,8 @@ export const consumeEventStreamRecordDelivered = {
     })),
   },
 };
+
+export const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
+  ...newNotificationRequest,
+  notificationRequestId: notificationId.valid,
+})(aIun.valid);

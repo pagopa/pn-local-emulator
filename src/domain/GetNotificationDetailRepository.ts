@@ -9,6 +9,7 @@ import { TimelineElement } from '../generated/definitions/TimelineElement';
 import { Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { Notification } from './Notification';
+import { NotificationRequest } from './NotificationRequest';
 
 export type GetNotificationDetailRecord = {
   type: 'GetNotificationDetailRecord';
@@ -38,19 +39,14 @@ const makeTimelineElement = (elementId: string): TimelineElement => ({
 export const makeFullSentNotification =
   (senderPaId: string) =>
   (sentAt: Date) =>
-  (notification: Notification): FullSentNotification => ({
+  (notification: NotificationRequest) =>
+  (iun: string): FullSentNotification => ({
+    iun,
     ...notification,
     sentAt,
-    // https://pagopa.atlassian.net/browse/VL-99
     notificationStatus: NotificationStatusEnum.ACCEPTED,
-    // https://pagopa.atlassian.net/browse/VL-102
-    notificationStatusHistory: [
-      makeNotificationStatusHistoryElement(notification.iun, NotificationStatusEnum.ACCEPTED, sentAt),
-    ],
-    // https://pagopa.atlassian.net/browse/VL-100
+    notificationStatusHistory: [makeNotificationStatusHistoryElement(iun, NotificationStatusEnum.ACCEPTED, sentAt)],
     documentsAvailable: true,
-    // https://pagopa.atlassian.net/browse/VL-103
-    timeline: [pipe(notification.iun, makeTimelineElementId, makeTimelineElement)],
-    // https://pagopa.atlassian.net/browse/VL-101
+    timeline: [pipe(iun, makeTimelineElementId, makeTimelineElement)],
     senderPaId,
   });

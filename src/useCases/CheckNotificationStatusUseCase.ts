@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import * as t from 'io-ts';
 import { pipe, flow } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
@@ -13,6 +14,7 @@ import { NewNotificationRepository } from '../domain/NewNotificationRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { ConsumeEventStreamRecordRepository } from '../domain/ConsumeEventStreamRecordRepository';
 import { Snapshot, computeSnapshot } from '../domain/Snapshot';
+import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
 
 const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db: Snapshot) =>
   pipe(
@@ -30,10 +32,12 @@ const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db:
 export const CheckNotificationStatusUseCase =
   (
     occurencesAfterComplete: number,
+    senderPAId: string,
     createNotificationRequestRecordRepository: NewNotificationRepository,
     findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository,
     consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository,
-    iunGenerator: () => string = crypto.randomUUID
+    iunGenerator: () => string = crypto.randomUUID,
+    dateGenerator: () => Date = () => new Date()
   ) =>
   (apiKey: ApiKey) =>
   (input: CheckNotificationStatusRecord['input']): TE.TaskEither<Error, CheckNotificationStatusRecord['output']> =>
@@ -41,7 +45,7 @@ export const CheckNotificationStatusUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(computeSnapshot(occurencesAfterComplete, iunGenerator)),
+          TE.of(computeSnapshot(occurencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
           TE.ap(createNotificationRequestRecordRepository.list()),
           TE.ap(findNotificationRequestRecordRepository.list()),
           TE.ap(consumeEventStreamRecordRepository.list()),
@@ -51,7 +55,10 @@ export const CheckNotificationStatusUseCase =
               O.map(
                 E.fold(
                   (nr) => ({ ...nr, notificationRequestStatus: 'WAITING' }),
-                  (n) => ({ ...n, notificationRequestStatus: 'ACCEPTED' })
+                  (n) =>
+                    t
+                      .exact(NewNotificationRequestStatusResponse)
+                      .encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
                 )
               ),
               O.map((response) => ({ statusCode: 200 as const, returned: response })),

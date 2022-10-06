@@ -34,6 +34,7 @@ pipe(
     const consumeEventStreamRepository = inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]);
 
     const numberOfWaitingBeforeComplete = 2; // TODO: numberOfWaitingBeforeComplete move this value into configuration
+    const senderPaId = 'aSenderPaId'; // TODO: senderPaId move this value into configuration
 
     /* init the use cases */
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
@@ -42,12 +43,14 @@ pipe(
     const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(
       numberOfWaitingBeforeComplete,
+      senderPaId,
       newNotificationRepository,
       checkNotificationStatusRepository,
       consumeEventStreamRepository
     );
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(
       numberOfWaitingBeforeComplete,
+      senderPaId,
       newNotificationRepository,
       checkNotificationStatusRepository,
       consumeEventStreamRepository
@@ -55,7 +58,7 @@ pipe(
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(
       numberOfWaitingBeforeComplete,
-      'senderPaId', // TODO: senderPAId move this value into configuration
+      senderPaId,
       getNotificationDetailRepository,
       newNotificationRepository,
       checkNotificationStatusRepository,

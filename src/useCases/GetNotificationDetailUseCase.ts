@@ -25,7 +25,8 @@ export const GetNotificationDetailUseCase =
     createNotificationRequestRecordRepository: NewNotificationRepository,
     findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository,
     consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository,
-    iunGenerator: () => string = crypto.randomUUID
+    iunGenerator: () => string = crypto.randomUUID,
+    dateGenerator: () => Date = () => new Date()
   ) =>
   (apiKey: ApiKey) =>
   (iun: Iun): TE.TaskEither<Error, GetNotificationDetailRecord['output']> =>
@@ -33,13 +34,12 @@ export const GetNotificationDetailUseCase =
       authorizeApiKey(apiKey),
       E.map((_) =>
         pipe(
-          TE.of(computeSnapshot(occurrencesAfterComplete, iunGenerator)),
+          TE.of(computeSnapshot(occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
           TE.ap(createNotificationRequestRecordRepository.list()),
           TE.ap(findNotificationRequestRecordRepository.list()),
           TE.ap(consumeEventStreamRecordRepository.list()),
           TE.map(RA.filterMap(O.fromEither)),
           TE.map(RA.findFirstMap((notification) => (notification.iun === iun ? O.some(notification) : O.none))),
-          TE.map(O.map(makeFullSentNotification(senderPAId)(new Date()))), // TODO Get the timestamp when the create notification event has been registered
           TE.map(O.map((response) => ({ returned: response, statusCode: 200 as const }))),
           TE.map(O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined })))
         )

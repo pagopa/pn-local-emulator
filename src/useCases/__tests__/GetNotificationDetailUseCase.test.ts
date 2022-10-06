@@ -10,13 +10,12 @@ import { GetNotificationDetailRecord } from '../../domain/GetNotificationDetailR
 
 const logger = makeLogger();
 const numberOfWaitingBeforeComplete = 2;
-const senderPaId = 'aSenderPaId';
 
 describe('GetNotificationDetailUseCase', () => {
   it('should return 404', async () => {
     const useCase = GetNotificationDetailUseCase(
       numberOfWaitingBeforeComplete,
-      senderPaId,
+      data.aSenderPaId,
       inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
       inMemory.makeRepository(logger)<NewNotificationRecord>([]),
       inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
@@ -24,6 +23,30 @@ describe('GetNotificationDetailUseCase', () => {
     );
 
     const expected = E.right({ statusCode: 404, returned: undefined });
+    const actual = await useCase(data.apiKey.valid)(data.aIun.valid)();
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  it('should return 200', async () => {
+    const useCase = GetNotificationDetailUseCase(
+      numberOfWaitingBeforeComplete,
+      data.aSenderPaId,
+      inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
+      inMemory.makeRepository(logger)<NewNotificationRecord>([
+        data.newNotificationRecord,
+        data.newNotificationRecordWithIdempotenceToken,
+      ]),
+      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([
+        data.checkNotificationStatusRecord,
+        data.checkNotificationStatusRecordAccepted,
+      ]),
+      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]),
+      () => data.aIun.valid,
+      () => data.aDate
+    );
+
+    const expected = E.right({ statusCode: 200, returned: data.acceptedNotification });
     const actual = await useCase(data.apiKey.valid)(data.aIun.valid)();
 
     expect(actual).toStrictEqual(expected);

@@ -11,7 +11,7 @@ export type Snapshot = ReadonlyArray<E.Either<NotificationRequest, Notification>
 
 // TODO: Use the State monad
 export const computeSnapshot =
-  (occurrencesAfterComplete: number, iunGenerator: () => string) =>
+  (occurrencesAfterComplete: number, senderPaId: string, iunGenerator: () => string, dateGenerator: () => Date) =>
   (createNotificationRequestRecord: ReadonlyArray<NewNotificationRecord>) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
   (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>): Snapshot =>
@@ -23,9 +23,12 @@ export const computeSnapshot =
       RA.map((notificationRequest) =>
         pipe(
           notificationRequest,
-          makeNotification(occurrencesAfterComplete, iunGenerator)(findNotificationRequestRecord)(
-            consumeEventStreamRecord
-          ),
+          makeNotification(
+            occurrencesAfterComplete,
+            senderPaId,
+            iunGenerator(),
+            dateGenerator()
+          )(findNotificationRequestRecord)(consumeEventStreamRecord),
           E.fromOption(() => notificationRequest)
         )
       )
