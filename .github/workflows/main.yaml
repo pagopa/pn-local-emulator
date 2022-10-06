@@ -60,7 +60,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.7.1
         with:
           image-ref: ${{ env.image_tag }}
-          format: 'template'
+          format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
           security-checks: 'vuln,secret,config'
