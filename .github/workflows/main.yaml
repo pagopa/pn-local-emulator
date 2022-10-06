@@ -1,0 +1,98 @@
+name: CI/CD
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: '*'
+
+env:
+  CONTAINER_REGISTRY: ghcr.io
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains two jobs named "build" and "container"
+  build:
+    name: Compile and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.node-version'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate code
+        run: npm run generate
+
+      - name: Compile
+        run: npm run compile
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Execute tests
+        run: npm test
+
+  build-container:
+    name: Build container image
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      image_tag: ${{ github.repository }}:${{ github.sha }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build container image
+        uses: docker/build-push-action@v3
+        with:
+          tags: ${{ env.image_tag }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.7.1
+        with:
+          image-ref: ${{ env.image_tag }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          security-checks: 'vuln,secret,config'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  deliver:
+    name: Build and push container image
+    needs: build-container
+    # This job is trigger only on new tags
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to GitHub Package
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.CONTAINER_REGISTRY }}/${{ github.repository }}
+
+      - name: Build and push container image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
