@@ -9,7 +9,6 @@ import { Iun } from '../generated/definitions/Iun';
 import {
   GetNotificationDetailRecord,
   GetNotificationDetailRecordRepository,
-  makeFullSentNotification,
 } from '../domain/GetNotificationDetailRepository';
 import { authorizeApiKey } from '../domain/authorize';
 import { computeSnapshot } from '../domain/Snapshot';

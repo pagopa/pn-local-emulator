@@ -8,7 +8,6 @@ import { TimelineElementCategoryEnum } from '../generated/definitions/TimelineEl
 import { TimelineElement } from '../generated/definitions/TimelineElement';
 import { Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { Notification } from './Notification';
 import { NotificationRequest } from './NotificationRequest';
 
 export type GetNotificationDetailRecord = {
