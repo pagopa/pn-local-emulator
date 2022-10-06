@@ -61,7 +61,6 @@ jobs:
         with:
           image-ref: ${{ env.image_tag }}
           format: 'template'
-          template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
           security-checks: 'vuln,secret,config'
