@@ -38,10 +38,10 @@ const makeTimelineElement = (elementId: string): TimelineElement => ({
 export const makeFullSentNotification =
   (senderPaId: string) =>
   (sentAt: Date) =>
-  (notification: NotificationRequest) =>
+  (notificationRequest: NotificationRequest) =>
   (iun: string): FullSentNotification => ({
+    ...notificationRequest,
     iun,
-    ...notification,
     sentAt,
     notificationStatus: NotificationStatusEnum.ACCEPTED,
     notificationStatusHistory: [makeNotificationStatusHistoryElement(iun, NotificationStatusEnum.ACCEPTED, sentAt)],
