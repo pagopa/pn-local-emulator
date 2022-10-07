@@ -20,10 +20,8 @@ const makeNotificationFromFind =
         : O.none,
       O.filter((e) => e.notificationRequestId === notificationRequest.notificationRequestId),
       O.filterMap((e) => O.fromNullable(e.iun)),
-      O.map((iun) => ({
-        ...notificationRequest,
-        ...makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)(iun),
-      }))
+      O.map(makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)),
+      O.map((full) => ({ ...notificationRequest, ...full }))
     );
 
 const makeNotificationFromConsume =
@@ -33,10 +31,8 @@ const makeNotificationFromConsume =
       getProgressResponseList([consumeEventStreamRecord]),
       RA.findLast((e) => e.notificationRequestId === notificationRequest.notificationRequestId),
       O.filterMap((e) => O.fromNullable(e.iun)),
-      O.map((iun) => ({
-        ...notificationRequest,
-        ...makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)(iun),
-      }))
+      O.map(makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)),
+      O.map((full) => ({ ...notificationRequest, ...full }))
     );
 
 const countFromFind = (notificationRequestId: string) =>

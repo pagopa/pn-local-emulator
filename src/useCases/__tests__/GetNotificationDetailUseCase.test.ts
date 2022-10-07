@@ -46,7 +46,7 @@ describe('GetNotificationDetailUseCase', () => {
       () => data.aDate
     );
 
-    const expected = E.right({ statusCode: 200, returned: data.acceptedNotification });
+    const expected = E.right(data.getNotificationDetailRecordAccepted.output);
     const actual = await useCase(data.apiKey.valid)(data.aIun.valid)();
 
     expect(actual).toStrictEqual(expected);

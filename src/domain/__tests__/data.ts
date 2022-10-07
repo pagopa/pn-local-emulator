@@ -10,7 +10,7 @@ import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
 import { makeNewNotificationRecord } from '../NewNotificationRepository';
 import { PreLoadRecord } from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
-import { makeFullSentNotification } from '../GetNotificationDetailRepository';
+import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
 
 export const apiKey = {
   valid: 'key-value',
@@ -192,7 +192,15 @@ export const consumeEventStreamRecordDelivered = {
   },
 };
 
-export const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
+// GetNotificationDetailRecord /////////////////////////////////////////////////
+
+const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
   ...newNotificationRequest,
   notificationRequestId: notificationId.valid,
 })(aIun.valid);
+
+export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = {
+  type: 'GetNotificationDetailRecord',
+  input: { apiKey: apiKey.valid, iun: aIun.valid },
+  output: { statusCode: 200, returned: acceptedNotification },
+};
