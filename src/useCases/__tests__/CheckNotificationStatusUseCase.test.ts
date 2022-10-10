@@ -14,6 +14,7 @@ describe('CheckNotificationStatusUseCase', () => {
   it('should return 404', async () => {
     const useCase = CheckNotificationStatusUseCase(
       numberOfWaitingBeforeComplete,
+      data.aSenderPaId,
       inMemory.makeRepository(logger)<NewNotificationRecord>([]),
       inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
       inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
@@ -29,6 +30,7 @@ describe('CheckNotificationStatusUseCase', () => {
   it('should return 200 given the notificationId', async () => {
     const useCase = CheckNotificationStatusUseCase(
       numberOfWaitingBeforeComplete,
+      data.aSenderPaId,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
@@ -47,6 +49,7 @@ describe('CheckNotificationStatusUseCase', () => {
   it('should return 200 given the paProtocolNumber', async () => {
     const useCase = CheckNotificationStatusUseCase(
       numberOfWaitingBeforeComplete,
+      data.aSenderPaId,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
@@ -65,6 +68,7 @@ describe('CheckNotificationStatusUseCase', () => {
   it('should return 200 given the paProtocolNumber and idempotenceToken', async () => {
     const useCase = CheckNotificationStatusUseCase(
       numberOfWaitingBeforeComplete,
+      data.aSenderPaId,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,
@@ -86,6 +90,7 @@ describe('CheckNotificationStatusUseCase', () => {
   it('should return the status ACCEPTED after reaching the threshold limit', async () => {
     const useCase = CheckNotificationStatusUseCase(
       numberOfWaitingBeforeComplete,
+      data.aSenderPaId,
       inMemory.makeRepository(logger)<NewNotificationRecord>([
         data.newNotificationRecord,
         data.newNotificationRecordWithIdempotenceToken,

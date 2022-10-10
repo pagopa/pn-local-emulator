@@ -1,36 +1,38 @@
 import { pipe, flow } from 'fp-ts/function';
-import * as M from 'fp-ts/Monoid';
 import * as n from 'fp-ts/number';
+import * as M from 'fp-ts/Monoid';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
+import { Iun } from '../generated/definitions/Iun';
+import { FullSentNotification } from '../generated/definitions/FullSentNotification';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRepository';
 import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecordRepository';
 import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
+import { makeFullSentNotification } from './GetNotificationDetailRepository';
 
-// TODO: Use generated model of FullNotification
-export type Notification = NotificationRequest & Required<Pick<NewNotificationRequestStatusResponse, 'iun'>>;
+export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 
-const makeNotificationFromFind =
-  (notificationRequest: NotificationRequest) =>
-  (findNotificationRequestRecord: CheckNotificationStatusRecord): O.Option<Notification> =>
+const mkNotification = (notificationRequest: NotificationRequest, sentAt: Date, senderPaId: string, iun: Iun) => ({
+  ...makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)(iun),
+  ...notificationRequest,
+});
+
+const getIunFromFind =
+  (notificationRequest: NotificationRequest) => (findNotificationRequestRecord: CheckNotificationStatusRecord) =>
     pipe(
       findNotificationRequestRecord.output.statusCode === 200
         ? O.some(findNotificationRequestRecord.output.returned)
         : O.none,
       O.filter((e) => e.notificationRequestId === notificationRequest.notificationRequestId),
-      O.filterMap((e) => O.fromNullable(e.iun)),
-      O.map((iun) => ({ ...notificationRequest, iun }))
+      O.filterMap((e) => O.fromNullable(e.iun))
     );
 
-const makeNotificationFromConsume =
-  (notificationRequest: NotificationRequest) =>
-  (consumeEventStreamRecord: ConsumeEventStreamRecord): O.Option<Notification> =>
+const getIunFromConsume =
+  (notificationRequest: NotificationRequest) => (consumeEventStreamRecord: ConsumeEventStreamRecord) =>
     pipe(
       getProgressResponseList([consumeEventStreamRecord]),
       RA.findLast((e) => e.notificationRequestId === notificationRequest.notificationRequestId),
-      O.filterMap((e) => O.fromNullable(e.iun)),
-      O.map((iun) => ({ ...notificationRequest, iun }))
+      O.filterMap((e) => O.fromNullable(e.iun))
     );
 
 const countFromFind = (notificationRequestId: string) =>
@@ -51,16 +53,19 @@ const countFromConsume = (notificationRequestId: string) =>
  * Compose a NotificationRequest starting from a list of records
  */
 export const makeNotification =
-  (occurrencesAfterComplete: number, iunGenerator: () => string) =>
+  (occurrencesAfterComplete: number, senderPaId: string, iun: string, sentAt: Date) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
   (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>) =>
   (notificationRequest: NotificationRequest): O.Option<Notification> =>
     pipe(
+      // get iun from find records
+      pipe(findNotificationRequestRecord, RA.findLastMap(getIunFromFind(notificationRequest))),
+      // get iun from consume records
+      O.alt(() => pipe(consumeEventStreamRecord, RA.findLastMap(getIunFromConsume(notificationRequest)))),
+      // create Notification from iun if any
+      O.map((iun) => mkNotification(notificationRequest, sentAt, senderPaId, iun)),
       // try to create notification from find records
-      pipe(findNotificationRequestRecord, RA.findLastMap(makeNotificationFromFind(notificationRequest))),
-      // try to create notification from create records
-      O.alt(() => pipe(consumeEventStreamRecord, RA.findLastMap(makeNotificationFromConsume(notificationRequest)))),
-      // if none then create a new notification based on occurrences
+      // if no iun was found then create a new notification based on occurrences counter
       O.alt(() =>
         pipe(
           M.concatAll(n.MonoidSum)([
@@ -68,7 +73,9 @@ export const makeNotification =
             pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
           ]),
           (occurrences) =>
-            occurrences >= occurrencesAfterComplete ? O.some({ ...notificationRequest, iun: iunGenerator() }) : O.none
+            occurrences >= occurrencesAfterComplete
+              ? O.some(mkNotification(notificationRequest, sentAt, senderPaId, iun))
+              : O.none
         )
       )
     );

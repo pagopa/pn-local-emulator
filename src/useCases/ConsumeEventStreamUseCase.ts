@@ -17,6 +17,7 @@ import { computeSnapshot } from '../domain/Snapshot';
 export const ConsumeEventStreamUseCase =
   (
     occurencesAfterComplete: number,
+    senderPAId: string,
     createNotificationRequestRecordRepository: NewNotificationRepository,
     findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository,
     consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository,
@@ -30,7 +31,7 @@ export const ConsumeEventStreamUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(computeSnapshot(occurencesAfterComplete, iunGenerator)),
+          TE.of(computeSnapshot(occurencesAfterComplete, senderPAId, iunGenerator, nowDate)),
           TE.ap(createNotificationRequestRecordRepository.list()),
           TE.ap(findNotificationRequestRecordRepository.list()),
           TE.ap(consumeEventStreamRecordRepository.list()),

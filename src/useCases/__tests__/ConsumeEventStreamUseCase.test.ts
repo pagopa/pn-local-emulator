@@ -17,6 +17,7 @@ describe('ConsumeEventStreamUseCase', () => {
     it('should return empty array', async () => {
       const useCase = ConsumeEventStreamUseCase(
         numberOfWaitingBeforeComplete,
+        data.aSenderPaId,
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>([]),
         inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([])
@@ -29,6 +30,7 @@ describe('ConsumeEventStreamUseCase', () => {
     it('should return waiting status', async () => {
       const useCase = ConsumeEventStreamUseCase(
         numberOfWaitingBeforeComplete,
+        data.aSenderPaId,
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>([data.newNotificationRecord]),
         inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([]),
@@ -43,6 +45,7 @@ describe('ConsumeEventStreamUseCase', () => {
     it('should return delivery status after reaching the threshold limit', async () => {
       const useCase = ConsumeEventStreamUseCase(
         numberOfWaitingBeforeComplete,
+        data.aSenderPaId,
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>([data.newNotificationRecord]),
         inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([
@@ -60,6 +63,7 @@ describe('ConsumeEventStreamUseCase', () => {
     it('should return last delivered response if any', async () => {
       const useCase = ConsumeEventStreamUseCase(
         numberOfWaitingBeforeComplete,
+        data.aSenderPaId,
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>([data.newNotificationRecord]),
         inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([
@@ -91,6 +95,7 @@ describe('ConsumeEventStreamUseCase', () => {
       );
       const useCase = ConsumeEventStreamUseCase(
         numberOfWaitingBeforeComplete,
+        data.aSenderPaId,
         inMemory.makeRepository(makeLogger())<NewNotificationRecord>(records),
         inMemory.makeRepository(makeLogger())<CheckNotificationStatusRecord>([]),
         inMemory.makeRepository(makeLogger())<ConsumeEventStreamRecord>([]),
