@@ -12,7 +12,7 @@ import { makeFullSentNotification } from './GetNotificationDetailRepository';
 
 export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 
-export const make = (notificationRequest: NotificationRequest, sentAt: Date, senderPaId: string, iun: Iun) => ({
+const mkNotification = (notificationRequest: NotificationRequest, sentAt: Date, senderPaId: string, iun: Iun) => ({
   ...makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)(iun),
   ...notificationRequest,
 });
@@ -63,7 +63,7 @@ export const makeNotification =
       // get iun from consume records
       O.alt(() => pipe(consumeEventStreamRecord, RA.findLastMap(getIunFromConsume(notificationRequest)))),
       // create Notification from iun if any
-      O.map((iun) => make(notificationRequest, sentAt, senderPaId, iun)),
+      O.map((iun) => mkNotification(notificationRequest, sentAt, senderPaId, iun)),
       // try to create notification from find records
       // if no iun was found then create a new notification based on occurrences counter
       O.alt(() =>
@@ -74,7 +74,7 @@ export const makeNotification =
           ]),
           (occurrences) =>
             occurrences >= occurrencesAfterComplete
-              ? O.some(make(notificationRequest, sentAt, senderPaId, iun))
+              ? O.some(mkNotification(notificationRequest, sentAt, senderPaId, iun))
               : O.none
         )
       )
