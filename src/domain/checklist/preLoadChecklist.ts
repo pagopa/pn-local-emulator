@@ -25,7 +25,7 @@ export const check2 = {
   ),
 };
 export const check3 = {
-  name: "Exists a request whose contentType are always 'application/pdf'",
+  name: "Exists a request whose contentType is always 'application/pdf'",
   eval: RA.some((record: PreLoadRecord) =>
     pipe(
       record.input.body,
