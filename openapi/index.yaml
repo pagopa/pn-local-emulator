@@ -756,6 +756,8 @@ components:
           type: string
           description: Denominazione paese estero
       description: Indirizzo fisico scoperto durante fase di consegna
+    NotificationAttachmentDownloadMetadataResponse:
+      $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/f1845e78c4d93f164d79f841ab92cd980c2c3125/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationAttachmentDownloadMetadataResponse'
 
   responses:
     200UploadS3Response:
