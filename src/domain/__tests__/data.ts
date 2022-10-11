@@ -15,7 +15,6 @@ import {
   GetNotificationDocumentMetadataRecord,
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
-import { NewNotificationResponse } from '../../generated/definitions/NewNotificationResponse';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
 
 export const apiKey = {
@@ -46,7 +45,7 @@ export const aDate = new Date(0);
 
 export const aSenderPaId = 'aSenderPaId';
 
-const aDocument: FullSentNotification['documents'][0] = {
+const aDocument0: FullSentNotification['documents'][0] = {
   docIdx: '0',
   digests: {
     sha256: 'aSha256',
@@ -57,6 +56,11 @@ const aDocument: FullSentNotification['documents'][0] = {
     versionToken: '123',
   },
 };
+
+const aDocument1 = {
+  ...aDocument0,
+  docIdx: undefined,
+}
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
@@ -88,7 +92,7 @@ const newNotificationRequest: NewNotificationRequest = {
   paProtocolNumber: paProtocolNumber.valid,
   subject: 'subject',
   recipients: [],
-  documents: [aDocument],
+  documents: [aDocument0, aDocument1],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
   physicalCommunicationType: PhysicalCommunicationTypeEnum.SIMPLE_REGISTERED_LETTER,
 };
@@ -225,10 +229,14 @@ export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = 
 
 // GetNotificationDocumentMetadataRecord //////////////////////////////////////
 
-const notificationAttachmentDownloadMetadataResponse = makeNotificationAttachmentDownloadMetadataResponse(aDocument);
-
-export const getNotificationDocumentMetadataRecord: GetNotificationDocumentMetadataRecord = {
+export const getNotificationDocumentMetadataRecord0: GetNotificationDocumentMetadataRecord = {
   type: 'GetNotificationDocumentMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 0 },
-  output: { statusCode: 200, returned: notificationAttachmentDownloadMetadataResponse },
+  output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(aDocument0) },
+};
+
+export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMetadataRecord = {
+  type: 'GetNotificationDocumentMetadataRecord',
+  input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 1 },
+  output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(aDocument1) },
 };

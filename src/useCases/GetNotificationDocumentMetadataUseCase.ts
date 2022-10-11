@@ -43,9 +43,10 @@ export const GetNotificationDocumentMetadataUseCase =
             flow(
               RA.filterMap(O.fromEither),
               RA.chain((notification) => (notification.iun === iun ? notification.documents : RA.empty)),
-              // the types of docIdx doens't fit (one is string the other is a number)
+              // the types of docIdx don't fit (one is a string the other is a number)
               // for the moment just convert the most convenient
-              RA.findFirst((document) => document.docIdx === docIdx.toString()),
+              RA.filterWithIndex((i, document) => (document.docIdx || i.toString()) === docIdx.toString()),
+              RA.last,
               O.map(makeNotificationAttachmentDownloadMetadataResponse),
               O.map((document) => ({ statusCode: 200 as const, returned: document })),
               O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
