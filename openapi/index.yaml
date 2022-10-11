@@ -166,7 +166,6 @@ components:
     NotificationDocument:
       description: >-
         Un documento da notifcare
-      type: object
       allOf:
         - $ref: "#/components/schemas/NotificationAttachment"
         - type: object
