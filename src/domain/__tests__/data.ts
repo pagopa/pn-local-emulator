@@ -11,6 +11,9 @@ import { makeNewNotificationRecord } from '../NewNotificationRepository';
 import { PreLoadRecord } from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
+import { GetNotificationDocumentMetadataRecord, makeNotificationAttachmentDownloadMetadataResponse } from '../GetNotificationDocumentMetadataRepository';
+import { NewNotificationResponse } from '../../generated/definitions/NewNotificationResponse';
+import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
 
 export const apiKey = {
   valid: 'key-value',
@@ -39,6 +42,18 @@ export const streamId = {
 export const aDate = new Date(0);
 
 export const aSenderPaId = 'aSenderPaId';
+
+const aDocument: FullSentNotification['documents'][0] = {
+  docIdx: '0',
+  digests: {
+    sha256: 'aSha256'
+  },
+  contentType: 'application/pdf',
+  ref: {
+    key: 'key',
+    versionToken: '123',
+  },
+};
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
@@ -70,7 +85,7 @@ const newNotificationRequest: NewNotificationRequest = {
   paProtocolNumber: paProtocolNumber.valid,
   subject: 'subject',
   recipients: [],
-  documents: [],
+  documents: [aDocument],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
   physicalCommunicationType: PhysicalCommunicationTypeEnum.SIMPLE_REGISTERED_LETTER,
 };
@@ -203,4 +218,14 @@ export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = 
   type: 'GetNotificationDetailRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid },
   output: { statusCode: 200, returned: acceptedNotification },
+};
+
+// GetNotificationDocumentMetadataRecord //////////////////////////////////////
+
+const notificationAttachmentDownloadMetadataResponse = makeNotificationAttachmentDownloadMetadataResponse(aDocument);
+
+export const getNotificationDocumentMetadataRecord: GetNotificationDocumentMetadataRecord = {
+  type: 'GetNotificationDocumentMetadataRecord',
+  input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 0 },
+  output: { statusCode: 200, returned: notificationAttachmentDownloadMetadataResponse },
 };
