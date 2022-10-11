@@ -60,7 +60,7 @@ const aDocument0: FullSentNotification['documents'][0] = {
 const aDocument1 = {
   ...aDocument0,
   docIdx: undefined,
-}
+};
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
 

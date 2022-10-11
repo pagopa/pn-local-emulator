@@ -44,7 +44,7 @@ describe('GetNotificationStatusUseCase', () => {
       inMemory.makeRepository(logger)<GetNotificationDocumentMetadataRecord>([])
     );
     const { apiKey: apiKey0, iun: iun0, docIdx: docIdx0 } = data.getNotificationDocumentMetadataRecord0.input;
-    const { apiKey: apiKey1, iun: iun1, docIdx: docIdx1 } = data.getNotificationDocumentMetadataRecord1.input
+    const { apiKey: apiKey1, iun: iun1, docIdx: docIdx1 } = data.getNotificationDocumentMetadataRecord1.input;
 
     const expected0 = E.right(data.getNotificationDocumentMetadataRecord0.output);
     const actual0 = await useCase(apiKey0)(iun0)(docIdx0)();
