@@ -49,5 +49,4 @@ describe('GetNotificationStatusUseCase', () => {
 
     expect(actual).toStrictEqual(expected);
   });
-
 });

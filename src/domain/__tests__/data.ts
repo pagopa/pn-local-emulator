@@ -11,7 +11,10 @@ import { makeNewNotificationRecord } from '../NewNotificationRepository';
 import { PreLoadRecord } from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
-import { GetNotificationDocumentMetadataRecord, makeNotificationAttachmentDownloadMetadataResponse } from '../GetNotificationDocumentMetadataRepository';
+import {
+  GetNotificationDocumentMetadataRecord,
+  makeNotificationAttachmentDownloadMetadataResponse,
+} from '../GetNotificationDocumentMetadataRepository';
 import { NewNotificationResponse } from '../../generated/definitions/NewNotificationResponse';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
 
@@ -46,7 +49,7 @@ export const aSenderPaId = 'aSenderPaId';
 const aDocument: FullSentNotification['documents'][0] = {
   docIdx: '0',
   digests: {
-    sha256: 'aSha256'
+    sha256: 'aSha256',
   },
   contentType: 'application/pdf',
   ref: {
