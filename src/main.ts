@@ -49,6 +49,7 @@ pipe(
       createNotificationRequestRecordRepository: newNotificationRepository,
       findNotificationRequestRecordRepository: checkNotificationStatusRepository,
       consumeEventStreamRecordRepository: consumeEventStreamRepository,
+      getNotificationDetailRecordRepository: getNotificationDetailRepository,
     };
 
     /* init the use cases */
@@ -59,14 +60,7 @@ pipe(
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
-    const getNotificationDetailUseCase = GetNotificationDetailUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      getNotificationDetailRepository,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository
-    );
+    const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
     const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(
       numberOfWaitingBeforeComplete,
       senderPaId,

@@ -2,6 +2,7 @@ import { IO } from 'fp-ts/IO';
 import { Iun } from '../generated/definitions/Iun';
 import { CheckNotificationStatusRecordRepository } from './CheckNotificationStatusRepository';
 import { ConsumeEventStreamRecordRepository } from './ConsumeEventStreamRecordRepository';
+import { GetNotificationDetailRecordRepository } from './GetNotificationDetailRepository';
 import { NewNotificationRepository } from './NewNotificationRepository';
 
 export type SystemEnv = {
@@ -15,4 +16,5 @@ export type SystemEnv = {
   createNotificationRequestRecordRepository: NewNotificationRepository;
   findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository;
   consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository;
+  getNotificationDetailRecordRepository: GetNotificationDetailRecordRepository;
 };
