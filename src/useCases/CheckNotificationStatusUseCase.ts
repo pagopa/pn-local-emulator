@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import * as t from 'io-ts';
 import { pipe, flow } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
@@ -6,15 +5,11 @@ import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { authorizeApiKey } from '../domain/authorize';
-import {
-  CheckNotificationStatusRecord,
-  CheckNotificationStatusRecordRepository,
-} from '../domain/CheckNotificationStatusRepository';
-import { NewNotificationRepository } from '../domain/NewNotificationRepository';
+import { CheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
-import { ConsumeEventStreamRecordRepository } from '../domain/ConsumeEventStreamRecordRepository';
 import { Snapshot, computeSnapshot } from '../domain/Snapshot';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
+import { SystemEnv } from '../domain/SystemEnv';
 
 const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db: Snapshot) =>
   pipe(
@@ -30,25 +25,17 @@ const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db:
   );
 
 export const CheckNotificationStatusUseCase =
-  (
-    occurencesAfterComplete: number,
-    senderPAId: string,
-    createNotificationRequestRecordRepository: NewNotificationRepository,
-    findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository,
-    consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository,
-    iunGenerator: () => string = crypto.randomUUID,
-    dateGenerator: () => Date = () => new Date()
-  ) =>
+  ({ occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator, ...env }: SystemEnv) =>
   (apiKey: ApiKey) =>
   (input: CheckNotificationStatusRecord['input']): TE.TaskEither<Error, CheckNotificationStatusRecord['output']> =>
     pipe(
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(computeSnapshot(occurencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
-          TE.ap(createNotificationRequestRecordRepository.list()),
-          TE.ap(findNotificationRequestRecordRepository.list()),
-          TE.ap(consumeEventStreamRecordRepository.list()),
+          TE.of(computeSnapshot(occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
+          TE.ap(env.createNotificationRequestRecordRepository.list()),
+          TE.ap(env.findNotificationRequestRecordRepository.list()),
+          TE.ap(env.consumeEventStreamRecordRepository.list()),
           TE.map(
             flow(
               findFromSnapshot(input),
@@ -69,7 +56,7 @@ export const CheckNotificationStatusUseCase =
       ),
       E.sequence(TE.ApplicativePar),
       TE.map(flow(E.toUnion, (output) => ({ type: 'CheckNotificationStatusRecord' as const, input, output }))),
-      TE.chain(findNotificationRequestRecordRepository.insert),
+      TE.chain(env.findNotificationRequestRecordRepository.insert),
       TE.map((record) => record.output)
     );
 

@@ -21,6 +21,7 @@ import { ConsumeEventStreamRecord } from './domain/ConsumeEventStreamRecordRepos
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
+import { SystemEnv } from './domain/SystemEnv';
 
 pipe(
   parseConfig(process.env),
@@ -40,18 +41,22 @@ pipe(
     const numberOfWaitingBeforeComplete = 2; // TODO: numberOfWaitingBeforeComplete move this value into configuration
     const senderPaId = 'aSenderPaId'; // TODO: senderPaId move this value into configuration
 
+    const systemEnv: SystemEnv = {
+      occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
+      senderPAId: 'aSenderPaId', // TODO: senderPaId move this value into configuration
+      iunGenerator: crypto.randomUUID,
+      dateGenerator: () => new Date(),
+      createNotificationRequestRecordRepository: newNotificationRepository,
+      findNotificationRequestRecordRepository: checkNotificationStatusRepository,
+      consumeEventStreamRecordRepository: consumeEventStreamRepository,
+    };
+
     /* init the use cases */
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
     const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
     const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
-    const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository
-    );
+    const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(
       numberOfWaitingBeforeComplete,
       senderPaId,
