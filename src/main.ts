@@ -38,9 +38,6 @@ pipe(
     const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
 
-    const numberOfWaitingBeforeComplete = 2; // TODO: numberOfWaitingBeforeComplete move this value into configuration
-    const senderPaId = 'aSenderPaId'; // TODO: senderPaId move this value into configuration
-
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
       senderPAId: 'aSenderPaId', // TODO: senderPaId move this value into configuration
@@ -50,6 +47,7 @@ pipe(
       findNotificationRequestRecordRepository: checkNotificationStatusRepository,
       consumeEventStreamRecordRepository: consumeEventStreamRepository,
       getNotificationDetailRecordRepository: getNotificationDetailRepository,
+      getNotificationDocumentMetadataRecordRepository,
     };
 
     /* init the use cases */
@@ -61,14 +59,7 @@ pipe(
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
-    const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository,
-      getNotificationDocumentMetadataRecordRepository
-    );
+    const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(

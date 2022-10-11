@@ -80,6 +80,9 @@ export const makeTestSystemEnv = (
   findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
   consumeEventStreamRecordRepository: inMemory.makeRepository(logger)(consumeEventStreamRecords),
   getNotificationDetailRecordRepository: inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
+  getNotificationDocumentMetadataRecordRepository: inMemory.makeRepository(
+    logger
+  )<GetNotificationDocumentMetadataRecord>([]),
 });
 
 // PreLoadRecord //////////////////////////////////////////////////////////////

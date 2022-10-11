@@ -3,6 +3,7 @@ import { Iun } from '../generated/definitions/Iun';
 import { CheckNotificationStatusRecordRepository } from './CheckNotificationStatusRepository';
 import { ConsumeEventStreamRecordRepository } from './ConsumeEventStreamRecordRepository';
 import { GetNotificationDetailRecordRepository } from './GetNotificationDetailRepository';
+import { GetNotificationDocumentMetadataRecordRepository } from './GetNotificationDocumentMetadataRepository';
 import { NewNotificationRepository } from './NewNotificationRepository';
 
 export type SystemEnv = {
@@ -17,4 +18,5 @@ export type SystemEnv = {
   findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository;
   consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository;
   getNotificationDetailRecordRepository: GetNotificationDetailRecordRepository;
+  getNotificationDocumentMetadataRecordRepository: GetNotificationDocumentMetadataRecordRepository;
 };

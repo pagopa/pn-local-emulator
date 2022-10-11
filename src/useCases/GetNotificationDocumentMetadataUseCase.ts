@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { flow, pipe } from 'fp-ts/lib/function';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as E from 'fp-ts/Either';
@@ -7,27 +6,15 @@ import * as TE from 'fp-ts/TaskEither';
 import { authorizeApiKey } from '../domain/authorize';
 import {
   GetNotificationDocumentMetadataRecord,
-  GetNotificationDocumentMetadataRecordRepository,
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../domain/GetNotificationDocumentMetadataRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { Iun } from '../generated/definitions/Iun';
 import { computeSnapshot } from '../domain/Snapshot';
-import { NewNotificationRepository } from '../domain/NewNotificationRepository';
-import { CheckNotificationStatusRecordRepository } from '../domain/CheckNotificationStatusRepository';
-import { ConsumeEventStreamRecordRepository } from '../domain/ConsumeEventStreamRecordRepository';
+import { SystemEnv } from '../domain/SystemEnv';
 
 export const GetNotificationDocumentMetadataUseCase =
-  (
-    occurrencesAfterComplete: number,
-    senderPAId: string,
-    createNotificationRequestRecordRepository: NewNotificationRepository,
-    findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository,
-    consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository,
-    getNotificationDocumentMetadataRecordRepository: GetNotificationDocumentMetadataRecordRepository,
-    iunGenerator: () => string = crypto.randomUUID,
-    dateGenerator: () => Date = () => new Date()
-  ) =>
+  ({ occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator, ...env }: SystemEnv) =>
   (apiKey: ApiKey) =>
   (iun: Iun) =>
   (docIdx: number): TE.TaskEither<Error, GetNotificationDocumentMetadataRecord['output']> =>
@@ -36,9 +23,9 @@ export const GetNotificationDocumentMetadataUseCase =
       E.map(() =>
         pipe(
           TE.of(computeSnapshot(occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
-          TE.ap(createNotificationRequestRecordRepository.list()),
-          TE.ap(findNotificationRequestRecordRepository.list()),
-          TE.ap(consumeEventStreamRecordRepository.list()),
+          TE.ap(env.createNotificationRequestRecordRepository.list()),
+          TE.ap(env.findNotificationRequestRecordRepository.list()),
+          TE.ap(env.consumeEventStreamRecordRepository.list()),
           TE.map(
             flow(
               RA.filterMap(O.fromEither),
@@ -60,7 +47,7 @@ export const GetNotificationDocumentMetadataUseCase =
         input: { iun, apiKey, docIdx },
         output,
       })),
-      TE.chain(getNotificationDocumentMetadataRecordRepository.insert),
+      TE.chain(env.getNotificationDocumentMetadataRecordRepository.insert),
       TE.map((record) => record.output)
     );
 
