@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {
   NewNotificationRequest,
   NotificationFeePolicyEnum,
@@ -7,7 +8,7 @@ import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRepository';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
-import { makeNewNotificationRecord } from '../NewNotificationRepository';
+import { makeNewNotificationRecord, NewNotificationRecord } from '../NewNotificationRepository';
 import { PreLoadRecord } from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
@@ -16,6 +17,9 @@ import {
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
+import { SystemEnv } from '../SystemEnv';
+import { Logger, makeLogger } from '../../logger';
+import * as inMemory from '../../adapters/inMemory';
 
 export const apiKey = {
   valid: 'key-value',
@@ -61,6 +65,21 @@ const aDocument1 = {
   ...aDocument0,
   docIdx: undefined,
 };
+
+export const makeTestSystemEnv = (
+  createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
+  findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
+  consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
+  logger: Logger = makeLogger()
+): SystemEnv => ({
+  occurrencesAfterComplete: 2,
+  senderPAId: aSenderPaId,
+  iunGenerator: crypto.randomUUID,
+  dateGenerator: () => new Date(),
+  createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
+  findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
+  consumeEventStreamRecordRepository: inMemory.makeRepository(logger)(consumeEventStreamRecords),
+});
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
