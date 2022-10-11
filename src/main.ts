@@ -57,13 +57,7 @@ pipe(
     const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
     const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
-    const consumeEventStreamUseCase = ConsumeEventStreamUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository
-    );
+    const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(
       numberOfWaitingBeforeComplete,
