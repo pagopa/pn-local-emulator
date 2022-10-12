@@ -2,7 +2,7 @@ import { GetNotificationDocumentMetadataUseCase } from '../GetNotificationDocume
 import * as E from 'fp-ts/Either';
 import * as data from '../../domain/__tests__/data';
 
-describe('GetNotificationStatusUseCase', () => {
+describe('GetNotificationDocumentMetadataUseCase', () => {
   it('should return 404', async () => {
     const useCase = GetNotificationDocumentMetadataUseCase(data.makeTestSystemEnv());
 
