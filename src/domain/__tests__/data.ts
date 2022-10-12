@@ -16,6 +16,7 @@ import {
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
+import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRepository';
 
 export const apiKey = {
   valid: 'key-value',
@@ -239,4 +240,12 @@ export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMeta
   type: 'GetNotificationDocumentMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 1 },
   output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(aDocument1) },
+};
+
+// GetPaymentNotificationMetadataRecord //////////////////////////////////////
+
+export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadataRecord = {
+  type: 'GetPaymentNotificationMetadataRecord',
+  input: { apiKey: apiKey.valid, iun: aIun.valid, recipientId: 0, attachmentName: 'PAGOPA' },
+  output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(aDocument0) },
 };
