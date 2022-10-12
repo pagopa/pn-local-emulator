@@ -43,16 +43,9 @@ export const GetPaymentNotificationMetadataUseCase =
           TE.map(
             flow(
               RA.filterMap(O.fromEither),
-              // FIXME: Check if this filter is ok
-              RA.filter(
-                (notification) =>
-                  notification.recipients.filter((recipient) => recipient.internalId === recipientId.toString())
-                    .length > 0
-              ),
               RA.chain((notification) => (notification.iun === iun ? notification.documents : RA.empty)),
               // the types of docIdx doesn't fit (one is string the other is a number)
               // for the moment just convert the most convenient
-              // FIXME: Check if the condition is ok
               RA.findFirst((document) => document.ref.key === attachmentName.toString()),
               O.map(makeNotificationAttachmentDownloadMetadataResponse),
               O.map((document) => ({ statusCode: 200 as const, returned: document })),
