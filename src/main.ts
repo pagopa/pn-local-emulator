@@ -21,6 +21,8 @@ import { ConsumeEventStreamRecord } from './domain/ConsumeEventStreamRecordRepos
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
+import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
+import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRepository';
 
 pipe(
   parseConfig(process.env),
@@ -28,14 +30,17 @@ pipe(
     const logger = makeLogger();
     const mkRepository = inMemory.makeRepository(logger);
     /* put here the driven adapters (e.g.: Repositories ) */
-    const preLoadRecordRepository = mkRepository<PreLoadRecord>([]);
-    const uploadToS3RecordRepository = mkRepository<UploadToS3Record>([]);
-    const newNotificationRepository = mkRepository<NewNotificationRecord>([]);
-    const createEventStreamRecordRepository = mkRepository<CreateEventStreamRecord>([]);
-    const checkNotificationStatusRepository = mkRepository<CheckNotificationStatusRecord>([]);
-    const getNotificationDetailRepository = mkRepository<GetNotificationDetailRecord>([]);
-    const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
+    const preLoadRecordRepository = inMemory.makeRepository(logger)<PreLoadRecord>([]);
+    const uploadToS3RecordRepository = inMemory.makeRepository(logger)<UploadToS3Record>([]);
+    const newNotificationRepository = inMemory.makeRepository(logger)<NewNotificationRecord>([]);
+    const createEventStreamRecordRepository = inMemory.makeRepository(logger)<CreateEventStreamRecord>([]);
+    const checkNotificationStatusRepository = inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]);
+    const getNotificationDetailRepository = inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]);
+    const consumeEventStreamRepository = inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
+    const getPaymentNotificationMetadataRepository = inMemory.makeRepository(
+      logger
+    )<GetPaymentNotificationMetadataRecord>([]);
 
     const numberOfWaitingBeforeComplete = 2; // TODO: numberOfWaitingBeforeComplete move this value into configuration
     const senderPaId = 'aSenderPaId'; // TODO: senderPaId move this value into configuration
@@ -76,6 +81,14 @@ pipe(
       consumeEventStreamRepository,
       getNotificationDocumentMetadataRecordRepository
     );
+    const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(
+      numberOfWaitingBeforeComplete,
+      senderPaId,
+      newNotificationRepository,
+      checkNotificationStatusRepository,
+      consumeEventStreamRepository,
+      getPaymentNotificationMetadataRepository
+    );
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
@@ -87,7 +100,8 @@ pipe(
       getNotificationDetailUseCase,
       consumeEventStreamUseCase,
       getChecklistResultUseCase,
-      getNotificationDocumentMetadataUseCase
+      getNotificationDocumentMetadataUseCase,
+      getPaymentNotificationMetadataUseCase
     );
     http.startApplication(logger, config, application);
   }),

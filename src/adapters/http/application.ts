@@ -11,6 +11,7 @@ import { CreateEventStreamUseCase } from '../../useCases/CreateEventStreamUseCas
 import { GetNotificationDetailUseCase } from '../../useCases/GetNotificationDetailUseCase';
 import { ConsumeEventStreamUseCase } from '../../useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from '../../useCases/GetNotificationDocumentMetadataUseCase';
+import { GetPaymentNotificationMetadataUseCase } from '../../useCases/GetPaymentNotificationMetadataUseCase';
 import { makePreLoadRouter } from './preLoad/router';
 import { makeUploadToS3Router } from './uploadToS3/router';
 import { makeSendNotificationRouter } from './sendNotification/router';
@@ -20,6 +21,7 @@ import { makeNotificationStatusRouter } from './checkNotificationStatus/router';
 import { makeGetNotificationDetailRouter } from './getNotificationDetail/router';
 import { makeConsumeEventStreamRouter } from './consumeEventStream/router';
 import { makeGetNotificationDocumentMetadataRouter } from './getNotificationDocumentMetadata/router';
+import { makeGetPaymentNotificationMetadataRouter } from './getPaymentNotificationMetadata/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
@@ -30,7 +32,8 @@ export const makeApplication = (
   getNotificationDetailUseCase: GetNotificationDetailUseCase,
   consumeEventStreamUseCase: ConsumeEventStreamUseCase,
   getChecklistResultUseCase: GetChecklistResultUseCase,
-  getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase
+  getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
+  getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase
 ): express.Application => {
   const app = express();
   app.use(express.json());
@@ -44,6 +47,7 @@ export const makeApplication = (
   app.use(makeChecklistRouter(getChecklistResultUseCase));
   app.use(makeGetNotificationDetailRouter(getNotificationDetailUseCase));
   app.use(makeGetNotificationDocumentMetadataRouter(getNotificationDocumentMetadataUseCase));
+  app.use(makeGetPaymentNotificationMetadataRouter(getPaymentNotificationMetadataUseCase));
   return app;
 };
 
