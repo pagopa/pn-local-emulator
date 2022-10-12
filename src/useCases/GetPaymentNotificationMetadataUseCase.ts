@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as RA from 'fp-ts/ReadonlyArray';
@@ -14,6 +15,7 @@ import { ApiKey } from '../generated/definitions/ApiKey';
 import { Iun } from '../generated/definitions/Iun';
 import { authorizeApiKey } from '../domain/authorize';
 import { computeSnapshot } from '../domain/Snapshot';
+import { makeNotificationAttachmentDownloadMetadataResponse } from '../domain/GetNotificationDocumentMetadataRepository';
 
 export const GetPaymentNotificationMetadataUseCase =
   (
@@ -51,9 +53,8 @@ export const GetPaymentNotificationMetadataUseCase =
               // the types of docIdx doesn't fit (one is string the other is a number)
               // for the moment just convert the most convenient
               // FIXME: Check if the condition is ok
-              RA.findFirst((document) => document.title === attachmentName.toString()),
-              // FIXME: Compose output
-              O.map((_) => 'ok'),
+              RA.findFirst((document) => document.ref.key === attachmentName.toString()),
+              O.map(makeNotificationAttachmentDownloadMetadataResponse),
               O.map((document) => ({ statusCode: 200 as const, returned: document })),
               O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
             )
