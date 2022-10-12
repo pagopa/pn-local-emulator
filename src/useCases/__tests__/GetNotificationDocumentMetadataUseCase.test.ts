@@ -11,7 +11,7 @@ import { GetNotificationDocumentMetadataRecord } from '../../domain/GetNotificat
 const logger = makeLogger();
 const occurrencesAfterComplete = 2;
 
-describe('GetNotificationStatusUseCase', () => {
+describe('GetNotificationDocumentMetadataUseCase', () => {
   it('should return 404', async () => {
     const useCase = GetNotificationDocumentMetadataUseCase(
       occurrencesAfterComplete,
