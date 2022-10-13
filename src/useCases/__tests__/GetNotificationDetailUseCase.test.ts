@@ -1,5 +1,5 @@
+import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
-import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as data from '../../domain/__tests__/data';
 import * as inMemory from '../../adapters/inMemory';
@@ -9,7 +9,6 @@ import { CheckNotificationStatusRecord } from '../../domain/CheckNotificationSta
 import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecordRepository';
 import { GetNotificationDetailUseCase } from '../GetNotificationDetailUseCase';
 import { GetNotificationDetailRecord } from '../../domain/GetNotificationDetailRepository';
-import { pipe } from 'fp-ts/lib/function';
 
 const logger = makeLogger();
 const numberOfWaitingBeforeComplete = 2;
