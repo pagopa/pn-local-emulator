@@ -11,7 +11,6 @@ import { Snapshot, computeSnapshot } from '../domain/Snapshot';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
 import { SystemEnv } from '../useCases/SystemEnv';
 
-// TODO: Apply the Reader monad to the environment.
 const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db: Snapshot) =>
   pipe(
     db,
@@ -25,6 +24,7 @@ const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db:
     )
   );
 
+// TODO: Apply the Reader monad to the environment.
 export const CheckNotificationStatusUseCase =
   (env: SystemEnv) =>
   (apiKey: ApiKey) =>
