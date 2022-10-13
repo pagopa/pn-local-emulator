@@ -13,4 +13,4 @@ export type GetPaymentNotificationMetadataRecord = {
     | Response<404>;
 };
 
-export type GetPaymentNotificationMetadataRepository = Repository<GetPaymentNotificationMetadataRecord>;
+export type GetPaymentNotificationMetadataRecordRepository = Repository<GetPaymentNotificationMetadataRecord>;

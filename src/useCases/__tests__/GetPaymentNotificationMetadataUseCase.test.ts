@@ -6,7 +6,7 @@ import { NewNotificationRecord } from '../../domain/NewNotificationRepository';
 import { CheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRepository';
 import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecordRepository';
 import { GetPaymentNotificationMetadataUseCase } from '../GetPaymentNotificationMetadataUseCase';
-import { GetPaymentNotificationMetadataRecord } from '../../domain/GetPaymentNotificationMetadataRepository';
+import { GetPaymentNotificationMetadataRecord } from '../../domain/GetPaymentNotificationMetadataRecordRepository';
 
 const logger = makeLogger();
 const occurrencesAfterComplete = 2;

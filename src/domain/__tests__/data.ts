@@ -16,7 +16,7 @@ import {
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
-import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRepository';
+import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
 
 export const apiKey = {
   valid: 'key-value',

@@ -22,7 +22,7 @@ import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase'
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
-import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRepository';
+import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRecordRepository';
 
 pipe(
   parseConfig(process.env),
