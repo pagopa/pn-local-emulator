@@ -287,17 +287,31 @@ components:
         - creditorTaxId
       properties:
         noticeCode:
-          $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/noticeCode'
+          $ref: '#/components/schemas/noticeCode'
         creditorTaxId:
-          $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/paTaxId'
+          $ref: '#/components/schemas/paTaxId'
         noticeCodeAlternative:
-          $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/noticeCode'
+          $ref: '#/components/schemas/noticeCode'
         pagoPaForm:
           $ref: "#/components/schemas/NotificationPaymentAttachment"
         f24flatRate:
           $ref: "#/components/schemas/NotificationPaymentAttachment"
         f24standard:
           $ref: "#/components/schemas/NotificationPaymentAttachment"
+    noticeCode:
+      description: "Payment notice number  numero avviso"
+      example: "302000100000019421"
+      type: "string"
+      maxLength: 18
+      minLength: 18
+      pattern: "^\\d+$"
+    paTaxId:
+      description: "Payment PA fiscal code"
+      example: "77777777777"
+      type: "string"
+      maxLength: 11
+      minLength: 11
+      pattern: "^\\d+$"
     NotificationAttachment:
       description: >-
         Un allegato della notifica.
