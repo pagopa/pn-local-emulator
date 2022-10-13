@@ -22,6 +22,8 @@ import { ConsumeEventStreamRecord } from './domain/ConsumeEventStreamRecordRepos
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
+import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
+import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRecordRepository';
 import { SystemEnv } from './useCases/SystemEnv';
 
 pipe(
@@ -38,6 +40,7 @@ pipe(
     const getNotificationDetailRepository = mkRepository<GetNotificationDetailRecord>([]);
     const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
+    const getPaymentNotificationMetadataRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
 
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
@@ -62,6 +65,15 @@ pipe(
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
     const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
 
+    const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(
+      systemEnv.numberOfWaitingBeforeComplete,
+      systemEnv.senderPAId,
+      newNotificationRepository,
+      checkNotificationStatusRepository,
+      consumeEventStreamRepository,
+      getPaymentNotificationMetadataRepository
+    );
+
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
       preLoadUseCase,
@@ -72,7 +84,8 @@ pipe(
       getNotificationDetailUseCase,
       consumeEventStreamUseCase,
       getChecklistResultUseCase,
-      getNotificationDocumentMetadataUseCase
+      getNotificationDocumentMetadataUseCase,
+      getPaymentNotificationMetadataUseCase
     );
     http.startApplication(logger, config, application);
   }),
