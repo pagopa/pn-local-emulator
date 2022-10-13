@@ -71,9 +71,7 @@ export const GetPaymentNotificationMetadataUseCase =
               RA.filterMap(O.fromEither),
               RA.chain((notification) => (notification.iun === iun ? notification.recipients : RA.empty)),
               getRecipientPayment,
-              RA.map(getNotificationPaymentAttachment(attachmentName)),
-              RA.compact,
-              RA.last,
+              RA.findLastMap(getNotificationPaymentAttachment(attachmentName)),
               O.map(makePaymentNotificationAttachmentDownloadMetadataResponse),
               O.map((paymentAttachment) => ({ statusCode: 200 as const, returned: paymentAttachment })),
               O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
