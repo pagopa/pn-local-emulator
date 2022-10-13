@@ -191,7 +191,6 @@ components:
           $ref: "#/components/schemas/NotificationDigitalAddress"
         physicalAddress:
           $ref: "#/components/schemas/NotificationPhysicalAddress"
-          # TODO: Copy the elements locally
         payment:
           $ref: "#/components/schemas/NotificationPaymentInfo"
     NotificationDocument:
