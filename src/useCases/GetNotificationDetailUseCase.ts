@@ -1,7 +1,7 @@
 import crypto from 'crypto';
+import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as O from 'fp-ts/Option';
 import { ApiKey } from '../generated/definitions/ApiKey';
