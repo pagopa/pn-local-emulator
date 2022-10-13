@@ -11,10 +11,11 @@ import {
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { Iun } from '../generated/definitions/Iun';
 import { computeSnapshot } from '../domain/Snapshot';
-import { SystemEnv } from '../domain/SystemEnv';
+import { SystemEnv } from '../useCases/SystemEnv';
 
+// TODO: Apply the Reader monad to the environment.
 export const GetNotificationDocumentMetadataUseCase =
-  ({ occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator, ...env }: SystemEnv) =>
+  (env: SystemEnv) =>
   (apiKey: ApiKey) =>
   (iun: Iun) =>
   (docIdx: number): TE.TaskEither<Error, GetNotificationDocumentMetadataRecord['output']> =>
@@ -22,7 +23,7 @@ export const GetNotificationDocumentMetadataUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(computeSnapshot(occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
+          TE.of(computeSnapshot(env)),
           TE.ap(env.createNotificationRequestRecordRepository.list()),
           TE.ap(env.findNotificationRequestRecordRepository.list()),
           TE.ap(env.consumeEventStreamRecordRepository.list()),

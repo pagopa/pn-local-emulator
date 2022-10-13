@@ -6,10 +6,11 @@ import { authorizeApiKey } from '../domain/authorize';
 import { ConsumeEventStreamRecord, makeProgressResponse } from '../domain/ConsumeEventStreamRecordRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { computeSnapshot } from '../domain/Snapshot';
-import { SystemEnv } from '../domain/SystemEnv';
+import { SystemEnv } from '../useCases/SystemEnv';
 
+// TODO: Apply the Reader monad to the environment.
 export const ConsumeEventStreamUseCase =
-  ({ occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator, ...env }: SystemEnv) =>
+  (env: SystemEnv) =>
   (apiKey: ApiKey) =>
   (streamId: string) =>
   (lastEventId?: string): TE.TaskEither<Error, ConsumeEventStreamRecord['output']> =>
@@ -17,14 +18,14 @@ export const ConsumeEventStreamUseCase =
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(computeSnapshot(occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
+          TE.of(computeSnapshot(env)),
           TE.ap(env.createNotificationRequestRecordRepository.list()),
           TE.ap(env.findNotificationRequestRecordRepository.list()),
           TE.ap(env.consumeEventStreamRecordRepository.list()),
           TE.map(
             flow(
               // create ProgressResponse
-              makeProgressResponse(dateGenerator()),
+              makeProgressResponse(env.dateGenerator()),
               // override the eventId to create a simple cursor based pagination
               RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
               RA.filterWithIndex((i) => i > parseInt(lastEventId || '-1', 10)),

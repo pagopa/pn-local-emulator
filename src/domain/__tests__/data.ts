@@ -17,7 +17,7 @@ import {
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
-import { SystemEnv } from '../SystemEnv';
+import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 

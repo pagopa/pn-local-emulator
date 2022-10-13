@@ -22,7 +22,7 @@ import { ConsumeEventStreamRecord } from './domain/ConsumeEventStreamRecordRepos
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
-import { SystemEnv } from './domain/SystemEnv';
+import { SystemEnv } from './useCases/SystemEnv';
 
 pipe(
   parseConfig(process.env),

@@ -9,8 +9,9 @@ import { CheckNotificationStatusRecord } from '../domain/CheckNotificationStatus
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { Snapshot, computeSnapshot } from '../domain/Snapshot';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
-import { SystemEnv } from '../domain/SystemEnv';
+import { SystemEnv } from '../useCases/SystemEnv';
 
+// TODO: Apply the Reader monad to the environment.
 const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db: Snapshot) =>
   pipe(
     db,
@@ -25,14 +26,14 @@ const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db:
   );
 
 export const CheckNotificationStatusUseCase =
-  ({ occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator, ...env }: SystemEnv) =>
+  (env: SystemEnv) =>
   (apiKey: ApiKey) =>
   (input: CheckNotificationStatusRecord['input']): TE.TaskEither<Error, CheckNotificationStatusRecord['output']> =>
     pipe(
       authorizeApiKey(apiKey),
       E.map(() =>
         pipe(
-          TE.of(computeSnapshot(occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
+          TE.of(computeSnapshot(env)),
           TE.ap(env.createNotificationRequestRecordRepository.list()),
           TE.ap(env.findNotificationRequestRecordRepository.list()),
           TE.ap(env.consumeEventStreamRecordRepository.list()),

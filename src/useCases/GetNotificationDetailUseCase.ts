@@ -8,17 +8,18 @@ import { Iun } from '../generated/definitions/Iun';
 import { GetNotificationDetailRecord } from '../domain/GetNotificationDetailRepository';
 import { authorizeApiKey } from '../domain/authorize';
 import { computeSnapshot } from '../domain/Snapshot';
-import { SystemEnv } from '../domain/SystemEnv';
+import { SystemEnv } from '../useCases/SystemEnv';
 
+// TODO: Apply the Reader monad to the environment.
 export const GetNotificationDetailUseCase =
-  ({ occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator, ...env }: SystemEnv) =>
+  (env: SystemEnv) =>
   (apiKey: ApiKey) =>
   (iun: Iun): TE.TaskEither<Error, GetNotificationDetailRecord['output']> =>
     pipe(
       authorizeApiKey(apiKey),
       E.map((_) =>
         pipe(
-          TE.of(computeSnapshot(occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator)),
+          TE.of(computeSnapshot(env)),
           TE.ap(env.createNotificationRequestRecordRepository.list()),
           TE.ap(env.findNotificationRequestRecordRepository.list()),
           TE.ap(env.consumeEventStreamRecordRepository.list()),
