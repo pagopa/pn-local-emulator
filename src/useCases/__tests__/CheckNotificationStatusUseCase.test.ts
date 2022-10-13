@@ -1,24 +1,10 @@
 import { CheckNotificationStatusUseCase } from '../CheckNotificationStatusUseCase';
 import * as E from 'fp-ts/Either';
 import * as data from '../../domain/__tests__/data';
-import * as inMemory from '../../adapters/inMemory';
-import { makeLogger } from '../../logger';
-import { NewNotificationRecord } from '../../domain/NewNotificationRepository';
-import { CheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRepository';
-import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecordRepository';
-
-const logger = makeLogger();
-const numberOfWaitingBeforeComplete = 2;
 
 describe('CheckNotificationStatusUseCase', () => {
   it('should return 404', async () => {
-    const useCase = CheckNotificationStatusUseCase(
-      numberOfWaitingBeforeComplete,
-      data.aSenderPaId,
-      inMemory.makeRepository(logger)<NewNotificationRecord>([]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
-    );
+    const useCase = CheckNotificationStatusUseCase(data.makeTestSystemEnv());
     const input = { notificationRequestId: data.notificationId.valid };
 
     const expected = E.right({ statusCode: 404, returned: undefined });
@@ -29,14 +15,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the notificationId', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      numberOfWaitingBeforeComplete,
-      data.aSenderPaId,
-      inMemory.makeRepository(logger)<NewNotificationRecord>([
-        data.newNotificationRecord,
-        data.newNotificationRecordWithIdempotenceToken,
-      ]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
+      data.makeTestSystemEnv([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
     );
     const input = { notificationRequestId: data.notificationId.valid };
 
@@ -48,14 +27,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      numberOfWaitingBeforeComplete,
-      data.aSenderPaId,
-      inMemory.makeRepository(logger)<NewNotificationRecord>([
-        data.newNotificationRecord,
-        data.newNotificationRecordWithIdempotenceToken,
-      ]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
+      data.makeTestSystemEnv([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
     );
     const input = { paProtocolNumber: data.paProtocolNumber.valid };
 
@@ -67,14 +39,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber and idempotenceToken', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      numberOfWaitingBeforeComplete,
-      data.aSenderPaId,
-      inMemory.makeRepository(logger)<NewNotificationRecord>([
-        data.newNotificationRecord,
-        data.newNotificationRecordWithIdempotenceToken,
-      ]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([])
+      data.makeTestSystemEnv([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
     );
     const input = {
       idempotenceToken: data.idempotenceToken.valid,
@@ -88,20 +53,14 @@ describe('CheckNotificationStatusUseCase', () => {
   });
 
   it('should return the status ACCEPTED after reaching the threshold limit', async () => {
-    const useCase = CheckNotificationStatusUseCase(
-      numberOfWaitingBeforeComplete,
-      data.aSenderPaId,
-      inMemory.makeRepository(logger)<NewNotificationRecord>([
-        data.newNotificationRecord,
-        data.newNotificationRecordWithIdempotenceToken,
-      ]),
-      inMemory.makeRepository(logger)<CheckNotificationStatusRecord>([
-        data.checkNotificationStatusRecord,
-        data.checkNotificationStatusRecord,
-      ]),
-      inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]),
-      () => data.aIun.valid
-    );
+    const useCase = CheckNotificationStatusUseCase({
+      ...data.makeTestSystemEnv(
+        [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken],
+        [data.checkNotificationStatusRecord, data.checkNotificationStatusRecord]
+      ),
+      iunGenerator: () => data.aIun.valid,
+    });
+
     const input = {
       paProtocolNumber: data.paProtocolNumber.valid,
     };

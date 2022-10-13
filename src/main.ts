@@ -1,5 +1,6 @@
-import * as E from 'fp-ts/Either';
+import crypto from 'crypto';
 import { pipe } from 'fp-ts/lib/function';
+import * as E from 'fp-ts/Either';
 import * as http from './adapters/http/application';
 import * as inMemory from './adapters/inMemory';
 import { parseConfig } from './config';
@@ -23,6 +24,7 @@ import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificati
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
 import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRecordRepository';
+import { SystemEnv } from './useCases/SystemEnv';
 
 pipe(
   parseConfig(process.env),
@@ -38,55 +40,32 @@ pipe(
     const getNotificationDetailRepository = mkRepository<GetNotificationDetailRecord>([]);
     const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
-    const getPaymentNotificationMetadataRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
+    const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
 
-    const numberOfWaitingBeforeComplete = 2; // TODO: numberOfWaitingBeforeComplete move this value into configuration
-    const senderPaId = 'aSenderPaId'; // TODO: senderPaId move this value into configuration
+    const systemEnv: SystemEnv = {
+      occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
+      senderPAId: 'aSenderPaId', // TODO: senderPaId move this value into configuration
+      iunGenerator: crypto.randomUUID,
+      dateGenerator: () => new Date(),
+      createNotificationRequestRecordRepository: newNotificationRepository,
+      findNotificationRequestRecordRepository: checkNotificationStatusRepository,
+      consumeEventStreamRecordRepository: consumeEventStreamRepository,
+      getNotificationDetailRecordRepository: getNotificationDetailRepository,
+      getNotificationDocumentMetadataRecordRepository,
+      getPaymentNotificationMetadataRecordRepository,
+    };
 
     /* init the use cases */
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
     const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
     const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
-    const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository
-    );
-    const consumeEventStreamUseCase = ConsumeEventStreamUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository
-    );
+    const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
+    const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
-    const getNotificationDetailUseCase = GetNotificationDetailUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      getNotificationDetailRepository,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository
-    );
-    const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository,
-      getNotificationDocumentMetadataRecordRepository
-    );
-    const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(
-      numberOfWaitingBeforeComplete,
-      senderPaId,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository,
-      getPaymentNotificationMetadataRepository
-    );
+    const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
+    const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
+    const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(systemEnv);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(

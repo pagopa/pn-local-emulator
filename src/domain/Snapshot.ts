@@ -6,12 +6,13 @@ import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecordRepository';
 import { NewNotificationRecord } from './NewNotificationRepository';
 import { makeNotificationRequestFromCreate, NotificationRequest } from './NotificationRequest';
 import { makeNotification, Notification } from './Notification';
+import { DomainEnv } from './DomainEnv';
 
 export type Snapshot = ReadonlyArray<E.Either<NotificationRequest, Notification>>;
 
 // TODO: Use the State monad
 export const computeSnapshot =
-  (occurrencesAfterComplete: number, senderPaId: string, iunGenerator: () => string, dateGenerator: () => Date) =>
+  ({ occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator }: DomainEnv) =>
   (createNotificationRequestRecord: ReadonlyArray<NewNotificationRecord>) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
   (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>): Snapshot =>
@@ -25,7 +26,7 @@ export const computeSnapshot =
           notificationRequest,
           makeNotification(
             occurrencesAfterComplete,
-            senderPaId,
+            senderPAId,
             iunGenerator(),
             dateGenerator()
           )(findNotificationRequestRecord)(consumeEventStreamRecord),
