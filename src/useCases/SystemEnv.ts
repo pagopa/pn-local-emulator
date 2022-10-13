@@ -2,6 +2,7 @@ import { CheckNotificationStatusRecordRepository } from '../domain/CheckNotifica
 import { ConsumeEventStreamRecordRepository } from '../domain/ConsumeEventStreamRecordRepository';
 import { GetNotificationDetailRecordRepository } from '../domain/GetNotificationDetailRepository';
 import { GetNotificationDocumentMetadataRecordRepository } from '../domain/GetNotificationDocumentMetadataRepository';
+import { GetPaymentNotificationMetadataRecordRepository } from '../domain/GetPaymentNotificationMetadataRecordRepository';
 import { NewNotificationRepository } from '../domain/NewNotificationRepository';
 import { DomainEnv } from '../domain/DomainEnv';
 
@@ -12,4 +13,5 @@ export type SystemEnv = DomainEnv & {
   consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository;
   getNotificationDetailRecordRepository: GetNotificationDetailRecordRepository;
   getNotificationDocumentMetadataRecordRepository: GetNotificationDocumentMetadataRecordRepository;
+  getPaymentNotificationMetadataRecordRepository: GetPaymentNotificationMetadataRecordRepository;
 };

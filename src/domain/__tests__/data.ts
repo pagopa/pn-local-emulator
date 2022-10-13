@@ -24,7 +24,6 @@ import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 import { unsafeCoerce } from 'fp-ts/function';
 
-
 export const apiKey = {
   valid: 'key-value',
 };
@@ -89,6 +88,9 @@ export const makeTestSystemEnv = (
   getNotificationDocumentMetadataRecordRepository: inMemory.makeRepository(
     logger
   )<GetNotificationDocumentMetadataRecord>([]),
+  getPaymentNotificationMetadataRecordRepository: inMemory.makeRepository(logger)<GetPaymentNotificationMetadataRecord>(
+    []
+  ),
 });
 
 const aRecipient: FullSentNotification['recipients'][0] = {

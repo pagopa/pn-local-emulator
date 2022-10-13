@@ -40,7 +40,7 @@ pipe(
     const getNotificationDetailRepository = mkRepository<GetNotificationDetailRecord>([]);
     const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
-    const getPaymentNotificationMetadataRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
+    const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
 
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
@@ -52,6 +52,7 @@ pipe(
       consumeEventStreamRecordRepository: consumeEventStreamRepository,
       getNotificationDetailRecordRepository: getNotificationDetailRepository,
       getNotificationDocumentMetadataRecordRepository,
+      getPaymentNotificationMetadataRecordRepository,
     };
 
     /* init the use cases */
@@ -64,15 +65,7 @@ pipe(
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
     const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
-
-    const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(
-      systemEnv.numberOfWaitingBeforeComplete,
-      systemEnv.senderPAId,
-      newNotificationRepository,
-      checkNotificationStatusRepository,
-      consumeEventStreamRepository,
-      getPaymentNotificationMetadataRepository
-    );
+    const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(systemEnv);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
