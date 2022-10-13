@@ -43,11 +43,10 @@ describe('GetPaymentNotificationMetadataUseCase', () => {
       inMemory.makeRepository(logger)<ConsumeEventStreamRecord>([]),
       inMemory.makeRepository(logger)<GetPaymentNotificationMetadataRecord>([])
     );
-    const { apiKey, iun, recipientId } = data.getPaymentNotificationMetadataRecord.input;
+    const { apiKey, iun, recipientId, attachmentName } = data.getPaymentNotificationMetadataRecord.input;
 
     const expected = E.right(data.getPaymentNotificationMetadataRecord.output);
-    // FIXME: The 'key' should be one of PAGOPA, F24_FLAT and F24_STANDARD
-    const actual = await useCase(apiKey)(iun)(recipientId)('key')();
+    const actual = await useCase(apiKey)(iun)(recipientId)(attachmentName)();
 
     expect(actual).toStrictEqual(expected);
   });
