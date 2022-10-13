@@ -18,7 +18,7 @@ const handler =
       E.of(getPaymentNotificationMetadataUseCase),
       E.ap(ApiKey.decode(req.headers['x-api-key'])),
       E.ap(Iun.decode(req.params.iun)),
-      E.ap(tt.NumberFromString.decode(req.params.recipientId)),
+      E.ap(tt.NumberFromString.decode(req.params.recipientIdx)),
       E.ap(t.string.decode(req.params.attachmentName)),
       E.map(
         TE.fold(
