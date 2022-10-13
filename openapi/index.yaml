@@ -188,9 +188,9 @@ components:
           type: "string"
           description: "Nome e cognome / ragione sociale"
         digitalDomicile:
-          $ref: "#/components/schemas/NotificationDigitalAddress"
+          $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationDigitalAddress"
         physicalAddress:
-          $ref: "#/components/schemas/NotificationPhysicalAddress"
+          $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationPhysicalAddress"
         payment:
           $ref: "#/components/schemas/NotificationPaymentInfo"
     NotificationDocument:
