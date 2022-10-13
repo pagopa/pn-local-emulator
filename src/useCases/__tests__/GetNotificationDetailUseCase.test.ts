@@ -1,4 +1,6 @@
 import * as E from 'fp-ts/Either';
+import * as O from 'fp-ts/Option';
+import * as RA from 'fp-ts/ReadonlyArray';
 import * as data from '../../domain/__tests__/data';
 import * as inMemory from '../../adapters/inMemory';
 import { makeLogger } from '../../logger';
@@ -7,6 +9,7 @@ import { CheckNotificationStatusRecord } from '../../domain/CheckNotificationSta
 import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecordRepository';
 import { GetNotificationDetailUseCase } from '../GetNotificationDetailUseCase';
 import { GetNotificationDetailRecord } from '../../domain/GetNotificationDetailRepository';
+import { pipe } from 'fp-ts/lib/function';
 
 const logger = makeLogger();
 const numberOfWaitingBeforeComplete = 2;
@@ -49,6 +52,13 @@ describe('GetNotificationDetailUseCase', () => {
     const expected = E.right(data.getNotificationDetailRecordAccepted.output);
     const actual = await useCase(data.apiKey.valid)(data.aIun.valid)();
 
+    const checkDocIdxIsDefined = pipe(
+      RA.fromEither(actual),
+      RA.chain(({ statusCode, returned }) => (statusCode === 200 ? returned.documents : RA.empty)),
+      RA.every(({ docIdx }) => docIdx !== undefined)
+    );
+
     expect(actual).toStrictEqual(expected);
+    expect(checkDocIdxIsDefined).toBeTruthy();
   });
 });
