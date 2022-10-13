@@ -21,6 +21,8 @@ import { ConsumeEventStreamRecord } from './domain/ConsumeEventStreamRecordRepos
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
+import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
+import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRecordRepository';
 
 pipe(
   parseConfig(process.env),
@@ -36,6 +38,7 @@ pipe(
     const getNotificationDetailRepository = mkRepository<GetNotificationDetailRecord>([]);
     const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
+    const getPaymentNotificationMetadataRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
 
     const numberOfWaitingBeforeComplete = 2; // TODO: numberOfWaitingBeforeComplete move this value into configuration
     const senderPaId = 'aSenderPaId'; // TODO: senderPaId move this value into configuration
@@ -76,6 +79,14 @@ pipe(
       consumeEventStreamRepository,
       getNotificationDocumentMetadataRecordRepository
     );
+    const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(
+      numberOfWaitingBeforeComplete,
+      senderPaId,
+      newNotificationRepository,
+      checkNotificationStatusRepository,
+      consumeEventStreamRepository,
+      getPaymentNotificationMetadataRepository
+    );
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
@@ -87,7 +98,8 @@ pipe(
       getNotificationDetailUseCase,
       consumeEventStreamUseCase,
       getChecklistResultUseCase,
-      getNotificationDocumentMetadataUseCase
+      getNotificationDocumentMetadataUseCase,
+      getPaymentNotificationMetadataUseCase
     );
     http.startApplication(logger, config, application);
   }),
