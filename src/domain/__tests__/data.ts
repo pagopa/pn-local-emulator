@@ -17,6 +17,8 @@ import {
 } from '../GetNotificationDocumentMetadataRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
+import { RecipientTypeEnum } from '../../generated/definitions/NotificationRecipient';
+import { unsafeCoerce } from 'fp-ts/function';
 
 export const apiKey = {
   valid: 'key-value',
@@ -46,21 +48,40 @@ export const aDate = new Date(0);
 
 export const aSenderPaId = 'aSenderPaId';
 
+const anAttachmentRef = {
+  key: 'key',
+  versionToken: '123',
+};
+
 const aDocument0: FullSentNotification['documents'][0] = {
   docIdx: '0',
   digests: {
     sha256: 'aSha256',
   },
   contentType: 'application/pdf',
-  ref: {
-    key: 'key',
-    versionToken: '123',
-  },
+  ref: anAttachmentRef,
 };
 
 const aDocument1 = {
   ...aDocument0,
   docIdx: undefined,
+};
+
+const aRecipient: FullSentNotification['recipients'][0] = {
+  recipientType: RecipientTypeEnum.PF,
+  denomination: 'denomination',
+  taxId: 'aTaxId',
+  payment: {
+    creditorTaxId: unsafeCoerce('77777777777'),
+    noticeCode: unsafeCoerce('302000100000019421'),
+    pagoPaForm: {
+      digests: {
+        sha256: 'aSha256',
+      },
+      contentType: 'application/pdf',
+      ref: anAttachmentRef,
+    },
+  },
 };
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
@@ -92,7 +113,7 @@ export const uploadToS3Record: UploadToS3Record = {
 const newNotificationRequest: NewNotificationRequest = {
   paProtocolNumber: paProtocolNumber.valid,
   subject: 'subject',
-  recipients: [],
+  recipients: [aRecipient],
   documents: [aDocument0, aDocument1],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
   physicalCommunicationType: PhysicalCommunicationTypeEnum.SIMPLE_REGISTERED_LETTER,
