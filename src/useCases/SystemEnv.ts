@@ -7,6 +7,7 @@ import { NewNotificationRepository } from '../domain/NewNotificationRepository';
 import { DomainEnv } from '../domain/DomainEnv';
 import { PreLoadRecordRepository } from '../domain/PreLoadRepository';
 import { UploadToS3RecordRepository } from '../domain/UploadToS3RecordRepository';
+import { CreateEventStreamRecordRepository } from '../domain/CreateEventStreamRecordRepository';
 
 export type SystemEnv = DomainEnv & {
   // repositories
@@ -14,6 +15,7 @@ export type SystemEnv = DomainEnv & {
   uploadToS3RecordRepository: UploadToS3RecordRepository;
   createNotificationRequestRecordRepository: NewNotificationRepository;
   findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository;
+  createEventStreamRecordRepository: CreateEventStreamRecordRepository;
   consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository;
   getNotificationDetailRecordRepository: GetNotificationDetailRecordRepository;
   getNotificationDocumentMetadataRecordRepository: GetNotificationDocumentMetadataRecordRepository;
