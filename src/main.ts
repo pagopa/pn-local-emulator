@@ -59,7 +59,7 @@ pipe(
     };
 
     /* init the use cases */
-    const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
+    const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, systemEnv);
     const uploadToS3UseCase = UploadToS3UseCase(systemEnv);
     const sendNotificationUseCase = SendNotificationUseCase(systemEnv);
     const createEventStreamUseCase = CreateEventStreamUseCase(systemEnv);

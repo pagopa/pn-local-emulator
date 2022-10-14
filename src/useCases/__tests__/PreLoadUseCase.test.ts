@@ -4,9 +4,7 @@ import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { makeLogger } from '../../logger';
 import { config } from '../../__tests__/data';
-import * as inMemory from '../../adapters/inMemory';
 import * as data from '../../domain/__tests__/data';
-import { PreLoadRecord } from '../../domain/PreLoadRepository';
 
 const logger = makeLogger();
 const body = [
@@ -19,7 +17,7 @@ const body = [
 
 describe('PreLoadUseCase', () => {
   it('should return the key into url for each elements', async () => {
-    const useCase = PreLoadUseCase(config.server.uploadToS3URL, inMemory.makeRepository(logger)<PreLoadRecord>([]));
+    const useCase = PreLoadUseCase(config.server.uploadToS3URL, data.makeTestSystemEnv());
     const actual = await useCase(data.apiKey.valid)(body)();
     const checkKey = pipe(
       actual,
