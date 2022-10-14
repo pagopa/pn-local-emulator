@@ -65,7 +65,7 @@ pipe(
     const createEventStreamUseCase = CreateEventStreamUseCase(systemEnv);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
-    const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
+    const getChecklistResultUseCase = GetChecklistResultUseCase(systemEnv);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
     const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
     const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(systemEnv);
