@@ -72,6 +72,8 @@ const aDocument1 = {
 };
 
 export const makeTestSystemEnv = (
+  preloadRecords: ReadonlyArray<PreLoadRecord> = [],
+  uploadToS3Records: ReadonlyArray<UploadToS3Record> = [],
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
@@ -81,8 +83,8 @@ export const makeTestSystemEnv = (
   senderPAId: aSenderPaId,
   iunGenerator: crypto.randomUUID,
   dateGenerator: () => new Date(),
-  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>([]),
-  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>([]),
+  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>(preloadRecords),
+  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>(uploadToS3Records),
   createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
   findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
   createEventStreamRecordRepository: inMemory.makeRepository(logger)<CreateEventStreamRecord>([]),

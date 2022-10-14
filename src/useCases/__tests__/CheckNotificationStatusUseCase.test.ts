@@ -15,7 +15,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the notificationId', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      data.makeTestSystemEnv([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
+      data.makeTestSystemEnv([], [], [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
     );
     const input = { notificationRequestId: data.notificationId.valid };
 
@@ -27,7 +27,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      data.makeTestSystemEnv([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
+      data.makeTestSystemEnv([], [], [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
     );
     const input = { paProtocolNumber: data.paProtocolNumber.valid };
 
@@ -39,7 +39,7 @@ describe('CheckNotificationStatusUseCase', () => {
 
   it('should return 200 given the paProtocolNumber and idempotenceToken', async () => {
     const useCase = CheckNotificationStatusUseCase(
-      data.makeTestSystemEnv([data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
+      data.makeTestSystemEnv([], [], [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken])
     );
     const input = {
       idempotenceToken: data.idempotenceToken.valid,
@@ -55,6 +55,8 @@ describe('CheckNotificationStatusUseCase', () => {
   it('should return the status ACCEPTED after reaching the threshold limit', async () => {
     const useCase = CheckNotificationStatusUseCase({
       ...data.makeTestSystemEnv(
+        [],
+        [],
         [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken],
         [data.checkNotificationStatusRecord, data.checkNotificationStatusRecord]
       ),
