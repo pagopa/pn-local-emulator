@@ -81,8 +81,11 @@ export const makeTestSystemEnv = (
   senderPAId: aSenderPaId,
   iunGenerator: crypto.randomUUID,
   dateGenerator: () => new Date(),
+  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>([]),
+  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>([]),
   createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
   findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
+  createEventStreamRecordRepository: inMemory.makeRepository(logger)<CreateEventStreamRecord>([]),
   consumeEventStreamRecordRepository: inMemory.makeRepository(logger)(consumeEventStreamRecords),
   getNotificationDetailRecordRepository: inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
   getNotificationDocumentMetadataRecordRepository: inMemory.makeRepository(

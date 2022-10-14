@@ -47,8 +47,11 @@ pipe(
       senderPAId: 'aSenderPaId', // TODO: senderPaId move this value into configuration
       iunGenerator: crypto.randomUUID,
       dateGenerator: () => new Date(),
+      preLoadRecordRepository,
+      uploadToS3RecordRepository,
       createNotificationRequestRecordRepository: newNotificationRepository,
       findNotificationRequestRecordRepository: checkNotificationStatusRepository,
+      createEventStreamRecordRepository,
       consumeEventStreamRecordRepository: consumeEventStreamRepository,
       getNotificationDetailRecordRepository: getNotificationDetailRepository,
       getNotificationDocumentMetadataRecordRepository,
