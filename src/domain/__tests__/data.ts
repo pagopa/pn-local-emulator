@@ -85,6 +85,7 @@ export const makeTestSystemEnv = (
   uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>([]),
   createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
   findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
+  createEventStreamRecordRepository: inMemory.makeRepository(logger)<CreateEventStreamRecord>([]),
   consumeEventStreamRecordRepository: inMemory.makeRepository(logger)(consumeEventStreamRecords),
   getNotificationDetailRecordRepository: inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
   getNotificationDocumentMetadataRecordRepository: inMemory.makeRepository(

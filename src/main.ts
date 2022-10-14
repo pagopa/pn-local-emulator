@@ -51,6 +51,7 @@ pipe(
       uploadToS3RecordRepository,
       createNotificationRequestRecordRepository: newNotificationRepository,
       findNotificationRequestRecordRepository: checkNotificationStatusRepository,
+      createEventStreamRecordRepository,
       consumeEventStreamRecordRepository: consumeEventStreamRepository,
       getNotificationDetailRecordRepository: getNotificationDetailRepository,
       getNotificationDocumentMetadataRecordRepository,
