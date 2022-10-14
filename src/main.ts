@@ -62,7 +62,7 @@ pipe(
     const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
     const uploadToS3UseCase = UploadToS3UseCase(systemEnv);
     const sendNotificationUseCase = SendNotificationUseCase(systemEnv);
-    const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
+    const createEventStreamUseCase = CreateEventStreamUseCase(systemEnv);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
     const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
