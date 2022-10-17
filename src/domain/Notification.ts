@@ -13,8 +13,8 @@ import { makeFullSentNotification } from './GetNotificationDetailRepository';
 export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 
 const mkNotification = (notificationRequest: NotificationRequest, sentAt: Date, senderPaId: string, iun: Iun) => ({
-  ...makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)(iun),
   ...notificationRequest,
+  ...makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)(iun),
 });
 
 const getIunFromFind =

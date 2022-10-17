@@ -68,7 +68,11 @@ const aDocument0: FullSentNotification['documents'][0] = {
 
 const aDocument1 = {
   ...aDocument0,
-  docIdx: undefined,
+  docIdx: '1',
+  ref: {
+    ...aDocument0.ref,
+    key: 'key1',
+  },
 };
 
 export const makeTestSystemEnv = (
@@ -143,7 +147,7 @@ const newNotificationRequest: NewNotificationRequest = {
   paProtocolNumber: paProtocolNumber.valid,
   subject: 'subject',
   recipients: [aRecipient],
-  documents: [aDocument0, aDocument1],
+  documents: [{ ...aDocument0, docIdx: undefined }, aDocument1],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
   physicalCommunicationType: PhysicalCommunicationTypeEnum.SIMPLE_REGISTERED_LETTER,
 };
@@ -173,17 +177,21 @@ export const newNotificationRecordWithIdempotenceToken = makeNewNotificationReco
 
 // CheckNotificationStatusRecord //////////////////////////////////////////////
 
+const checkNotificationStatusRecordReturned = {
+  ...newNotificationRecord.input.body,
+  // override any undefined `docIdx`
+  documents: [aDocument0, aDocument1],
+  paProtocolNumber: paProtocolNumber.valid,
+  notificationRequestId: notificationId.valid,
+  notificationRequestStatus: 'WAITING',
+};
+
 export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
   type: 'CheckNotificationStatusRecord',
   input: { notificationRequestId: notificationId.valid },
   output: {
     statusCode: 200,
-    returned: {
-      ...newNotificationRecord.input.body,
-      paProtocolNumber: paProtocolNumber.valid,
-      notificationRequestId: notificationId.valid,
-      notificationRequestStatus: 'WAITING',
-    },
+    returned: checkNotificationStatusRecordReturned,
   },
 };
 
@@ -193,9 +201,7 @@ export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecor
   output: {
     statusCode: 200,
     returned: {
-      ...newNotificationRecord.input.body,
-      paProtocolNumber: paProtocolNumber.valid,
-      notificationRequestId: notificationId.valid,
+      ...checkNotificationStatusRecordReturned,
       notificationRequestStatus: 'ACCEPTED',
       iun: aIun.valid,
     },
@@ -208,10 +214,8 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
   output: {
     statusCode: 200,
     returned: {
-      ...newNotificationRecordWithIdempotenceToken.input.body,
+      ...checkNotificationStatusRecordReturned,
       idempotenceToken: idempotenceToken.valid,
-      paProtocolNumber: paProtocolNumber.valid,
-      notificationRequestId: notificationId.valid,
       notificationRequestStatus: 'WAITING',
     },
   },
@@ -269,6 +273,7 @@ export const consumeEventStreamRecordDelivered = {
 
 const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
   ...newNotificationRequest,
+  documents: [aDocument0, aDocument1],
   notificationRequestId: notificationId.valid,
 })(aIun.valid);
 
