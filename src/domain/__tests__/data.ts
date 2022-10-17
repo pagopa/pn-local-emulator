@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {
   NewNotificationRequest,
   NotificationFeePolicyEnum,
@@ -7,7 +8,7 @@ import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRepository';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
-import { makeNewNotificationRecord } from '../NewNotificationRepository';
+import { makeNewNotificationRecord, NewNotificationRecord } from '../NewNotificationRepository';
 import { PreLoadRecord } from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
@@ -15,7 +16,13 @@ import {
   GetNotificationDocumentMetadataRecord,
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
+import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
+import { RecipientTypeEnum } from '../../generated/definitions/NotificationRecipient';
+import { SystemEnv } from '../../useCases/SystemEnv';
+import { Logger, makeLogger } from '../../logger';
+import * as inMemory from '../../adapters/inMemory';
+import { unsafeCoerce } from 'fp-ts/function';
 
 export const apiKey = {
   valid: 'key-value',
@@ -45,16 +52,18 @@ export const aDate = new Date(0);
 
 export const aSenderPaId = 'aSenderPaId';
 
+const anAttachmentRef = {
+  key: 'key',
+  versionToken: '123',
+};
+
 const aDocument0: FullSentNotification['documents'][0] = {
   docIdx: '0',
   digests: {
     sha256: 'aSha256',
   },
   contentType: 'application/pdf',
-  ref: {
-    key: 'key',
-    versionToken: '123',
-  },
+  ref: anAttachmentRef,
 };
 
 const aDocument1 = {
@@ -63,6 +72,48 @@ const aDocument1 = {
   ref: {
     ...aDocument0.ref,
     key: 'key1',
+  },
+};
+
+export const makeTestSystemEnv = (
+  createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
+  findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
+  consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
+  logger: Logger = makeLogger()
+): SystemEnv => ({
+  occurrencesAfterComplete: 2,
+  senderPAId: aSenderPaId,
+  iunGenerator: crypto.randomUUID,
+  dateGenerator: () => new Date(),
+  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>([]),
+  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>([]),
+  createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
+  findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
+  createEventStreamRecordRepository: inMemory.makeRepository(logger)<CreateEventStreamRecord>([]),
+  consumeEventStreamRecordRepository: inMemory.makeRepository(logger)(consumeEventStreamRecords),
+  getNotificationDetailRecordRepository: inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
+  getNotificationDocumentMetadataRecordRepository: inMemory.makeRepository(
+    logger
+  )<GetNotificationDocumentMetadataRecord>([]),
+  getPaymentNotificationMetadataRecordRepository: inMemory.makeRepository(logger)<GetPaymentNotificationMetadataRecord>(
+    []
+  ),
+});
+
+const aRecipient: FullSentNotification['recipients'][0] = {
+  recipientType: RecipientTypeEnum.PF,
+  denomination: 'denomination',
+  taxId: 'aTaxId',
+  payment: {
+    creditorTaxId: unsafeCoerce('77777777777'),
+    noticeCode: unsafeCoerce('302000100000019421'),
+    pagoPaForm: {
+      digests: {
+        sha256: 'aSha256',
+      },
+      contentType: 'application/pdf',
+      ref: anAttachmentRef,
+    },
   },
 };
 
@@ -95,7 +146,7 @@ export const uploadToS3Record: UploadToS3Record = {
 const newNotificationRequest: NewNotificationRequest = {
   paProtocolNumber: paProtocolNumber.valid,
   subject: 'subject',
-  recipients: [],
+  recipients: [aRecipient],
   documents: [aDocument0, aDocument1],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
   physicalCommunicationType: PhysicalCommunicationTypeEnum.SIMPLE_REGISTERED_LETTER,
@@ -243,4 +294,12 @@ export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMeta
   type: 'GetNotificationDocumentMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 1 },
   output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(aDocument1) },
+};
+
+// GetPaymentNotificationMetadataRecord //////////////////////////////////////
+
+export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadataRecord = {
+  type: 'GetPaymentNotificationMetadataRecord',
+  input: { apiKey: apiKey.valid, iun: aIun.valid, recipientId: 0, attachmentName: 'PAGOPA' },
+  output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(aDocument0) },
 };
