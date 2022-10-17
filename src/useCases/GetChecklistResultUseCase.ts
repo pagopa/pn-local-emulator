@@ -5,11 +5,10 @@ import * as TE from 'fp-ts/TaskEither';
 import { preLoadChecklist } from '../domain/checklist/preLoadChecklist';
 import { ChecklistResult, evalChecklist } from '../domain/checklist/types';
 import { uploadToS3Checklist } from '../domain/checklist/uploadToS3Checklist';
-import { PreLoadRecordRepository } from '../domain/PreLoadRepository';
-import { UploadToS3RecordRepository } from '../domain/UploadToS3RecordRepository';
+import { SystemEnv } from './SystemEnv';
 
 export const GetChecklistResultUseCase =
-  (preLoadRecordRepository: PreLoadRecordRepository, uploadToS3RecordRepository: UploadToS3RecordRepository) =>
+  ({ preLoadRecordRepository, uploadToS3RecordRepository }: SystemEnv) =>
   (): TE.TaskEither<Error, ChecklistResult> =>
     pipe(
       Apply.sequenceS(TE.ApplySeq)({

@@ -23,6 +23,7 @@ import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 import { unsafeCoerce } from 'fp-ts/function';
+import { config } from '../../__tests__/data';
 
 export const apiKey = {
   valid: 'key-value',
@@ -76,17 +77,20 @@ const aDocument1 = {
 };
 
 export const makeTestSystemEnv = (
+  preloadRecords: ReadonlyArray<PreLoadRecord> = [],
+  uploadToS3Records: ReadonlyArray<UploadToS3Record> = [],
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
   logger: Logger = makeLogger()
 ): SystemEnv => ({
+  uploadToS3URL: config.server.uploadToS3URL,
   occurrencesAfterComplete: 2,
   senderPAId: aSenderPaId,
   iunGenerator: crypto.randomUUID,
   dateGenerator: () => new Date(),
-  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>([]),
-  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>([]),
+  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>(preloadRecords),
+  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>(uploadToS3Records),
   createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
   findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
   createEventStreamRecordRepository: inMemory.makeRepository(logger)<CreateEventStreamRecord>([]),

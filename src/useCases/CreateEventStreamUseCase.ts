@@ -3,16 +3,14 @@ import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { authorizeApiKey } from '../domain/authorize';
-import {
-  CreateEventStreamRecord,
-  CreateEventStreamRecordRepository,
-} from '../domain/CreateEventStreamRecordRepository';
+import { CreateEventStreamRecord } from '../domain/CreateEventStreamRecordRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { StreamCreationRequest } from '../generated/streams/StreamCreationRequest';
+import { SystemEnv } from './SystemEnv';
 
 export const CreateEventStreamUseCase =
   (
-    repository: CreateEventStreamRecordRepository,
+    { createEventStreamRecordRepository }: SystemEnv,
     streamIdGenerator: () => string = () => crypto.randomUUID(),
     nowDate: () => Date = () => new Date()
   ) =>
@@ -28,7 +26,7 @@ export const CreateEventStreamUseCase =
         input: { apiKey, body: input },
         output,
       }),
-      repository.insert,
+      createEventStreamRecordRepository.insert,
       TE.map(({ output }) => output)
     );
 
