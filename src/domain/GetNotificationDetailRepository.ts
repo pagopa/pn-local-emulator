@@ -1,4 +1,5 @@
 import { pipe } from 'fp-ts/function';
+import * as RA from 'fp-ts/ReadonlyArray';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { Iun } from '../generated/definitions/Iun';
 import { FullSentNotification } from '../generated/definitions/FullSentNotification';
@@ -35,6 +36,12 @@ const makeTimelineElement = (elementId: string): TimelineElement => ({
   category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
 });
 
+const fillDocIdx = (documents: FullSentNotification['documents']) =>
+  pipe(
+    documents,
+    RA.mapWithIndex((i, doc) => ({ ...doc, docIdx: doc.docIdx || i.toString() }))
+  );
+
 export const makeFullSentNotification =
   (senderPaId: string) =>
   (sentAt: Date) =>
@@ -43,6 +50,7 @@ export const makeFullSentNotification =
     ...notificationRequest,
     iun,
     sentAt,
+    documents: fillDocIdx(notificationRequest.documents),
     notificationStatus: NotificationStatusEnum.ACCEPTED,
     notificationStatusHistory: [makeNotificationStatusHistoryElement(iun, NotificationStatusEnum.ACCEPTED, sentAt)],
     documentsAvailable: true,
