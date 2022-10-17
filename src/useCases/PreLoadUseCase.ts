@@ -2,16 +2,12 @@ import * as crypto from 'crypto';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import {
-  makePreLoadRecord,
-  makePreLoadResponse,
-  PreLoadRecord,
-  PreLoadRecordRepository,
-} from '../domain/PreLoadRepository';
+import { makePreLoadRecord, makePreLoadResponse, PreLoadRecord } from '../domain/PreLoadRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 import { PreLoadResponse } from '../generated/definitions/PreLoadResponse';
 import { authorizeApiKey } from '../domain/authorize';
+import { SystemEnv } from './SystemEnv';
 
 // build response payload from the given request body
 const makeResponsePayload = (baseUrl: string, body: PreLoadRequestBody): ReadonlyArray<PreLoadResponse> =>
@@ -20,17 +16,16 @@ const makeResponsePayload = (baseUrl: string, body: PreLoadRequestBody): Readonl
   );
 
 export const PreLoadUseCase =
-  (uploadToS3URL: URL, repository: PreLoadRecordRepository) =>
+  ({ uploadToS3URL, preLoadRecordRepository }: SystemEnv) =>
   (apiKey: ApiKey) =>
   (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> =>
     pipe(
-      // authorize the key
       authorizeApiKey(apiKey),
       E.map((_) => makeResponsePayload(uploadToS3URL.href, body)),
       E.map((returned) => ({ statusCode: 200 as const, returned })),
       E.toUnion,
       (output) => makePreLoadRecord({ input: { apiKey, body }, output }),
-      repository.insert,
+      preLoadRecordRepository.insert,
       TE.map((record) => record.output)
     );
 

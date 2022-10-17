@@ -6,7 +6,7 @@ import { authorizeApiKey } from '../domain/authorize';
 import { ConsumeEventStreamRecord, makeProgressResponse } from '../domain/ConsumeEventStreamRecordRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { computeSnapshot } from '../domain/Snapshot';
-import { SystemEnv } from '../useCases/SystemEnv';
+import { SystemEnv } from './SystemEnv';
 
 // TODO: Apply the Reader monad to the environment.
 export const ConsumeEventStreamUseCase =

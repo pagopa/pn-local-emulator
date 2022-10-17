@@ -17,7 +17,7 @@ describe('ConsumeEventStreamUseCase', () => {
     });
     it('should return waiting status', async () => {
       const useCase = ConsumeEventStreamUseCase({
-        ...data.makeTestSystemEnv([data.newNotificationRecord]),
+        ...data.makeTestSystemEnv([], [], [data.newNotificationRecord]),
         dateGenerator: () => data.aDate,
       });
 
@@ -29,6 +29,8 @@ describe('ConsumeEventStreamUseCase', () => {
     it('should return delivery status after reaching the threshold limit', async () => {
       const useCase = ConsumeEventStreamUseCase({
         ...data.makeTestSystemEnv(
+          [],
+          [],
           [data.newNotificationRecord],
           [],
           [data.consumeEventStreamRecord, data.consumeEventStreamRecord]
@@ -44,6 +46,8 @@ describe('ConsumeEventStreamUseCase', () => {
     it('should return last delivered response if any', async () => {
       const useCase = ConsumeEventStreamUseCase({
         ...data.makeTestSystemEnv(
+          [],
+          [],
           [data.newNotificationRecord],
           [],
           [data.consumeEventStreamRecord, data.consumeEventStreamRecordDelivered]
@@ -72,7 +76,7 @@ describe('ConsumeEventStreamUseCase', () => {
         }))
       );
       const useCase = ConsumeEventStreamUseCase({
-        ...data.makeTestSystemEnv(records),
+        ...data.makeTestSystemEnv([], [], records),
         dateGenerator: () => data.aDate,
         iunGenerator: () => data.aIun.valid,
       });

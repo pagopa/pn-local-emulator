@@ -56,16 +56,17 @@ pipe(
       getNotificationDetailRecordRepository: getNotificationDetailRepository,
       getNotificationDocumentMetadataRecordRepository,
       getPaymentNotificationMetadataRecordRepository,
+      uploadToS3URL: config.server.uploadToS3URL,
     };
 
     /* init the use cases */
-    const preLoadUseCase = PreLoadUseCase(config.server.uploadToS3URL, preLoadRecordRepository);
-    const uploadToS3UseCase = UploadToS3UseCase(uploadToS3RecordRepository);
-    const sendNotificationUseCase = SendNotificationUseCase(newNotificationRepository);
-    const createEventStreamUseCase = CreateEventStreamUseCase(createEventStreamRecordRepository);
+    const preLoadUseCase = PreLoadUseCase(systemEnv);
+    const uploadToS3UseCase = UploadToS3UseCase(systemEnv);
+    const sendNotificationUseCase = SendNotificationUseCase(systemEnv);
+    const createEventStreamUseCase = CreateEventStreamUseCase(systemEnv);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
-    const getChecklistResultUseCase = GetChecklistResultUseCase(preLoadRecordRepository, uploadToS3RecordRepository);
+    const getChecklistResultUseCase = GetChecklistResultUseCase(systemEnv);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
     const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
     const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(systemEnv);
