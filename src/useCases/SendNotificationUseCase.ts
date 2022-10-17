@@ -8,12 +8,12 @@ import {
   makeNewNotificationRecord,
   makeNewNotificationResponse,
   NewNotificationRecord,
-  NewNotificationRepository,
 } from '../domain/NewNotificationRepository';
 import { authorizeApiKey } from '../domain/authorize';
+import { SystemEnv } from './SystemEnv';
 
 export const SendNotificationUseCase =
-  (repository: NewNotificationRepository) =>
+  ({ createNotificationRequestRecordRepository }: SystemEnv) =>
   (apiKey: ApiKey) =>
   (body: NewNotificationRequest): TE.TaskEither<Error, NewNotificationRecord['output']> =>
     pipe(
@@ -23,7 +23,7 @@ export const SendNotificationUseCase =
       E.map((returned) => ({ statusCode: 202 as const, returned })),
       E.toUnion,
       (output) => makeNewNotificationRecord({ input: { apiKey, body }, output }),
-      repository.insert,
+      createNotificationRequestRecordRepository.insert,
       TE.map((record) => record.output)
     );
 export type SendNotificationUseCase = ReturnType<typeof SendNotificationUseCase>;

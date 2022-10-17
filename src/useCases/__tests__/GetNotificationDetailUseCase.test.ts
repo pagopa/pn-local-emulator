@@ -17,6 +17,8 @@ describe('GetNotificationDetailUseCase', () => {
   it('should return 200', async () => {
     const useCase = GetNotificationDetailUseCase({
       ...data.makeTestSystemEnv(
+        [],
+        [],
         [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken],
         [data.checkNotificationStatusRecord, data.checkNotificationStatusRecordAccepted]
       ),
