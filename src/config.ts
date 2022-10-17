@@ -9,6 +9,7 @@ export type Config = {
     port: number;
     hostname: string;
     uploadToS3URL: URL;
+    downloadDocumentURL: URL;
   };
 };
 
@@ -27,6 +28,7 @@ export const parseConfig = (envs: Record<string, undefined | string>): E.Either<
           port: envs.PORT,
           hostname: envs.HOSTNAME,
           uploadToS3URL: new URL(`http://${envs.HOSTNAME}:${envs.PORT}/uploadS3`),
+          downloadDocumentURL: new URL(`http://${envs.HOSTNAME}:${envs.PORT}/download`),
         },
       })
     )

@@ -9,5 +9,6 @@ export const config: Config = {
     hostname: envs['HOSTNAME'] as string,
     port: Number(envs['PORT']),
     uploadToS3URL: new URL(`http://${envs['HOSTNAME']}:${envs['PORT']}/uploadS3`),
+    downloadDocumentURL: new URL(`http://${envs['HOSTNAME']}:${envs['PORT']}/download`),
   },
 };
