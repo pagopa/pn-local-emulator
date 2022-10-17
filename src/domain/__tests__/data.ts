@@ -294,13 +294,19 @@ export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = 
 export const getNotificationDocumentMetadataRecord0: GetNotificationDocumentMetadataRecord = {
   type: 'GetNotificationDocumentMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 0 },
-  output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0) },
+  output: {
+    statusCode: 200,
+    returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
+  },
 };
 
 export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMetadataRecord = {
   type: 'GetNotificationDocumentMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 1 },
-  output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument1) },
+  output: {
+    statusCode: 200,
+    returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument1),
+  },
 };
 
 // GetPaymentNotificationMetadataRecord //////////////////////////////////////
@@ -308,5 +314,8 @@ export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMeta
 export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadataRecord = {
   type: 'GetPaymentNotificationMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, recipientId: 0, attachmentName: 'PAGOPA' },
-  output: { statusCode: 200, returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0) },
+  output: {
+    statusCode: 200,
+    returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
+  },
 };
