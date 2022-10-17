@@ -20,4 +20,6 @@ export type SystemEnv = DomainEnv & {
   getNotificationDetailRecordRepository: GetNotificationDetailRecordRepository;
   getNotificationDocumentMetadataRecordRepository: GetNotificationDocumentMetadataRecordRepository;
   getPaymentNotificationMetadataRecordRepository: GetPaymentNotificationMetadataRecordRepository;
+  // custom env
+  uploadToS3URL: URL;
 };

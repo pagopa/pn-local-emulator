@@ -17,7 +17,7 @@ const body = [
 
 describe('PreLoadUseCase', () => {
   it('should return the key into url for each elements', async () => {
-    const useCase = PreLoadUseCase(config.server.uploadToS3URL, data.makeTestSystemEnv());
+    const useCase = PreLoadUseCase(data.makeTestSystemEnv());
     const actual = await useCase(data.apiKey.valid)(body)();
     const checkKey = pipe(
       actual,

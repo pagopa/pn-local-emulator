@@ -23,6 +23,7 @@ import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 import { unsafeCoerce } from 'fp-ts/function';
+import { config } from '../../__tests__/data';
 
 export const apiKey = {
   valid: 'key-value',
@@ -79,6 +80,7 @@ export const makeTestSystemEnv = (
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
   logger: Logger = makeLogger()
 ): SystemEnv => ({
+  uploadToS3URL: config.server.uploadToS3URL,
   occurrencesAfterComplete: 2,
   senderPAId: aSenderPaId,
   iunGenerator: crypto.randomUUID,

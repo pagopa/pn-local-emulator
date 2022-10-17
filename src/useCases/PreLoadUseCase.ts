@@ -16,11 +16,10 @@ const makeResponsePayload = (baseUrl: string, body: PreLoadRequestBody): Readonl
   );
 
 export const PreLoadUseCase =
-  (uploadToS3URL: URL, { preLoadRecordRepository }: SystemEnv) =>
+  ({ uploadToS3URL, preLoadRecordRepository }: SystemEnv) =>
   (apiKey: ApiKey) =>
   (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> =>
     pipe(
-      // authorize the key
       authorizeApiKey(apiKey),
       E.map((_) => makeResponsePayload(uploadToS3URL.href, body)),
       E.map((returned) => ({ statusCode: 200 as const, returned })),
