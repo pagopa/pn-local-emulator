@@ -33,6 +33,7 @@ const makeNotificationStatusHistoryElement = (
 const makeTimelineElement = (elementId: string): TimelineElement => ({
   elementId,
   category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+  legalFactsIds: [],
 });
 
 export const makeFullSentNotification =
