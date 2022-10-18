@@ -22,6 +22,7 @@ import { makeGetNotificationDetailRouter } from './getNotificationDetail/router'
 import { makeConsumeEventStreamRouter } from './consumeEventStream/router';
 import { makeGetNotificationDocumentMetadataRouter } from './getNotificationDocumentMetadata/router';
 import { makeGetPaymentNotificationMetadataRouter } from './getPaymentNotificationMetadata/router';
+import { makeDownloadDocumentRouter } from './download/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
@@ -48,6 +49,7 @@ export const makeApplication = (
   app.use(makeGetNotificationDetailRouter(getNotificationDetailUseCase));
   app.use(makeGetNotificationDocumentMetadataRouter(getNotificationDocumentMetadataUseCase));
   app.use(makeGetPaymentNotificationMetadataRouter(getPaymentNotificationMetadataUseCase));
+  app.use(makeDownloadDocumentRouter());
   return app;
 };
 

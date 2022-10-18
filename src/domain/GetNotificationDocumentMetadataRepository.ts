@@ -4,6 +4,7 @@ import { NotificationAttachmentDownloadMetadataResponse } from '../generated/def
 import { Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { Notification } from './Notification';
+import { DomainEnv } from './DomainEnv';
 
 export type GetNotificationDocumentMetadataRecord = {
   type: 'GetNotificationDocumentMetadataRecord';
@@ -14,13 +15,14 @@ export type GetNotificationDocumentMetadataRecord = {
     | Response<404>;
 };
 
-export const makeNotificationAttachmentDownloadMetadataResponse = (
-  document: Notification['documents'][0]
-): NotificationAttachmentDownloadMetadataResponse => ({
-  filename: document.ref.key,
-  contentType: document.contentType,
-  contentLength: 0,
-  sha256: document.digests.sha256,
-});
+export const makeNotificationAttachmentDownloadMetadataResponse =
+  (env: DomainEnv) =>
+  (document: Notification['documents'][0]): NotificationAttachmentDownloadMetadataResponse => ({
+    filename: document.ref.key,
+    contentType: document.contentType,
+    contentLength: 0,
+    sha256: document.digests.sha256,
+    url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}`,
+  });
 
 export type GetNotificationDocumentMetadataRecordRepository = Repository<GetNotificationDocumentMetadataRecord>;

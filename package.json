@@ -9,6 +9,7 @@
     "generate:pnstream": "shx rm -rf ./src/generated/streams && shx mkdir -p ./src/generated/streams && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pn-delivery-push/d2b3854f646064740666cbe60fec5e77f9dfb4b7/docs/openapi/api-external-b2b-webhook-v1.yaml --no-strict --out-dir ./src/generated/streams",
     "generate:internal": "shx rm -rf ./src/generated/codec && shx mkdir -p ./src/generated/codec && gen-api-models --api-spec ./openapi/internal.yaml --no-strict --out-dir ./src/generated/codec",
     "clean": "tsc --build --clean",
+    "postcompile": "shx cp -R ./src/adapters/http/download/exampledocuments ./dist/adapters/http/download/exampledocuments",
     "compile": "tsc",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",

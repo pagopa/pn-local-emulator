@@ -35,7 +35,7 @@ export const GetNotificationDocumentMetadataUseCase =
               // for the moment just convert the most convenient
               RA.filterWithIndex((i, document) => (document.docIdx || i.toString()) === docIdx.toString()),
               RA.last,
-              O.map(makeNotificationAttachmentDownloadMetadataResponse),
+              O.map(makeNotificationAttachmentDownloadMetadataResponse(env)),
               O.map((document) => ({ statusCode: 200 as const, returned: document })),
               O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
             )
