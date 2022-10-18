@@ -17,17 +17,16 @@ export const GetChecklistResultUseCase =
         uploadList: uploadToS3RecordRepository.list(),
         notificationStatusList: findNotificationRequestRecordRepository.list(),
       }),
-      (x) => x,
       TE.map(({ preLoadList, uploadList, notificationStatusList }) => ({
         preLoadChecklistIn: preLoadList,
         uploadChecklistIn: RA.concatW(preLoadList)(uploadList),
-        notificationStatusList,
+        notificationStatusListIn: notificationStatusList,
       })),
-      TE.map(({ preLoadChecklistIn, uploadChecklistIn, notificationStatusList }) =>
+      TE.map(({ preLoadChecklistIn, uploadChecklistIn, notificationStatusListIn }) =>
         pipe(
           evalChecklist(preLoadChecklist)(preLoadChecklistIn),
           RA.alt(() => evalChecklist(uploadToS3Checklist)(uploadChecklistIn)),
-          RA.alt(() => evalChecklist(checkNotificationStatusChecklist)(notificationStatusList))
+          RA.alt(() => evalChecklist(checkNotificationStatusChecklist)(notificationStatusListIn))
         )
       )
     );
