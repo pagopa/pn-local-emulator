@@ -1,4 +1,6 @@
+import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
+import * as RA from 'fp-ts/ReadonlyArray';
 import * as data from '../../domain/__tests__/data';
 import { GetNotificationDetailUseCase } from '../GetNotificationDetailUseCase';
 
@@ -27,6 +29,13 @@ describe('GetNotificationDetailUseCase', () => {
     const expected = E.right(data.getNotificationDetailRecordAccepted.output);
     const actual = await useCase(data.apiKey.valid)(data.aIun.valid)();
 
+    const checkDocIdxIsDefined = pipe(
+      RA.fromEither(actual),
+      RA.chain(({ statusCode, returned }) => (statusCode === 200 ? returned.documents : RA.empty)),
+      RA.every(({ docIdx }) => docIdx !== undefined)
+    );
+
     expect(actual).toStrictEqual(expected);
+    expect(checkDocIdxIsDefined).toBeTruthy();
   });
 });
