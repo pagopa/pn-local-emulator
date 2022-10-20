@@ -112,7 +112,7 @@ const aRecipient: FullSentNotification['recipients'][0] = {
   taxId: 'aTaxId',
   digitalDomicile: {
     type: TypeEnum.PEC,
-    address: 'hello@thisismypec.pec'
+    address: 'hello@thisismypec.pec',
   },
   physicalAddress: {
     address: '',
@@ -164,7 +164,7 @@ const newNotificationRequest: NewNotificationRequest = {
   recipients: [aRecipient],
   documents: [{ ...aDocument0, docIdx: undefined }, aDocument1],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
-  physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890
+  physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890,
 };
 
 export const newNotificationRecord = makeNewNotificationRecord({
