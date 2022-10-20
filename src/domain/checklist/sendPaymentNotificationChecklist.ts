@@ -1,12 +1,20 @@
+import { flow, pipe } from 'fp-ts/lib/function';
+import * as P from 'fp-ts/Predicate';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRecord } from '../NewNotificationRepository';
-import { PreLoadRecord } from '../PreLoadRepository';
+import { isPreLoadRecord, PreLoadRecord } from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
 import { Checklist } from './types';
+import * as preLoadChecks from './preLoadChecklist';
 
 const group = {
   name: 'TC-INVIO-01 - Send a notification with a payment document',
 };
+
+// TODO: Move them somewhere else as single checks adn make them reusable
+const existsApiKey = pipe(preLoadChecks.check1.eval, P.contramap(RA.of<PreLoadRecord>));
+const hasPreloadIdxUnique = pipe(preLoadChecks.check2.eval, P.contramap(RA.of<PreLoadRecord>));
+const hasContentType = pipe(preLoadChecks.check3.eval, P.contramap(RA.of<PreLoadRecord>));
 
 // Request an “upload slot” endpoint
 //  expect at least two requests with a payload that produces a 2xx as a response
@@ -16,7 +24,14 @@ const group = {
 export const preLoadCheck = {
   group,
   name: `Exist at least two requests 'Request an "upload slot"' that matches the criteria`,
-  eval: RA.some(() => true),
+  eval: pipe(
+    flow(
+      RA.filter(pipe(existsApiKey, P.and(hasPreloadIdxUnique), P.and(hasContentType))),
+      RA.size,
+      (size) => size >= 2
+    ),
+    P.contramap(RA.filterMap(isPreLoadRecord))
+  ),
 };
 
 // Upload to S3 endpoint
