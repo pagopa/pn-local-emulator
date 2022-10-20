@@ -18,7 +18,7 @@ import {
 } from '../GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
-import { RecipientTypeEnum } from '../../generated/definitions/NotificationRecipient';
+import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
@@ -110,6 +110,15 @@ const aRecipient: FullSentNotification['recipients'][0] = {
   recipientType: RecipientTypeEnum.PF,
   denomination: 'denomination',
   taxId: 'aTaxId',
+  digitalDomicile: {
+    type: TypeEnum.PEC,
+    address: 'hello@thisismypec.pec'
+  },
+  physicalAddress: {
+    address: '',
+    zip: '',
+    municipality: '',
+  },
   payment: {
     creditorTaxId: unsafeCoerce('77777777777'),
     noticeCode: unsafeCoerce('302000100000019421'),
@@ -144,7 +153,7 @@ export const uploadToS3Record: UploadToS3Record = {
     secret: preLoadResponse.secret,
     checksum: preLoadBody.sha256,
   },
-  output: { statusCode: 200, returned: 10 },
+  output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken) },
 };
 
 // NewNotificationRecord //////////////////////////////////////////////////////
@@ -155,7 +164,7 @@ const newNotificationRequest: NewNotificationRequest = {
   recipients: [aRecipient],
   documents: [{ ...aDocument0, docIdx: undefined }, aDocument1],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
-  physicalCommunicationType: PhysicalCommunicationTypeEnum.SIMPLE_REGISTERED_LETTER,
+  physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890
 };
 
 export const newNotificationRecord = makeNewNotificationRecord({
