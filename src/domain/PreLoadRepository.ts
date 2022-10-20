@@ -1,4 +1,7 @@
 import * as O from 'fp-ts/Option';
+import { pipe } from 'fp-ts/function';
+import * as RA from 'fp-ts/ReadonlyArray';
+import * as s from 'fp-ts/string';
 import { PreLoadResponseBody } from '../generated/definitions/PreLoadResponseBody';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 import { ApiKey } from '../generated/definitions/ApiKey';
@@ -35,3 +38,17 @@ export const makePreLoadRecord = (record: Omit<PreLoadRecord, 'type'>): PreLoadR
 });
 
 export type PreLoadRecordRepository = Repository<PreLoadRecord>;
+
+export const uniquePreloadIdx = (record: PreLoadRecord) =>
+  pipe(
+    record.input.body,
+    RA.map((elem) => elem.preloadIdx),
+    RA.uniq(s.Eq),
+    (unique) => unique.length === record.input.body.length
+  );
+
+export const contentTypeIsPdf = (record: PreLoadRecord) =>
+  pipe(
+    record.input.body,
+    RA.every(({ contentType }) => contentType === 'application/pdf')
+  );
