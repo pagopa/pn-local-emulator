@@ -15,16 +15,10 @@ export const GetChecklistResultUseCase =
         uploadList: uploadToS3RecordRepository.list(),
         createNotificationRequestList: createNotificationRequestRecordRepository.list(),
       }),
-      TE.map(({ preLoadList, uploadList, createNotificationRequestList }) => ({
-        sendPaymentNotificationChecklistIn: pipe(
-          preLoadList,
-          RA.concatW(uploadList),
-          RA.concatW(createNotificationRequestList)
-        ),
-      })),
-      TE.map(({ sendPaymentNotificationChecklistIn }) =>
-        evalChecklist(sendPaymentNotificationChecklist)(sendPaymentNotificationChecklistIn)
-      )
+      TE.map(({ preLoadList, uploadList, createNotificationRequestList }) =>
+        pipe(preLoadList, RA.concatW(uploadList), RA.concatW(createNotificationRequestList))
+      ),
+      TE.map(evalChecklist(sendPaymentNotificationChecklist))
     );
 
 export type GetChecklistResultUseCase = ReturnType<typeof GetChecklistResultUseCase>;
