@@ -153,7 +153,7 @@ export const uploadToS3Record: UploadToS3Record = {
     secret: preLoadResponse.secret,
     checksum: preLoadBody.sha256,
   },
-  output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken) },
+  output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken, 10) },
 };
 
 // NewNotificationRecord //////////////////////////////////////////////////////

@@ -2,7 +2,7 @@ import { evalCheck } from '../types';
 import { preLoadCheck, uploadToS3Check, createNotificationRequestCheck } from '../sendPaymentNotificationChecklist';
 import * as data from '../../__tests__/data';
 
-describe.skip('TC-INVIO-01 - Send a notification with a payment document', () => {
+describe('TC-SEND-01 - Send a notification with a payment document', () => {
   it('should verify the conditions on preLoadRecord', () => {
     const check = evalCheck({ ...preLoadCheck });
 
@@ -13,7 +13,7 @@ describe.skip('TC-INVIO-01 - Send a notification with a payment document', () =>
     expect(actual1.result).toStrictEqual('ok');
   });
 
-  it('should verify the conditions on uploadToS3Record', () => {
+  it.skip('should verify the conditions on uploadToS3Record', () => {
     const check = evalCheck({ ...uploadToS3Check });
 
     const actual0 = check([data.preLoadRecord, data.uploadToS3Record]);
@@ -23,7 +23,7 @@ describe.skip('TC-INVIO-01 - Send a notification with a payment document', () =>
     expect(actual1.result).toStrictEqual('ok');
   });
 
-  it('should verify the conditions on NewNotificationRecord', () => {
+  it.skip('should verify the conditions on NewNotificationRecord', () => {
     const check = evalCheck({ ...createNotificationRequestCheck });
 
     const actual0 = check([data.preLoadRecord, data.uploadToS3Record]);

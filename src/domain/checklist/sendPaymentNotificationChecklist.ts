@@ -1,11 +1,19 @@
+import { flow, pipe } from 'fp-ts/lib/function';
+import * as P from 'fp-ts/Predicate';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRecord } from '../NewNotificationRepository';
-import { PreLoadRecord } from '../PreLoadRepository';
+import {
+  hasApplicationPdfAsContentType,
+  isPreLoadRecord,
+  PreLoadRecord,
+  hasUniquePreloadIdx,
+} from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
+import { existsApiKey } from '../Repository';
 import { Checklist } from './types';
 
 const group = {
-  name: 'TC-INVIO-01 - Send a notification with a payment document',
+  name: 'TC-SEND-01 - Send a notification with a payment document',
 };
 
 // Request an “upload slot” endpoint
@@ -16,7 +24,11 @@ const group = {
 export const preLoadCheck = {
   group,
   name: `Exist at least two requests 'Request an "upload slot"' that matches the criteria`,
-  eval: RA.some(() => true),
+  eval: flow(
+    RA.filterMap(isPreLoadRecord),
+    RA.filter(pipe(existsApiKey, P.and(hasUniquePreloadIdx), P.and(hasApplicationPdfAsContentType))),
+    (records) => RA.size(records) >= 2
+  ),
 };
 
 // Upload to S3 endpoint
