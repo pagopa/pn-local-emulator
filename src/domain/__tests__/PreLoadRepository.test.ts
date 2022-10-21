@@ -1,14 +1,14 @@
 import * as data from './data';
-import { contentTypeIsPdf } from '../PreLoadRepository';
+import { hasApplicationPdfAsContentType } from '../PreLoadRepository';
 
 describe('PreLoadRepository', () => {
   it('should be true that all content types are "application/pdf"', () => {
-    const actual = contentTypeIsPdf(data.preLoadRecord);
+    const actual = hasApplicationPdfAsContentType(data.preLoadRecord);
     expect(actual).toStrictEqual(true);
   });
 
   it('should be false that all content types are "application/pdf"', () => {
-    const actual = contentTypeIsPdf({
+    const actual = hasApplicationPdfAsContentType({
       ...data.preLoadRecord,
       input: {
         ...data.preLoadRecord.input,

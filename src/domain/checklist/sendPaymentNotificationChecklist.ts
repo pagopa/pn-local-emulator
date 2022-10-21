@@ -2,7 +2,12 @@ import { flow, pipe } from 'fp-ts/lib/function';
 import * as P from 'fp-ts/Predicate';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRecord } from '../NewNotificationRepository';
-import { contentTypeIsPdf, isPreLoadRecord, PreLoadRecord, uniquePreloadIdx } from '../PreLoadRepository';
+import {
+  hasApplicationPdfAsContentType,
+  isPreLoadRecord,
+  PreLoadRecord,
+  hasUniquePreloadIdx,
+} from '../PreLoadRepository';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
 import { existsApiKey } from '../Repository';
 import { Checklist } from './types';
@@ -19,12 +24,10 @@ const group = {
 export const preLoadCheck = {
   group,
   name: `Exist at least two requests 'Request an "upload slot"' that matches the criteria`,
-  eval: pipe(
-    flow(
-      RA.filterMap(isPreLoadRecord),
-      RA.filter(pipe(existsApiKey, P.and(uniquePreloadIdx), P.and(contentTypeIsPdf))),
-      (records) => RA.size(records) >= 2
-    )
+  eval: flow(
+    RA.filterMap(isPreLoadRecord),
+    RA.filter(pipe(existsApiKey, P.and(hasUniquePreloadIdx), P.and(hasApplicationPdfAsContentType))),
+    (records) => RA.size(records) >= 2
   ),
 };
 

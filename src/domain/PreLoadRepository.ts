@@ -39,7 +39,7 @@ export const makePreLoadRecord = (record: Omit<PreLoadRecord, 'type'>): PreLoadR
 
 export type PreLoadRecordRepository = Repository<PreLoadRecord>;
 
-export const uniquePreloadIdx = (record: PreLoadRecord) =>
+export const hasUniquePreloadIdx = (record: PreLoadRecord) =>
   pipe(
     record.input.body,
     RA.map((elem) => elem.preloadIdx),
@@ -47,7 +47,7 @@ export const uniquePreloadIdx = (record: PreLoadRecord) =>
     (unique) => unique.length === record.input.body.length
   );
 
-export const contentTypeIsPdf = (record: PreLoadRecord) =>
+export const hasApplicationPdfAsContentType = (record: PreLoadRecord) =>
   pipe(
     record.input.body,
     RA.every(({ contentType }) => contentType === 'application/pdf')
