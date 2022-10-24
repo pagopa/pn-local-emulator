@@ -1,7 +1,36 @@
 # PnValidator
 [![CI](https://github.com/pagopa/pn-local-emulator/actions/workflows/main.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator/actions/workflows/main.yaml)
 
-A system that emulates some features of the Piattaforma Notifiche platform.
+A system that emulates a subset of the HTTP API provided by Piattaforma Notifiche platform and produces a report containing the coverage of expected use cases.
+
+## How to use
+1. Start `PnValidator` as described in [How to run](#how-to-run) section.
+2. Change the configuration of your integration as follows:
+   - Change the `x-api-key` to the following value `key-value`,
+   - Change the base url to the `PnValidator` endpoint (depends on how you started it, e.g.: `http://localhost:3000`).
+3. Test your integration.
+4. Call the endpoint that produce the report showing the use-cases coverage
+``` shell
+# this is an example, the port and the hostname depends on how you started the PnValidator system
+
+curl --location --request GET 'http://localhost:3000/checklistresult'
+```
+
+## Which use cases case be tested
+At the moment the `PnValidator` allows the following use-case:
+
+1. TC-SEND-01
+   1. Request two upload slot
+   2. Consume the two upload slots uploading two documents (use the information provided in the previous request).
+   3. Create a notification request providing the following information:
+      - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
+      - the `recipients` field providing:
+        - `taxId`
+        - `digitalDomicile`
+        - `physicalAddress`
+        - `payment` referencing one file uploaded previously
+      - the `documents` field providing one file uploaded previously
+
 
 ## Prerequisites
 If you want to run the emulator locally, starting from the source code, you need to follow the next steps.
