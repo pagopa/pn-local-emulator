@@ -1,4 +1,4 @@
-import { flow, pipe } from 'fp-ts/lib/function';
+import { flow, pipe, tuple } from 'fp-ts/lib/function';
 import * as P from 'fp-ts/Predicate';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
@@ -44,7 +44,7 @@ export const uploadToS3Check = {
     R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
     R.map(({ preloadRecordList, uploadToS3RecordList }) =>
       pipe(
-        RA.comprehension([preloadRecordList, uploadToS3RecordList], oneRefersToOther),
+        RA.comprehension([preloadRecordList, uploadToS3RecordList], tuple, oneRefersToOther),
         (records) => RA.size(records) >= 2
       )
     )
