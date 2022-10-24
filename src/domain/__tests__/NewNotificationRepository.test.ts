@@ -11,6 +11,11 @@ import {
 import { unauthorizedResponse } from '../types';
 import { PhysicalCommunicationTypeEnum } from '../../generated/definitions/NewNotificationRequest';
 
+const validOverridingBody = (body: Partial<typeof data.newNotificationRecord['input']['body']>) => ({
+  ...data.newNotificationRecord,
+  input: { ...data.newNotificationRecord.input, body: { ...data.newNotificationRecord.input.body, ...body } },
+});
+
 describe('NewNotificationRepository', () => {
   const validRecord = data.newNotificationRecord;
 
@@ -27,16 +32,11 @@ describe('NewNotificationRepository', () => {
     expect(hasRecipientDigitalDomicile(validRecord)).toStrictEqual(true);
 
     expect(
-      hasRecipientDigitalDomicile({
-        ...validRecord,
-        input: {
-          ...validRecord.input,
-          body: {
-            ...validRecord.input.body,
-            recipients: [{ ...validRecord.input.body.recipients[0], digitalDomicile: undefined }],
-          },
-        },
-      })
+      hasRecipientDigitalDomicile(
+        validOverridingBody({
+          recipients: [{ ...validRecord.input.body.recipients[0], digitalDomicile: undefined }],
+        })
+      )
     ).toStrictEqual(false);
   });
 
@@ -44,16 +44,11 @@ describe('NewNotificationRepository', () => {
     expect(hasPhysicalAddress(validRecord)).toStrictEqual(true);
 
     expect(
-      hasPhysicalAddress({
-        ...validRecord,
-        input: {
-          ...validRecord.input,
-          body: {
-            ...validRecord.input.body,
-            recipients: [{ ...validRecord.input.body.recipients[0], physicalAddress: undefined }],
-          },
-        },
-      })
+      hasPhysicalAddress(
+        validOverridingBody({
+          recipients: [{ ...validRecord.input.body.recipients[0], physicalAddress: undefined }],
+        })
+      )
     ).toStrictEqual(false);
   });
 
@@ -61,16 +56,11 @@ describe('NewNotificationRepository', () => {
     expect(hasRegisteredLetterAsPhysicalDocumentType(validRecord)).toStrictEqual(true);
 
     expect(
-      hasRegisteredLetterAsPhysicalDocumentType({
-        ...validRecord,
-        input: {
-          ...validRecord.input,
-          body: {
-            ...validRecord.input.body,
-            physicalCommunicationType: PhysicalCommunicationTypeEnum.SIMPLE_REGISTERED_LETTER,
-          },
-        },
-      })
+      hasRegisteredLetterAsPhysicalDocumentType(
+        validOverridingBody({
+          physicalCommunicationType: PhysicalCommunicationTypeEnum.SIMPLE_REGISTERED_LETTER,
+        })
+      )
     ).toStrictEqual(false);
   });
 
@@ -78,29 +68,11 @@ describe('NewNotificationRepository', () => {
     expect(hasRecipientPaymentCreditorTaxId(validRecord)).toStrictEqual(true);
     expect(hasRecipientPaymentNoticeCode(validRecord)).toStrictEqual(true);
 
-    expect(
-      hasRecipientPaymentCreditorTaxId({
-        ...validRecord,
-        input: {
-          ...validRecord.input,
-          body: {
-            ...validRecord.input.body,
-            recipients: [{ ...validRecord.input.body.recipients[0], payment: undefined }],
-          },
-        },
-      })
-    ).toStrictEqual(false);
-    expect(
-      hasRecipientPaymentNoticeCode({
-        ...validRecord,
-        input: {
-          ...validRecord.input,
-          body: {
-            ...validRecord.input.body,
-            recipients: [{ ...validRecord.input.body.recipients[0], payment: undefined }],
-          },
-        },
-      })
-    ).toStrictEqual(false);
+    const invalid = validOverridingBody({
+      recipients: [{ ...validRecord.input.body.recipients[0], payment: undefined }],
+    });
+
+    expect(hasRecipientPaymentCreditorTaxId(invalid)).toStrictEqual(false);
+    expect(hasRecipientPaymentNoticeCode(invalid)).toStrictEqual(false);
   });
 });
