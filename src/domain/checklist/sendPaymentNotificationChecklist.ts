@@ -1,7 +1,17 @@
 import { flow, pipe } from 'fp-ts/lib/function';
 import * as P from 'fp-ts/Predicate';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NewNotificationRecord } from '../NewNotificationRepository';
+import {
+  hasPhysicalAddress,
+  hasRecipientDigitalDomicile,
+  hasRecipientPaymentCreditorTaxId,
+  hasRecipientPaymentNoticeCode,
+  hasRecipientTaxId,
+  hasRegisteredLetterAsPhysicalDocumentType,
+  hasSuccessfulResponse,
+  isNewNotificationRecord,
+  NewNotificationRecord,
+} from '../NewNotificationRepository';
 import {
   hasApplicationPdfAsContentType,
   isPreLoadRecord,
@@ -46,7 +56,21 @@ export const uploadToS3Check = {
 export const createNotificationRequestCheck = {
   group,
   name: 'Expect a send notification request that matches all the criteria',
-  eval: RA.some(() => true),
+  eval: flow(
+    RA.filterMap(isNewNotificationRecord),
+    RA.some(
+      pipe(
+        existsApiKey,
+        P.and(hasRecipientTaxId),
+        P.and(hasRecipientDigitalDomicile),
+        P.and(hasPhysicalAddress),
+        P.and(hasRegisteredLetterAsPhysicalDocumentType),
+        P.and(hasRecipientPaymentCreditorTaxId),
+        P.and(hasRecipientPaymentNoticeCode),
+        P.and(hasSuccessfulResponse)
+      )
+    )
+  ),
 };
 
 export const sendPaymentNotificationChecklist: Checklist<
