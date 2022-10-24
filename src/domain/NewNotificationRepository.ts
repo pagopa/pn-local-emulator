@@ -53,11 +53,6 @@ export const hasRecipientPaymentNoticeCode = (record: NewNotificationRecord) =>
     RA.every(({ payment }) => pipe(payment?.noticeCode, O.fromNullable, O.isSome))
   );
 
-const getNotification = (record: NewNotificationRecord): O.Option<Notification> =>
-  record.output.statusCode === 202 ? O.some({ ...record.input.body, ...record.output.returned }) : O.none;
-
-export const getNotifications = RA.filterMap(getNotification);
-
 export const makeNewNotificationResponse =
   (input: NewNotificationRequest) =>
   (notificationRequestId: string): NewNotificationResponse => ({
