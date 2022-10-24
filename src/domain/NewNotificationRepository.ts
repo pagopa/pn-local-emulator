@@ -44,27 +44,13 @@ export const hasRegisteredLetterAsPhysicalDocumentType = (record: NewNotificatio
 export const hasRecipientPaymentCreditorTaxId = (record: NewNotificationRecord) =>
   pipe(
     record.input.body.recipients,
-    RA.every((recipient) =>
-      pipe(
-        recipient.payment,
-        O.fromNullable,
-        O.map((_) => _.creditorTaxId),
-        O.isSome
-      )
-    )
+    RA.every(({ payment }) => pipe(payment?.creditorTaxId, O.fromNullable, O.isSome))
   );
 
 export const hasRecipientPaymentNoticeCode = (record: NewNotificationRecord) =>
   pipe(
     record.input.body.recipients,
-    RA.every((recipient) =>
-      pipe(
-        recipient.payment,
-        O.fromNullable,
-        O.map((_) => _.noticeCode),
-        O.isSome
-      )
-    )
+    RA.every(({ payment }) => pipe(payment?.noticeCode, O.fromNullable, O.isSome))
   );
 
 const getNotification = (record: NewNotificationRecord): O.Option<Notification> =>
