@@ -1,5 +1,6 @@
 import { flow, pipe } from 'fp-ts/lib/function';
 import * as P from 'fp-ts/Predicate';
+import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRecord } from '../NewNotificationRepository';
 import {
@@ -8,7 +9,7 @@ import {
   PreLoadRecord,
   hasUniquePreloadIdx,
 } from '../PreLoadRepository';
-import { UploadToS3Record } from '../UploadToS3RecordRepository';
+import { oneRefersToOther, isUploadToS3Record, UploadToS3Record } from '../UploadToS3RecordRepository';
 import { existsApiKey } from '../Repository';
 import { Checklist } from './types';
 
@@ -37,7 +38,17 @@ export const preLoadCheck = {
 export const uploadToS3Check = {
   group,
   name: `Exist at least two requests 'Upload to S3' that matches the criteria`,
-  eval: RA.some(() => true),
+  eval: pipe(
+    R.Do,
+    R.apS('preloadRecordList', RA.filterMap(isPreLoadRecord)),
+    R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
+    R.map(({ preloadRecordList, uploadToS3RecordList }) =>
+      pipe(
+        RA.comprehension([preloadRecordList, uploadToS3RecordList], oneRefersToOther),
+        (records) => RA.size(records) >= 2
+      )
+    )
+  ),
 };
 
 // Send notification endpoint
