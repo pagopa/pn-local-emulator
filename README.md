@@ -25,7 +25,7 @@ At the moment the `PnValidator` allows the following use-case:
 ### TC-SEND-01
 Create a `NotificationRequest` providing two documents: the act to notify and the pagoPA payment.
 
-1. Request two upload slot
+1. Request two upload slots
 2. Consume the two upload slots uploading two documents (use the information provided in the previous request).
 3. Create a notification request providing the following information:
    - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
