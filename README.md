@@ -11,7 +11,7 @@ A system that emulates a subset of the HTTP API provided by Piattaforma Notifich
    - Point your base URL to the `PnValidator` (it depends on how you started it, e.g.: `http://localhost:3000`).
 
 3. Test your integration.
-4. Call the endpoint that produces the report showing the use cases coverage.
+4. Call the `/checklistresult` endpoint that reports the use cases coverage and status.
 If all the checks are `ok` then your integration covers the expected use cases.
 
  ``` shell
