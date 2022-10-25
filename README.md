@@ -4,15 +4,18 @@
 A system that emulates a subset of the HTTP API provided by Piattaforma Notifiche platform and produces a report containing the coverage of expected use cases.
 
 ## How to use
-1. Start `PnValidator` as described in the [How to run](#how-to-run) section.
-2. Change the configuration of your integration as follows:
-   - Change the `x-api-key` to the following value `key-value`,
-   - Change the base URL to the `PnValidator` endpoint (depends on how you started it, e.g.: `http://localhost:3000`).
-3. Test your integration.
-4. Call the endpoint that produces the report showing the use cases coverage. If all the checks are `ok` then your integration covers the expected use cases.
-``` shell
-# this is an example, the port and the hostname depend on how you started the PnValidator system
 
+1. Start the `PnValidator` as described in the [How to run](#how-to-run) section.
+2. Configure your integration as following:
+   - Set the `x-api-key` to `key-value`,
+   - Point your base URL to the `PnValidator` (it depends on how you started it, e.g.: `http://localhost:3000`).
+
+3. Test your integration.
+4. Call the endpoint that produces the report showing the use cases coverage.
+If all the checks are `ok` then your integration covers the expected use cases.
+
+ ``` shell
+# this is an example, the port and the hostname depend on how you started the PnValidator system
 curl --location --request GET 'http://localhost:3000/checklistresult'
 ```
 
@@ -34,19 +37,20 @@ Create a `NotificationRequest` providing two documents: the act to notify and th
    - the `documents` field providing one file uploaded previously
 
 
-## Prerequisites
-If you want to run the emulator locally, starting from the source code, you need to follow the next steps.
+## How to run
 
-The first thing to do is to clone the repository using the preferred method (the next command uses SSH):
+### Prerequisites
+If you want to run the emulator starting from the source code, please follow these steps.
+
+First, clone the repository using the preferred method (the next command uses SSH):
 
 ```shell
 git clone git@github.com:pagopa/pn-local-emulator.git
 ```
 
-This project runs using [Node.js](https://nodejs.org/en/) and it has been developed with the version specified in the [`.node_version`](.node-version) file.
+Second, this project runs with [Node.js](https://nodejs.org/en/) and it has been developed with the version specified in the [`.node_version`](.node-version) file.
 
-You could [install nvm](https://github.com/nvm-sh/nvm) and use the next commands to install and set the same version
-of Node.js specified in the `.node_version` file.
+We suggest [using nvm](https://github.com/nvm-sh/nvm) to install Node.js at the same version specified in the `.node_version` file.
 
 ```shell
 # Install the version of Node.js specified in the .node_version file
@@ -55,9 +59,7 @@ nvm install `cat .node-version`
 # Set the version of Node.js specified in the .node_version file
 nvm use `cat .node-version`
 ```
-Make sure that the path of `.node_version` is correct because the example commands assume you are in the repository folder.
-
-## How to run
+Please, make sure the path of `.node_version` is correct. The given commands assume you are in the repository folder.
 
 ### Run using Node.js
 
