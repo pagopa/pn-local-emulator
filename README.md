@@ -4,14 +4,14 @@
 A system that emulates a subset of the HTTP API provided by Piattaforma Notifiche platform and produces a report containing the coverage of expected use cases.
 
 ## How to use
-1. Start `PnValidator` as described in [How to run](#how-to-run) section.
+1. Start `PnValidator` as described in the [How to run](#how-to-run) section.
 2. Change the configuration of your integration as follows:
    - Change the `x-api-key` to the following value `key-value`,
-   - Change the base url to the `PnValidator` endpoint (depends on how you started it, e.g.: `http://localhost:3000`).
+   - Change the base URL to the `PnValidator` endpoint (depends on how you started it, e.g.: `http://localhost:3000`).
 3. Test your integration.
-4. Call the endpoint that produce the report showing the use-cases coverage, if all the checks are `ok` the your integration cover the expected use-cases.
+4. Call the endpoint that produces the report showing the use cases coverage. If all the checks are `ok` then your integration covers the expected use cases.
 ``` shell
-# this is an example, the port and the hostname depends on how you started the PnValidator system
+# this is an example, the port and the hostname depend on how you started the PnValidator system
 
 curl --location --request GET 'http://localhost:3000/checklistresult'
 ```
