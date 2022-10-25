@@ -6,7 +6,7 @@ A system that emulates a subset of the HTTP API provided by Piattaforma Notifich
 ## How to use
 
 1. Start the `PnValidator` as described in the [How to run](#how-to-run) section.
-2. Configure your integration as following:
+2. Configure your integration as follows:
    - Set the `x-api-key` to `key-value`,
    - Point your base URL to the `PnValidator` (it depends on how you started it, e.g.: `http://localhost:3000`).
 
