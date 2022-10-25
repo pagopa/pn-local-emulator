@@ -9,7 +9,7 @@ A system that emulates a subset of the HTTP API provided by Piattaforma Notifich
    - Change the `x-api-key` to the following value `key-value`,
    - Change the base url to the `PnValidator` endpoint (depends on how you started it, e.g.: `http://localhost:3000`).
 3. Test your integration.
-4. Call the endpoint that produce the report showing the use-cases coverage
+4. Call the endpoint that produce the report showing the use-cases coverage, if all the checks are `ok` the your integration cover the expected use-cases.
 ``` shell
 # this is an example, the port and the hostname depends on how you started the PnValidator system
 
@@ -19,17 +19,19 @@ curl --location --request GET 'http://localhost:3000/checklistresult'
 ## Which use cases case be tested
 At the moment the `PnValidator` allows the following use-case:
 
-1. TC-SEND-01
-   1. Request two upload slot
-   2. Consume the two upload slots uploading two documents (use the information provided in the previous request).
-   3. Create a notification request providing the following information:
-      - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
-      - the `recipients` field providing:
-        - `taxId`
-        - `digitalDomicile`
-        - `physicalAddress`
-        - `payment` referencing one file uploaded previously
-      - the `documents` field providing one file uploaded previously
+### TC-SEND-01
+Create a `NotificationRequest` providing two documents: the act to notify and the pagoPA payment.
+
+1. Request two upload slot
+2. Consume the two upload slots uploading two documents (use the information provided in the previous request).
+3. Create a notification request providing the following information:
+   - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
+   - the `recipients` field providing:
+      - `taxId`
+      - `digitalDomicile`
+      - `physicalAddress`
+      - `payment` referencing one file uploaded previously
+   - the `documents` field providing one file uploaded previously
 
 
 ## Prerequisites
