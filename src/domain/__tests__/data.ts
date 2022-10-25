@@ -143,6 +143,11 @@ export const preLoadRecord: PreLoadRecord = {
   output: { statusCode: 200, returned: [preLoadResponse] },
 };
 
+export const preLoadRecordBulk: PreLoadRecord = {
+  type: 'PreLoadRecord',
+  input: { apiKey: apiKey.valid, body: [preLoadBody, { ...preLoadBody, preloadIdx: '1' }] },
+  output: { statusCode: 200, returned: [preLoadResponse, { ...preLoadResponse, preloadIdx: '1' }] },
+};
 // UploadToS3Record ///////////////////////////////////////////////////////////
 
 export const uploadToS3Record: UploadToS3Record = {

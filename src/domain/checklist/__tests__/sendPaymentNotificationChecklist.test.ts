@@ -11,6 +11,9 @@ describe('TC-SEND-01 - Send a notification with a payment document', () => {
 
     const actual1 = check([data.preLoadRecord, data.preLoadRecord]);
     expect(actual1.result).toStrictEqual('ok');
+
+    const actual2 = check([data.preLoadRecordBulk]);
+    expect(actual2.result).toStrictEqual('ok');
   });
 
   it.skip('should verify the conditions on uploadToS3Record', () => {

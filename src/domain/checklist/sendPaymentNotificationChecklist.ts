@@ -33,10 +33,11 @@ const group = {
 //      the contentType payload’s property match application/pdf
 export const preLoadCheck = {
   group,
-  name: `Exist at least two requests 'Request an "upload slot"' that matches the criteria`,
+  name: `Exist at least two upload slot that matches the criteria`,
   eval: flow(
     RA.filterMap(isPreLoadRecord),
     RA.filter(pipe(existsApiKey, P.and(hasUniquePreloadIdx), P.and(hasApplicationPdfAsContentType))),
+    RA.chain(({ input }) => input.body),
     (records) => RA.size(records) >= 2
   ),
 };
