@@ -19,8 +19,8 @@ If all the checks are `ok` then your integration covers the expected use cases.
 curl --location --request GET 'http://localhost:3000/checklistresult'
 ```
 
-## Which use cases case be tested
-At the moment the `PnValidator` allows the following use-case:
+## Testable use cases
+At the moment the `PnValidator` allows the following use case:
 
 ### TC-SEND-01
 Create a `NotificationRequest` providing two documents: the act to notify and the pagoPA payment.
@@ -88,7 +88,7 @@ npm run start
 
 ### Run as a Docker image
 
-Another option is to run the container image already available in the containers registry, as follow:
+Another option is to run the container image already available in the containers registry, as follows:
 
 1. Pull the image from the container registry.
 
@@ -104,7 +104,7 @@ docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 
 ## More advanced stuff
 
-### Build and run your local Docker image from source code
+### Build and run your local Docker image from the source code
 
 The repository comes with a Dockerfile that you can use to run the application with Docker.
 
