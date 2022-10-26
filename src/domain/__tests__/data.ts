@@ -137,7 +137,7 @@ const aRecipient: FullSentNotification['recipients'][0] = {
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
 const preLoadBody = { preloadIdx: '0', contentType: 'application/pdf', sha256: aSha256 };
-const preLoadResponse = { preloadIdx: '0', secret: 'a-secret', url: 'a-url', key: 'a-key' };
+const preLoadResponse = { preloadIdx: '0', secret: 'a-secret', url: 'a-url', key: anAttachmentRef.key };
 
 export const preLoadRecord: PreLoadRecord = {
   type: 'PreLoadRecord',
