@@ -58,10 +58,12 @@ const anAttachmentRef = {
   versionToken: '123',
 };
 
+const aSha256 = 'jezIVxlG1M1woCSUngM6KipUN3/p8cG5RMIPnuEanlE=';
+
 const aDocument0: FullSentNotification['documents'][0] = {
   docIdx: '0',
   digests: {
-    sha256: 'aSha256',
+    sha256: aSha256,
   },
   contentType: 'application/pdf',
   ref: anAttachmentRef,
@@ -124,7 +126,7 @@ const aRecipient: FullSentNotification['recipients'][0] = {
     noticeCode: unsafeCoerce('302000100000019421'),
     pagoPaForm: {
       digests: {
-        sha256: 'aSha256',
+        sha256: aSha256,
       },
       contentType: 'application/pdf',
       ref: anAttachmentRef,
@@ -134,7 +136,7 @@ const aRecipient: FullSentNotification['recipients'][0] = {
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
-const preLoadBody = { preloadIdx: '0', contentType: 'application/pdf', sha256: 'a-sha256' };
+const preLoadBody = { preloadIdx: '0', contentType: 'application/pdf', sha256: aSha256 };
 const preLoadResponse = { preloadIdx: '0', secret: 'a-secret', url: 'a-url', key: 'a-key' };
 
 export const preLoadRecord: PreLoadRecord = {
