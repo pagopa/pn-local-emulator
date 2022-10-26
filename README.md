@@ -42,7 +42,7 @@ Create a `NotificationRequest` providing two documents: the act to notify and th
 We provide a couple of methods to start the emulator:
 
 - from the source code
-- as a Docker image
+- as a [Docker](https://docker.com) image
 
 ### Run from the source code
 
@@ -82,24 +82,23 @@ npm run generate
 
 5. Start the Emulator.
 
-```shell
+ ```shell
 npm run start
 ```
 
-### Run using the public container image
+### Run as a Docker image
 
-Another option is to run the container image available in the containers registry.
+Another option is to run the container image already available in the containers registry, as follow:
 
-Pull the image from the container registry.
+1. Pull the image from the container registry.
 
-```shell
+ ```shell
 docker pull ghcr.io/pagopa/pn-local-emulator:latest
 ```
 
-Run the application.
+2. Run the application.
 
-
-```shell
+ ```shell
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
 
@@ -107,17 +106,18 @@ docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 
 ### Build and run your local Docker image from source code
 
-The repository comes with a Dockerfile that you can use to run the application with [Docker](https://docker.com).
+The repository comes with a Dockerfile that you can use to run the application with Docker.
 
-Build the image.
+1. Build the image.
 
-```shell
+ ```shell
 docker build -t pnemulator .
 ```
 
-Run the emulator.
+2. Run the emulator.
 
-```shell
+ ```shell
 docker run -p 3000:3000 pnemulator
 ```
-The [Dockerfile](./Dockerfile) exposes port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
+
+The [Dockerfile](./Dockerfile) exposes the port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
