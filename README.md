@@ -39,68 +39,56 @@ Create a `NotificationRequest` providing two documents: the act to notify and th
 
 ## How to run
 
-### Prerequisites
-If you want to run the emulator starting from the source code, please follow these steps.
+We provide a couple of methods to start the emulator:
 
-First, clone the repository using the preferred method (the next command uses SSH):
+- from the source code
+- as a Docker image
 
-```shell
+### Run from the source code
+
+This method describes how to start the Emulator from the source code.
+
+Since this project runs with [Node.js](https://nodejs.org/en/) as specified in the [`.node_version`](.node-version) file, we strongly encourage [using nvm](https://github.com/nvm-sh/nvm).
+
+Here is what you need to do:
+
+1. clone the repository using the preferred method (the next command uses SSH):
+
+ ```shell
 git clone git@github.com:pagopa/pn-local-emulator.git
 ```
 
-Second, this project runs with [Node.js](https://nodejs.org/en/) and it has been developed with the version specified in the [`.node_version`](.node-version) file.
+2. (Optional but strongly recommended) Install the Node.js runtime using `nvm` (please, make sure the path of `.node_version` is correct. The given commands assume you are in the repository folder.).
 
-We suggest [using nvm](https://github.com/nvm-sh/nvm) to install Node.js at the same version specified in the `.node_version` file.
-
-```shell
+ ```shell
 # Install the version of Node.js specified in the .node_version file
 nvm install `cat .node-version`
 
-# Set the version of Node.js specified in the .node_version file
+ # Set the version of Node.js specified in the .node_version file
 nvm use `cat .node-version`
 ```
-Please, make sure the path of `.node_version` is correct. The given commands assume you are in the repository folder.
 
-### Run using Node.js
+3. Install the dependencies.
 
-Install the dependencies.
-
-```shell
+ ```shell
 npm install
 ```
 
-Generates code from the [OpenAPI](./openapi/index.yaml) specification.
+4. Generates code from the [OpenAPI](./openapi/index.yaml) specification.
 
-```shell
+ ```shell
 npm run generate
 ```
 
-Start the application.
+5. Start the Emulator.
 
 ```shell
 npm run start
 ```
 
-### Run using Docker (Dockerfile)
-
-The repository comes with a Dockerfile that you can use to run the application with Docker.
-
-Build the image.
-
-```shell
-docker build -t pnemulator .
-```
-
-Run the emulator.
-
-```shell
-docker run -p 3000:3000 pnemulator
-```
-The [Dockerfile](./Dockerfile) exposes port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
-
 ### Run using the public container image
 
-Another option is to run the container image available in the container registry.
+Another option is to run the container image available in the containers registry.
 
 Pull the image from the container registry.
 
@@ -114,3 +102,22 @@ Run the application.
 ```shell
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
+
+## More advanced stuff
+
+### Build and run your local Docker image from source code
+
+The repository comes with a Dockerfile that you can use to run the application with [Docker](https://docker.com).
+
+Build the image.
+
+```shell
+docker build -t pnemulator .
+```
+
+Run the emulator.
+
+```shell
+docker run -p 3000:3000 pnemulator
+```
+The [Dockerfile](./Dockerfile) exposes port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
