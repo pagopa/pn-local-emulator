@@ -3,15 +3,10 @@ import * as P from 'fp-ts/Predicate';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import {
-  hasPhysicalAddress,
-  hasRecipientDigitalDomicile,
-  hasRecipientPaymentCreditorTaxId,
-  hasRecipientPaymentNoticeCode,
-  hasRecipientTaxId,
-  hasRegisteredLetterAsPhysicalDocumentType,
-  hasSuccessfulResponse,
   isNewNotificationRecord,
   NewNotificationRecord,
+  satisfyChecksDependentToPreviousRequests,
+  satisfyIndependentChecks,
 } from '../NewNotificationRepository';
 import {
   hasApplicationPdfAsContentType,
@@ -62,25 +57,25 @@ export const uploadToS3Check = {
   ),
 };
 
-// Send notification endpoint
-//  expect a request that produces a 2xx as a response
-//      the x-api-key header should be filled
 export const createNotificationRequestCheck = {
   group,
   name: 'Expect a send notification request that matches all the criteria',
-  eval: flow(
-    RA.filterMap(isNewNotificationRecord),
-    RA.some(
-      pipe(
-        existsApiKey,
-        P.and(hasRecipientTaxId),
-        P.and(hasRecipientDigitalDomicile),
-        P.and(hasPhysicalAddress),
-        P.and(hasRegisteredLetterAsPhysicalDocumentType),
-        P.and(hasRecipientPaymentCreditorTaxId),
-        P.and(hasRecipientPaymentNoticeCode),
-        P.and(hasSuccessfulResponse)
-      )
+  eval: pipe(
+    R.Do,
+    R.apS('preloadRecordList', RA.filterMap(isPreLoadRecord)),
+    R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
+    R.apS('newNotificationRecordList', RA.filterMap(isNewNotificationRecord)),
+    R.map(
+      ({ preloadRecordList, uploadToS3RecordList, newNotificationRecordList }) =>
+        satisfyIndependentChecks(newNotificationRecordList) &&
+        pipe(
+          RA.comprehension(
+            [preloadRecordList, uploadToS3RecordList, newNotificationRecordList],
+            tuple,
+            satisfyChecksDependentToPreviousRequests
+          ),
+          RA.isNonEmpty
+        )
     )
   ),
 };
