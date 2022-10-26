@@ -97,49 +97,40 @@ export const makeNewNotificationResponse =
     notificationRequestId,
   });
 
-// Send notification endpoint
-//  expect a request that produces a 2xx as a response
-//      the x-api-key header should be filled
-export const satisfyIndependentChecks = (records: ReadonlyArray<NewNotificationRecord>) =>
-  pipe(
-    records,
-    RA.some(
-      pipe(
-        existsApiKey,
-        P.and(hasRecipientTaxId),
-        P.and(hasRecipientDigitalDomicile),
-        P.and(hasPhysicalAddress),
-        P.and(hasRegisteredLetterAsPhysicalDocumentType),
-        P.and(hasRecipientPaymentCreditorTaxId),
-        P.and(hasRecipientPaymentNoticeCode),
-        P.and(hasSuccessfulResponse)
+export const matchNewNotificationRecordCriteria = pipe(
+  existsApiKey,
+  P.and(hasRecipientTaxId),
+  P.and(hasRecipientDigitalDomicile),
+  P.and(hasPhysicalAddress),
+  P.and(hasRegisteredLetterAsPhysicalDocumentType),
+  P.and(hasRecipientPaymentCreditorTaxId),
+  P.and(hasRecipientPaymentNoticeCode),
+  P.and(hasSuccessfulResponse)
+);
+
+export const matchAgainstPreLoadRecordList =
+  (preLoadRecords: ReadonlyArray<PreLoadRecord>) =>
+  (newNotificationRecord: NewNotificationRecord): boolean =>
+    pipe(
+      preLoadRecords,
+      RA.some(
+        (record) =>
+          record.output.statusCode === 200 &&
+          hasSameContentType(newNotificationRecord, record) &&
+          hasSameSha256(newNotificationRecord, record)
       )
-    )
-  );
+    );
 
-const satisfyCheckWithUploadToS3Record = (
-  uploadToS3Record: UploadToS3Record,
-  newNotificationRecord: NewNotificationRecord
-): boolean =>
-  uploadToS3Record.output.statusCode === 200 &&
-  hasSameVersionToken(newNotificationRecord, uploadToS3Record) &&
-  hasSameDocumentKey(newNotificationRecord, uploadToS3Record);
-
-const satisfyCheckWithPreloadRecord = (
-  preLoadRecord: PreLoadRecord,
-  newNotificationRecord: NewNotificationRecord
-): boolean =>
-  preLoadRecord.output.statusCode === 200 &&
-  hasSameContentType(newNotificationRecord, preLoadRecord) &&
-  hasSameSha256(newNotificationRecord, preLoadRecord);
-
-export const satisfyChecksDependentToPreviousRequests = (
-  preLoadRecord: PreLoadRecord,
-  uploadToS3Record: UploadToS3Record,
-  newNotificationRecord: NewNotificationRecord
-): boolean =>
-  satisfyCheckWithUploadToS3Record(uploadToS3Record, newNotificationRecord) &&
-  satisfyCheckWithPreloadRecord(preLoadRecord, newNotificationRecord);
+export const matchAgainstUploadToS3RecordList =
+  (uploadToS3Records: ReadonlyArray<UploadToS3Record>) =>
+  (newNotificationRecord: NewNotificationRecord): boolean =>
+    pipe(
+      uploadToS3Records,
+      RA.some(
+        (record) =>
+          hasSameVersionToken(newNotificationRecord, record) && hasSameDocumentKey(newNotificationRecord, record)
+      )
+    );
 
 export const makeNewNotificationRecord = (record: Omit<NewNotificationRecord, 'type'>): NewNotificationRecord => ({
   type: 'NewNotificationRecord',
