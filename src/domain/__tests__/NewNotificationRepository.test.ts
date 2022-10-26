@@ -6,6 +6,9 @@ import {
   hasRecipientPaymentNoticeCode,
   hasRecipientTaxId,
   hasRegisteredLetterAsPhysicalDocumentType,
+  hasSameDocumentKey,
+  hasSameSha256,
+  hasSameVersionToken,
   hasSuccessfulResponse,
 } from '../NewNotificationRepository';
 import { unauthorizedResponse } from '../types';
@@ -74,5 +77,49 @@ describe('NewNotificationRepository', () => {
 
     expect(hasRecipientPaymentCreditorTaxId(invalid)).toStrictEqual(false);
     expect(hasRecipientPaymentNoticeCode(invalid)).toStrictEqual(false);
+  });
+
+  it('should return true if the record has the same version token used in upload to s3', () => {
+    expect(hasSameVersionToken(validRecord, data.uploadToS3Record)).toStrictEqual(true);
+
+    const anotherRecord = validOverridingBody({
+      documents: [
+        {
+          ...validRecord.input.body.documents[0],
+          ref: { ...validRecord.input.body.documents[0].ref, versionToken: '321' },
+        },
+      ],
+    });
+    expect(hasSameVersionToken(anotherRecord, data.uploadToS3Record)).toStrictEqual(false);
+  });
+
+  it('should return true if the record has the same document key used in upload to s3', () => {
+    expect(hasSameDocumentKey(validRecord, data.uploadToS3Record)).toStrictEqual(true);
+
+    const anotherRecord = validOverridingBody({
+      documents: [
+        {
+          ...validRecord.input.body.documents[0],
+          ref: { ...validRecord.input.body.documents[0].ref, key: '321' },
+        },
+      ],
+    });
+    expect(hasSameDocumentKey(anotherRecord, data.uploadToS3Record)).toStrictEqual(false);
+  });
+
+  it('should return true if the record has the same sha256 used in preLoad request', () => {
+    expect(hasSameSha256(validRecord, data.preLoadRecord)).toStrictEqual(true);
+
+    const anotherRecord = validOverridingBody({
+      documents: [
+        {
+          ...validRecord.input.body.documents[0],
+          digests: {
+            sha256: '321',
+          },
+        },
+      ],
+    });
+    expect(hasSameSha256(anotherRecord, data.preLoadRecord)).toStrictEqual(false);
   });
 });
