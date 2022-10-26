@@ -33,7 +33,7 @@ describe('TC-SEND-01 - Send a notification with a payment document', () => {
     expect(actual2.result).toStrictEqual('ok');
   });
 
-  it.skip('should verify the conditions on NewNotificationRecord', () => {
+  it('should verify the conditions on NewNotificationRecord', () => {
     const check = evalCheck({ ...createNotificationRequestCheck });
 
     const actual0 = check([data.preLoadRecord, data.uploadToS3Record]);
