@@ -20,7 +20,7 @@ curl --location --request GET 'http://localhost:3000/checklistresult'
 ```
 
 ## Testable use cases
-At the moment the `PnValidator` allows the following use case:
+Currently, the `PnValidator` allows the emulation and testing of one single use case (TC-SEND-01). As the development proceeds, the list will expand.
 
 ### TC-SEND-01
 Create a `NotificationRequest` providing two documents: the act to notify and the pagoPA payment.
@@ -38,15 +38,14 @@ Create a `NotificationRequest` providing two documents: the act to notify and th
 
 
 ## How to run
-
-We provide a couple of methods to start the emulator:
+We provide a couple of different ways to start the `PnValidator`:
 
 - from the source code
 - as a [Docker](https://docker.com) image
 
 ### Run from the source code
 
-This section describes how to start the Emulator from the source code.
+This section describes how to start the `PnValidator` from the source code.
 
 Since this project runs with [Node.js](https://nodejs.org/en/) as specified in the [`.node_version`](.node-version) file, we strongly encourage [using nvm](https://github.com/nvm-sh/nvm).
 
@@ -80,7 +79,7 @@ npm install
 npm run generate
 ```
 
-5. Start the Emulator.
+5. Start the `PnValidator`.
 
  ```shell
 npm run start
@@ -96,7 +95,7 @@ Another option is to run the container image already available in the containers
 docker pull ghcr.io/pagopa/pn-local-emulator:latest
 ```
 
-2. Run the application.
+2. Run the `PnValidator`.
 
  ```shell
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
@@ -106,7 +105,7 @@ docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 
 ### Build and run your local Docker image from the source code
 
-The repository comes with a Dockerfile that you can use to run the application with Docker.
+The repository comes with a Dockerfile that you can use to run the `PnValidator` with Docker.
 
 1. Build the image.
 
@@ -114,7 +113,7 @@ The repository comes with a Dockerfile that you can use to run the application w
 docker build -t pnemulator .
 ```
 
-2. Run the emulator.
+2. Run the `PnValidator`.
 
  ```shell
 docker run -p 3000:3000 pnemulator
