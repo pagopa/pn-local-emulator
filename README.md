@@ -1,7 +1,7 @@
 # PnValidator
 [![CI](https://github.com/pagopa/pn-local-emulator/actions/workflows/main.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator/actions/workflows/main.yaml)
 
-A system that emulates a subset of the HTTP API provided by Piattaforma Notifiche platform and produces a report containing the coverage of expected use cases.
+A system that emulates a subset of the HTTP API provided by Piattaforma Notifiche platform, driven by well-defined use cases, and produces a report describing their coverage and correctness.
 
 ## How to use
 
