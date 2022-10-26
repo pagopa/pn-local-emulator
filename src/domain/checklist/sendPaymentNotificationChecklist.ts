@@ -4,9 +4,10 @@ import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import {
   isNewNotificationRecord,
+  matchAgainstPreLoadRecordList,
+  matchAgainstUploadToS3RecordList,
+  matchNewNotificationRecordCriteria,
   NewNotificationRecord,
-  satisfyChecksDependentToPreviousRequests,
-  satisfyIndependentChecks,
 } from '../NewNotificationRepository';
 import {
   hasApplicationPdfAsContentType,
@@ -65,17 +66,17 @@ export const createNotificationRequestCheck = {
     R.apS('preloadRecordList', RA.filterMap(isPreLoadRecord)),
     R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
     R.apS('newNotificationRecordList', RA.filterMap(isNewNotificationRecord)),
-    R.map(
-      ({ preloadRecordList, uploadToS3RecordList, newNotificationRecordList }) =>
-        satisfyIndependentChecks(newNotificationRecordList) &&
-        pipe(
-          RA.comprehension(
-            [preloadRecordList, uploadToS3RecordList, newNotificationRecordList],
-            tuple,
-            satisfyChecksDependentToPreviousRequests
-          ),
-          RA.isNonEmpty
+    R.map(({ preloadRecordList, uploadToS3RecordList, newNotificationRecordList }) =>
+      pipe(
+        newNotificationRecordList,
+        RA.some(
+          pipe(
+            matchNewNotificationRecordCriteria,
+            P.and(matchAgainstPreLoadRecordList(preloadRecordList)),
+            P.and(matchAgainstUploadToS3RecordList(uploadToS3RecordList))
+          )
         )
+      )
     )
   ),
 };
