@@ -46,7 +46,7 @@ We provide a couple of methods to start the emulator:
 
 ### Run from the source code
 
-This method describes how to start the Emulator from the source code.
+This section describes how to start the Emulator from the source code.
 
 Since this project runs with [Node.js](https://nodejs.org/en/) as specified in the [`.node_version`](.node-version) file, we strongly encourage [using nvm](https://github.com/nvm-sh/nvm).
 
