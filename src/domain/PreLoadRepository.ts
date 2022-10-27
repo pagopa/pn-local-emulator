@@ -2,6 +2,7 @@ import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as s from 'fp-ts/string';
+import * as P from 'fp-ts/Predicate';
 import { PreLoadResponseBody } from '../generated/definitions/PreLoadResponseBody';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 import { ApiKey } from '../generated/definitions/ApiKey';
@@ -54,15 +55,15 @@ export const hasApplicationPdfAsContentType = (record: PreLoadRecord) =>
     RA.every(({ contentType }) => contentType === 'application/pdf')
   );
 
-export const existsPreLoadRecordWithSameSha256 = (sha256: string | undefined) => (record: PreLoadRecord) =>
+const existsPreLoadRecordWithSameSha256 = (sha256: string | undefined) => (record: PreLoadRecord) =>
   pipe(
     record.input.body,
     RA.some(({ sha256: recordSha256 }) => sha256 === recordSha256)
   );
 
-export const hasSuccessfulResponse = (record: PreLoadRecord) => record.output.statusCode === 200;
+const hasSuccessfulResponse = (record: PreLoadRecord) => record.output.statusCode === 200;
 
-export const hasSameSha256UsedInPreLoadRecord =
+const hasSameSha256UsedInPreLoadRecord =
   (newNotificationRecord: NewNotificationRecord) =>
   (preLoadRecord: PreLoadRecord): boolean =>
     pipe(
@@ -75,12 +76,25 @@ export const hasSameSha256UsedInPreLoadRecord =
       )
     );
 
-export const hasSamePaymentDocumentSha256UsedInPreLoadRecord =
+const hasSamePaymentDocumentSha256UsedInPreLoadRecord =
   (newNotificationRecord: NewNotificationRecord) =>
   (preLoadRecord: PreLoadRecord): boolean =>
     pipe(
       newNotificationRecord.input.body.recipients,
       RA.every(({ payment }) =>
         pipe(preLoadRecord, existsPreLoadRecordWithSameSha256(payment?.pagoPaForm?.digests.sha256))
+      )
+    );
+
+export const documentsHaveSameShaOfPreLoadRecords =
+  (preloadRecordList: ReadonlyArray<PreLoadRecord>) => (record: NewNotificationRecord) =>
+    pipe(
+      preloadRecordList,
+      RA.some(
+        pipe(
+          hasSuccessfulResponse,
+          P.and(hasSameSha256UsedInPreLoadRecord(record)),
+          P.and(hasSamePaymentDocumentSha256UsedInPreLoadRecord(record))
+        )
       )
     );

@@ -85,3 +85,15 @@ export const hasSamePaymentDocumentReferenceOfUploadToS3Record =
         )
       )
     );
+
+export const documentsHaveSameReferenceToUploadToS3Records =
+  (uploadToS3Record: ReadonlyArray<UploadToS3Record>) => (record: NewNotificationRecord) =>
+    pipe(
+      uploadToS3Record,
+      RA.some(
+        pipe(
+          hasSameDocumentReferenceOfUploadToS3Record(record),
+          P.and(hasSamePaymentDocumentReferenceOfUploadToS3Record(record))
+        )
+      )
+    );

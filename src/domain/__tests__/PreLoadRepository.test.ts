@@ -1,6 +1,6 @@
 import * as data from './data';
 import {
-  existsPreLoadRecordWithSameSha256,
+  documentsHaveSameShaOfPreLoadRecords,
   hasApplicationPdfAsContentType,
   hasUniquePreloadIdx,
 } from '../PreLoadRepository';
@@ -42,14 +42,25 @@ describe('PreLoadRepository', () => {
     });
   });
 
-  describe('existsPreLoadRecordWithSameSha256', () => {
+  describe('documentsHaveSameShaOfPreLoadRecords', () => {
+    const actualFn = documentsHaveSameShaOfPreLoadRecords([data.preLoadRecord]);
     it('should exist a PreLoadRecord with SHA256 provided', () => {
-      const actual = existsPreLoadRecordWithSameSha256(data.preLoadRecord.input.body[0].sha256)(data.preLoadRecord);
+      const actual = actualFn(data.newNotificationRecord);
       expect(actual).toStrictEqual(true);
     });
 
     it('should not exist a PreLoadRecord with SHA256 provided', () => {
-      const actual = existsPreLoadRecordWithSameSha256('notAValidSha')(data.preLoadRecord);
+      const anotherNewNotificationRecord = {
+        ...data.newNotificationRecord,
+        input: {
+          ...data.newNotificationRecord.input,
+          body: {
+            ...data.newNotificationRecord.input.body,
+            documents: [{ ...data.newNotificationRecord.input.body.documents[0], digests: { sha256: 'dummySha256' } }],
+          },
+        },
+      };
+      const actual = actualFn(anotherNewNotificationRecord);
       expect(actual).toStrictEqual(false);
     });
   });
