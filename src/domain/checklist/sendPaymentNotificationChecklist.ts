@@ -3,6 +3,8 @@ import * as P from 'fp-ts/Predicate';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import {
+  hasSamePaymentDocumentReferenceOfUploadToS3Record,
+  hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest,
   hasPhysicalAddress,
   hasRecipientDigitalDomicile,
   hasRecipientPaymentCreditorTaxId,
@@ -86,7 +88,9 @@ export const createNotificationRequestCheck = {
             P.and(hasRecipientPaymentNoticeCode),
             P.and(hasSuccessfulResponse),
             P.and(hasSameSha256UsedInPreLoadRecordRequest(preloadRecordList)),
-            P.and(hasSameDocumentReferenceOfUploadToS3Record(uploadToS3RecordList))
+            P.and(hasSameDocumentReferenceOfUploadToS3Record(uploadToS3RecordList)),
+            P.and(hasSamePaymentDocumentReferenceOfUploadToS3Record(uploadToS3RecordList)),
+            P.and(hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest(preloadRecordList))
           )
         )
       )
