@@ -1,10 +1,10 @@
 import * as data from './data';
-import { oneRefersToOther } from '../UploadToS3RecordRepository';
+import { matchAnyPreLoadRecord } from '../UploadToS3RecordRepository';
 
 describe('UploadToS3Repository', () => {
-  describe('oneRefersToOther', () => {
+  describe('matchAnyPreLoadRecord', () => {
     it('should be true if the two record are related to each other', () => {
-      const actual = oneRefersToOther(data.preLoadRecord, data.uploadToS3Record);
+      const actual = matchAnyPreLoadRecord([data.preLoadRecord])(data.uploadToS3Record);
       expect(actual).toStrictEqual(true);
     });
     it('should be false if the two record are not related to each other', () => {
@@ -12,7 +12,7 @@ describe('UploadToS3Repository', () => {
         ...data.uploadToS3Record,
         input: { ...data.uploadToS3Record.input, key: 'another-key' },
       };
-      const actual = oneRefersToOther(data.preLoadRecord, uploadToS3Record);
+      const actual = matchAnyPreLoadRecord([data.preLoadRecord])(uploadToS3Record);
       expect(actual).toStrictEqual(false);
     });
   });

@@ -132,10 +132,15 @@ const aRecipient: FullSentNotification['recipients'][0] = {
   },
 };
 
+export const aSha256 = 'a-sha256';
+export const aSecret = 'a-secret';
+export const aUrl = 'a-url';
+export const aKey = 'a-key';
+
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
-const preLoadBody = { preloadIdx: '0', contentType: 'application/pdf', sha256: 'a-sha256' };
-const preLoadResponse = { preloadIdx: '0', secret: 'a-secret', url: 'a-url', key: 'a-key' };
+const preLoadBody = { preloadIdx: '0', contentType: 'application/pdf', sha256: aSha256 };
+const preLoadResponse = { preloadIdx: '0', secret: aSecret, url: aUrl, key: aKey };
 
 export const preLoadRecord: PreLoadRecord = {
   type: 'PreLoadRecord',

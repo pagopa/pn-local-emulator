@@ -52,3 +52,12 @@ export const hasApplicationPdfAsContentType = (record: PreLoadRecord) =>
     record.input.body,
     RA.every(({ contentType }) => contentType === 'application/pdf')
   );
+
+export const matchProperties =
+  (sha256: string, secret: string, key: string) =>
+  (record: PreLoadRecord): boolean =>
+    record.output.statusCode === 200 &&
+    pipe(
+      RA.zip(record.output.returned)(record.input.body),
+      RA.exists(([body, response]) => body.sha256 === sha256 && response.secret === secret && response.key === key)
+    );
