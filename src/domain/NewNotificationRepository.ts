@@ -95,6 +95,34 @@ export const hasSameDocumentReferenceOfUploadToS3Record =
       )
     );
 
+export const hasSamePaymentDocumentReferenceOfUploadToS3Record =
+  (uploadToS3Records: ReadonlyArray<UploadToS3Record>) =>
+  (newNotificationRecord: NewNotificationRecord): boolean =>
+    pipe(
+      newNotificationRecord.input.body.recipients,
+      RA.every(({ payment }) =>
+        pipe(
+          uploadToS3Records,
+          RA.some(
+            pipe(
+              existsUploadToS3RecordWithSameVersionToken(payment?.pagoPaForm?.ref.versionToken),
+              P.and(existsUploadToS3RecordWithSameDocumentKey(payment?.pagoPaForm?.ref.key))
+            )
+          )
+        )
+      )
+    );
+
+export const hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest =
+  (preLoadRecords: ReadonlyArray<PreLoadRecord>) =>
+  (newNotificationRecord: NewNotificationRecord): boolean =>
+    pipe(
+      newNotificationRecord.input.body.recipients,
+      RA.every(({ payment }) =>
+        pipe(preLoadRecords, RA.some(existsPreLoadRecordWithSameSha256(payment?.pagoPaForm?.digests.sha256)))
+      )
+    );
+
 export const makeNewNotificationResponse =
   (input: NewNotificationRequest) =>
   (notificationRequestId: string): NewNotificationResponse => ({
