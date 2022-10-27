@@ -71,15 +71,10 @@ export const uploadToS3Check = {
 };
 
 const matchNewNotificationCriteriaAgainstPreviousRecords =
-  <T>(predicate: P.Predicate<T>) =>
-  (preLoadRecords: ReadonlyArray<T>): P.Predicate<NewNotificationRecord> =>
-  (newNotificationRecord: NewNotificationRecord) =>
-    pipe(
-      preLoadRecords,
-      RA.some(predicate),
-      // FIXME: This is just an hack to change the Predicate type
-      (_) => hasSuccessfulResponse(newNotificationRecord)
-    );
+  <T>(getPredicate: (record: NewNotificationRecord) => P.Predicate<T>) =>
+  (records: ReadonlyArray<T>): P.Predicate<NewNotificationRecord> =>
+  (_: NewNotificationRecord) =>
+    pipe(records, RA.some(getPredicate(_)));
 
 export const createNotificationRequestCheck = {
   group,
@@ -103,22 +98,22 @@ export const createNotificationRequestCheck = {
             P.and(hasRecipientPaymentNoticeCode),
             P.and(hasSuccessfulResponse),
             // Verify conditions between PreLoadRecord and NewNotificationRecord
-            P.and((record) =>
-              matchNewNotificationCriteriaAgainstPreviousRecords(
+            P.and(
+              matchNewNotificationCriteriaAgainstPreviousRecords((record) =>
                 pipe(
                   hasSameSha256UsedInPreLoadRecordRequest(record),
                   P.and(hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest(record))
                 )
-              )(preloadRecordList)(record)
+              )(preloadRecordList)
             ),
             // Verify conditions between UploadToS3Record and NewNotificationRecord
-            P.and((record) =>
-              matchNewNotificationCriteriaAgainstPreviousRecords(
+            P.and(
+              matchNewNotificationCriteriaAgainstPreviousRecords((record) =>
                 pipe(
                   hasSameDocumentReferenceOfUploadToS3Record(record),
                   P.and(hasSamePaymentDocumentReferenceOfUploadToS3Record(record))
                 )
-              )(uploadToS3RecordList)(record)
+              )(uploadToS3RecordList)
             )
           )
         )
