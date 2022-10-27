@@ -58,3 +58,5 @@ export const existsPreLoadRecordWithSameSha256 = (sha256: string) => (record: Pr
     record.input.body,
     RA.some(({ sha256: recordSha256 }) => sha256 === recordSha256)
   );
+
+export const hasSuccessfulResponse = (record: PreLoadRecord) => record.output.statusCode === 200;
