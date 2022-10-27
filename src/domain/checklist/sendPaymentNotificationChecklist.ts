@@ -18,15 +18,13 @@ import {
   isPreLoadRecord,
   PreLoadRecord,
   hasUniquePreloadIdx,
-  hasSameSha256UsedInPreLoadRecordRequest,
-  hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest,
+  documentsHaveSameShaOfPreLoadRecords,
 } from '../PreLoadRepository';
 import {
   oneRefersToOther,
   isUploadToS3Record,
   UploadToS3Record,
-  hasSameDocumentReferenceOfUploadToS3Record,
-  hasSamePaymentDocumentReferenceOfUploadToS3Record,
+  documentsHaveSameReferenceToUploadToS3Records,
 } from '../UploadToS3RecordRepository';
 import { existsApiKey } from '../Repository';
 import { Checklist } from './types';
@@ -70,12 +68,6 @@ export const uploadToS3Check = {
   ),
 };
 
-const matchNewNotificationCriteriaAgainstPreviousRecords =
-  <T>(getPredicate: (record: NewNotificationRecord) => P.Predicate<T>) =>
-  (records: ReadonlyArray<T>): P.Predicate<NewNotificationRecord> =>
-  (_: NewNotificationRecord) =>
-    pipe(records, RA.some(getPredicate(_)));
-
 export const createNotificationRequestCheck = {
   group,
   name: 'Expect a send notification request that matches all the criteria',
@@ -97,24 +89,8 @@ export const createNotificationRequestCheck = {
             P.and(hasRecipientPaymentCreditorTaxId),
             P.and(hasRecipientPaymentNoticeCode),
             P.and(hasSuccessfulResponse),
-            // Verify conditions between PreLoadRecord and NewNotificationRecord
-            P.and(
-              matchNewNotificationCriteriaAgainstPreviousRecords((record) =>
-                pipe(
-                  hasSameSha256UsedInPreLoadRecordRequest(record),
-                  P.and(hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest(record))
-                )
-              )(preloadRecordList)
-            ),
-            // Verify conditions between UploadToS3Record and NewNotificationRecord
-            P.and(
-              matchNewNotificationCriteriaAgainstPreviousRecords((record) =>
-                pipe(
-                  hasSameDocumentReferenceOfUploadToS3Record(record),
-                  P.and(hasSamePaymentDocumentReferenceOfUploadToS3Record(record))
-                )
-              )(uploadToS3RecordList)
-            )
+            P.and(documentsHaveSameShaOfPreLoadRecords(preloadRecordList)),
+            P.and(documentsHaveSameReferenceToUploadToS3Records(uploadToS3RecordList))
           )
         )
       )
