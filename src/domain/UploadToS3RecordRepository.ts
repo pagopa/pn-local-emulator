@@ -1,6 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { Predicate } from 'fp-ts/lib/Predicate';
 import { AmzChecksumSHA256 } from '../generated/definitions/AmzChecksumSHA256';
 import { AmzMetaSecret } from '../generated/definitions/AmzMetaSecret';
 import { AmzSdkChecksumAlg } from '../generated/definitions/AmzSdkChecksumAlg';
@@ -40,3 +41,13 @@ export const oneRefersToOther = (preLoadRecord: PreLoadRecord, uploadToS3Record:
         result.key === uploadToS3Record.input.key
     )
   );
+
+export const existsUploadToS3RecordWithSameVersionToken =
+  (versionToken: string): Predicate<UploadToS3Record> =>
+  (record: UploadToS3Record) =>
+    record.output.returned.toString() === versionToken;
+
+export const existsUploadToS3RecordWithSameDocumentKey =
+  (documentKey: string): Predicate<UploadToS3Record> =>
+  (uploadToS3Record: UploadToS3Record) =>
+    uploadToS3Record.input.key === documentKey;
