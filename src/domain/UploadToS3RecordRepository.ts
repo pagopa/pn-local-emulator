@@ -43,11 +43,11 @@ export const oneRefersToOther = (preLoadRecord: PreLoadRecord, uploadToS3Record:
   );
 
 export const existsUploadToS3RecordWithSameVersionToken =
-  (versionToken: string): Predicate<UploadToS3Record> =>
+  (versionToken: string | undefined): Predicate<UploadToS3Record> =>
   (record: UploadToS3Record) =>
     record.output.returned.toString() === versionToken;
 
 export const existsUploadToS3RecordWithSameDocumentKey =
-  (documentKey: string): Predicate<UploadToS3Record> =>
+  (documentKey: string | undefined): Predicate<UploadToS3Record> =>
   (uploadToS3Record: UploadToS3Record) =>
     uploadToS3Record.input.key === documentKey;
