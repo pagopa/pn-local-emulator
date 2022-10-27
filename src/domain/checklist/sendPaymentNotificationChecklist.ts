@@ -3,16 +3,12 @@ import * as P from 'fp-ts/Predicate';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import {
-  hasSamePaymentDocumentReferenceOfUploadToS3Record,
-  hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest,
   hasPhysicalAddress,
   hasRecipientDigitalDomicile,
   hasRecipientPaymentCreditorTaxId,
   hasRecipientPaymentNoticeCode,
   hasRecipientTaxId,
   hasRegisteredLetterAsPhysicalDocumentType,
-  hasSameDocumentReferenceOfUploadToS3Record,
-  hasSameSha256UsedInPreLoadRecordRequest,
   hasSuccessfulResponse,
   isNewNotificationRecord,
   NewNotificationRecord,
@@ -22,8 +18,16 @@ import {
   isPreLoadRecord,
   PreLoadRecord,
   hasUniquePreloadIdx,
+  hasSameSha256UsedInPreLoadRecordRequest,
+  hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest,
 } from '../PreLoadRepository';
-import { oneRefersToOther, isUploadToS3Record, UploadToS3Record } from '../UploadToS3RecordRepository';
+import {
+  oneRefersToOther,
+  isUploadToS3Record,
+  UploadToS3Record,
+  hasSameDocumentReferenceOfUploadToS3Record,
+  hasSamePaymentDocumentReferenceOfUploadToS3Record,
+} from '../UploadToS3RecordRepository';
 import { existsApiKey } from '../Repository';
 import { Checklist } from './types';
 
@@ -66,6 +70,17 @@ export const uploadToS3Check = {
   ),
 };
 
+const matchNewNotificationCriteriaAgainstPreviousRecords =
+  <T>(predicate: P.Predicate<T>) =>
+  (preLoadRecords: ReadonlyArray<T>): P.Predicate<NewNotificationRecord> =>
+  (newNotificationRecord: NewNotificationRecord) =>
+    pipe(
+      preLoadRecords,
+      RA.some(predicate),
+      // FIXME: This is just an hack to change the Predicate type
+      (_) => hasSuccessfulResponse(newNotificationRecord)
+    );
+
 export const createNotificationRequestCheck = {
   group,
   name: 'Expect a send notification request that matches all the criteria',
@@ -87,10 +102,24 @@ export const createNotificationRequestCheck = {
             P.and(hasRecipientPaymentCreditorTaxId),
             P.and(hasRecipientPaymentNoticeCode),
             P.and(hasSuccessfulResponse),
-            P.and(hasSameSha256UsedInPreLoadRecordRequest(preloadRecordList)),
-            P.and(hasSameDocumentReferenceOfUploadToS3Record(uploadToS3RecordList)),
-            P.and(hasSamePaymentDocumentReferenceOfUploadToS3Record(uploadToS3RecordList)),
-            P.and(hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest(preloadRecordList))
+            // Verify conditions between PreLoadRecord and NewNotificationRecord
+            P.and((record) =>
+              matchNewNotificationCriteriaAgainstPreviousRecords(
+                pipe(
+                  hasSameSha256UsedInPreLoadRecordRequest(record),
+                  P.and(hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest(record))
+                )
+              )(preloadRecordList)(record)
+            ),
+            // Verify conditions between UploadToS3Record and NewNotificationRecord
+            P.and((record) =>
+              matchNewNotificationCriteriaAgainstPreviousRecords(
+                pipe(
+                  hasSameDocumentReferenceOfUploadToS3Record(record),
+                  P.and(hasSamePaymentDocumentReferenceOfUploadToS3Record(record))
+                )
+              )(uploadToS3RecordList)(record)
+            )
           )
         )
       )
