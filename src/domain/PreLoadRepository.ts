@@ -9,6 +9,7 @@ import { PreLoadRequest } from '../generated/definitions/PreLoadRequest';
 import { HttpMethodEnum, PreLoadResponse } from '../generated/definitions/PreLoadResponse';
 import { AllRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
+import { NewNotificationRecord } from './NewNotificationRepository';
 
 export type PreLoadRecord = {
   type: 'PreLoadRecord';
@@ -60,3 +61,26 @@ export const existsPreLoadRecordWithSameSha256 = (sha256: string | undefined) =>
   );
 
 export const hasSuccessfulResponse = (record: PreLoadRecord) => record.output.statusCode === 200;
+
+export const hasSameSha256UsedInPreLoadRecordRequest =
+  (newNotificationRecord: NewNotificationRecord) =>
+  (preLoadRecord: PreLoadRecord): boolean =>
+    pipe(
+      newNotificationRecord.input.body.documents,
+      RA.every(({ digests }) =>
+        pipe(
+          preLoadRecord.input.body,
+          RA.some(({ sha256 }) => sha256 === digests.sha256)
+        )
+      )
+    );
+
+export const hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest =
+  (newNotificationRecord: NewNotificationRecord) =>
+  (preLoadRecord: PreLoadRecord): boolean =>
+    pipe(
+      newNotificationRecord.input.body.recipients,
+      RA.every(({ payment }) =>
+        pipe(preLoadRecord, existsPreLoadRecordWithSameSha256(payment?.pagoPaForm?.digests.sha256))
+      )
+    );
