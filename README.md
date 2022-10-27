@@ -93,6 +93,8 @@ Another option is to run the `PnValidator` with Docker, as simple as:
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
 
+> Hint: The Docker image exposes the port 3000 of the container, so you can use the -p option to map it to a port of your choice.
+
 ## More advanced stuff
 
 ### Build and run your local Docker image from the source code
@@ -111,4 +113,4 @@ docker build -t pnemulator .
 docker run -p 3000:3000 pnemulator
 ```
 
-The [Dockerfile](./Dockerfile) exposes the port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
+> Hint: The [Dockerfile](./Dockerfile) exposes the port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
