@@ -87,17 +87,9 @@ npm run start
 
 ### Run as a Docker image
 
-Another option is to run the container image already available in the containers registry, as follows:
+Another option is to run the `PnValidator` with Docker, as simple as:
 
-1. Pull the image from the container registry.
-
- ```shell
-docker pull ghcr.io/pagopa/pn-local-emulator:latest
 ```
-
-2. Run the `PnValidator`.
-
- ```shell
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
 
