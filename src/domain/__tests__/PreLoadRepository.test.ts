@@ -1,5 +1,9 @@
 import * as data from './data';
-import { hasApplicationPdfAsContentType, hasUniquePreloadIdx } from '../PreLoadRepository';
+import {
+  existsPreLoadRecordWithSameSha256,
+  hasApplicationPdfAsContentType,
+  hasUniquePreloadIdx,
+} from '../PreLoadRepository';
 
 describe('PreLoadRepository', () => {
   describe('hasApplicationPdfAsContentType', () => {
@@ -34,6 +38,18 @@ describe('PreLoadRepository', () => {
           body: [...data.preLoadRecord.input.body, ...data.preLoadRecord.input.body],
         },
       });
+      expect(actual).toStrictEqual(false);
+    });
+  });
+
+  describe('existsPreLoadRecordWithSameSha256', () => {
+    it('should exist a PreLoadRecord with SHA256 provided', () => {
+      const actual = existsPreLoadRecordWithSameSha256(data.preLoadRecord.input.body[0].sha256)(data.preLoadRecord);
+      expect(actual).toStrictEqual(true);
+    });
+
+    it('should not exist a PreLoadRecord with SHA256 provided', () => {
+      const actual = existsPreLoadRecordWithSameSha256('notAValidSha')(data.preLoadRecord);
       expect(actual).toStrictEqual(false);
     });
   });

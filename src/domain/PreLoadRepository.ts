@@ -52,3 +52,9 @@ export const hasApplicationPdfAsContentType = (record: PreLoadRecord) =>
     record.input.body,
     RA.every(({ contentType }) => contentType === 'application/pdf')
   );
+
+export const existsPreLoadRecordWithSameSha256 = (sha256: string) => (record: PreLoadRecord) =>
+  pipe(
+    record.input.body,
+    RA.some(({ sha256: recordSha256 }) => sha256 === recordSha256)
+  );
