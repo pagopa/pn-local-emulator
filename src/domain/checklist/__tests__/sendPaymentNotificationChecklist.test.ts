@@ -1,7 +1,6 @@
 import { evalCheck } from '../types';
 import { preLoadCheck, uploadToS3Check, createNotificationRequestCheck } from '../sendPaymentNotificationChecklist';
 import * as data from '../../__tests__/data';
-import { newNotificationRecord } from '../../__tests__/data';
 
 describe('TC-SEND-01 - Send a notification with a payment document', () => {
   it('should verify the conditions on preLoadRecord', () => {
