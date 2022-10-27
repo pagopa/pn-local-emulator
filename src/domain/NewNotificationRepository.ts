@@ -1,14 +1,22 @@
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { pipe, tuple } from 'fp-ts/lib/function';
 import * as P from 'fp-ts/Predicate';
+import { pipe } from 'fp-ts/lib/function';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRequest, PhysicalCommunicationTypeEnum } from '../generated/definitions/NewNotificationRequest';
 import { NewNotificationResponse } from '../generated/definitions/NewNotificationResponse';
-import { AllRecord, existsApiKey, Repository } from './Repository';
+import { AllRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { UploadToS3Record } from './UploadToS3RecordRepository';
-import { PreLoadRecord } from './PreLoadRepository';
+import {
+  existsUploadToS3RecordWithSameDocumentKey,
+  existsUploadToS3RecordWithSameVersionToken,
+  UploadToS3Record,
+} from './UploadToS3RecordRepository';
+import {
+  existsPreLoadRecordWithSameSha256,
+  PreLoadRecord,
+  hasSuccessfulResponse as hasPreLoadSuccessfulResponse,
+} from './PreLoadRepository';
 
 export type Notification = NewNotificationRequest & NewNotificationResponse;
 
@@ -56,38 +64,36 @@ export const hasRecipientPaymentNoticeCode = (record: NewNotificationRecord) =>
     RA.every(({ payment }) => pipe(payment?.noticeCode, O.fromNullable, O.isSome))
   );
 
-export const hasSameVersionToken = (newNotificationRecord: NewNotificationRecord, uploadToS3Record: UploadToS3Record) =>
-  pipe(
-    newNotificationRecord.input.body.documents,
-    RA.some((document) => document.ref.versionToken === uploadToS3Record.output.returned.toString())
-  );
-
-export const hasSameDocumentKey = (newNotificationRecord: NewNotificationRecord, uploadToS3Record: UploadToS3Record) =>
-  pipe(
-    newNotificationRecord.input.body.documents,
-    RA.some((document) => document.ref.key === uploadToS3Record.input.key)
-  );
-
-export const hasSameContentType = (newNotificationRecord: NewNotificationRecord, preLoadRecord: PreLoadRecord) =>
-  pipe(
-    newNotificationRecord.input.body.documents,
-    RA.some((document) =>
-      pipe(
-        preLoadRecord.input.body,
-        RA.every(({ contentType }) => contentType === document.contentType)
+export const hasSameSha256UsedInPreLoadRecordRequest =
+  (preLoadRecords: ReadonlyArray<PreLoadRecord>) =>
+  (newNotificationRecord: NewNotificationRecord): boolean =>
+    pipe(
+      newNotificationRecord.input.body.documents,
+      RA.every(({ digests }) =>
+        pipe(
+          preLoadRecords,
+          RA.some(pipe(hasPreLoadSuccessfulResponse, P.and(existsPreLoadRecordWithSameSha256(digests.sha256))))
+        )
       )
-    )
-  );
+    );
 
-export const hasSameSha256 = (newNotificationRecord: NewNotificationRecord, preLoadRecord: PreLoadRecord) =>
-  pipe(
-    RA.comprehension(
-      [preLoadRecord.input.body, newNotificationRecord.input.body.documents],
-      tuple,
-      (preLoad, newNotification) => preLoad.sha256 === newNotification.digests.sha256
-    ),
-    RA.isNonEmpty
-  );
+export const hasSameDocumentReferenceOfUploadToS3Record =
+  (uploadToS3Records: ReadonlyArray<UploadToS3Record>) =>
+  (newNotificationRecord: NewNotificationRecord): boolean =>
+    pipe(
+      newNotificationRecord.input.body.documents,
+      RA.every(({ ref }) =>
+        pipe(
+          uploadToS3Records,
+          RA.some(
+            pipe(
+              existsUploadToS3RecordWithSameVersionToken(ref.versionToken),
+              P.and(existsUploadToS3RecordWithSameDocumentKey(ref.key))
+            )
+          )
+        )
+      )
+    );
 
 export const makeNewNotificationResponse =
   (input: NewNotificationRequest) =>
@@ -96,41 +102,6 @@ export const makeNewNotificationResponse =
     paProtocolNumber: input.paProtocolNumber,
     notificationRequestId,
   });
-
-export const matchNewNotificationRecordCriteria = pipe(
-  existsApiKey,
-  P.and(hasRecipientTaxId),
-  P.and(hasRecipientDigitalDomicile),
-  P.and(hasPhysicalAddress),
-  P.and(hasRegisteredLetterAsPhysicalDocumentType),
-  P.and(hasRecipientPaymentCreditorTaxId),
-  P.and(hasRecipientPaymentNoticeCode),
-  P.and(hasSuccessfulResponse)
-);
-
-export const matchAgainstPreLoadRecordList =
-  (preLoadRecords: ReadonlyArray<PreLoadRecord>) =>
-  (newNotificationRecord: NewNotificationRecord): boolean =>
-    pipe(
-      preLoadRecords,
-      RA.some(
-        (record) =>
-          record.output.statusCode === 200 &&
-          hasSameContentType(newNotificationRecord, record) &&
-          hasSameSha256(newNotificationRecord, record)
-      )
-    );
-
-export const matchAgainstUploadToS3RecordList =
-  (uploadToS3Records: ReadonlyArray<UploadToS3Record>) =>
-  (newNotificationRecord: NewNotificationRecord): boolean =>
-    pipe(
-      uploadToS3Records,
-      RA.some(
-        (record) =>
-          hasSameVersionToken(newNotificationRecord, record) && hasSameDocumentKey(newNotificationRecord, record)
-      )
-    );
 
 export const makeNewNotificationRecord = (record: Omit<NewNotificationRecord, 'type'>): NewNotificationRecord => ({
   type: 'NewNotificationRecord',

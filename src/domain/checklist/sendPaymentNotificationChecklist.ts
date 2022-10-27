@@ -3,10 +3,16 @@ import * as P from 'fp-ts/Predicate';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import {
+  hasPhysicalAddress,
+  hasRecipientDigitalDomicile,
+  hasRecipientPaymentCreditorTaxId,
+  hasRecipientPaymentNoticeCode,
+  hasRecipientTaxId,
+  hasRegisteredLetterAsPhysicalDocumentType,
+  hasSameDocumentReferenceOfUploadToS3Record,
+  hasSameSha256UsedInPreLoadRecordRequest,
+  hasSuccessfulResponse,
   isNewNotificationRecord,
-  matchAgainstPreLoadRecordList,
-  matchAgainstUploadToS3RecordList,
-  matchNewNotificationRecordCriteria,
   NewNotificationRecord,
 } from '../NewNotificationRepository';
 import {
@@ -71,9 +77,16 @@ export const createNotificationRequestCheck = {
         newNotificationRecordList,
         RA.some(
           pipe(
-            matchNewNotificationRecordCriteria,
-            P.and(matchAgainstPreLoadRecordList(preloadRecordList)),
-            P.and(matchAgainstUploadToS3RecordList(uploadToS3RecordList))
+            existsApiKey,
+            P.and(hasRecipientTaxId),
+            P.and(hasRecipientDigitalDomicile),
+            P.and(hasPhysicalAddress),
+            P.and(hasRegisteredLetterAsPhysicalDocumentType),
+            P.and(hasRecipientPaymentCreditorTaxId),
+            P.and(hasRecipientPaymentNoticeCode),
+            P.and(hasSuccessfulResponse),
+            P.and(hasSameSha256UsedInPreLoadRecordRequest(preloadRecordList)),
+            P.and(hasSameDocumentReferenceOfUploadToS3Record(uploadToS3RecordList))
           )
         )
       )
