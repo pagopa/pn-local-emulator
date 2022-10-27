@@ -62,7 +62,7 @@ export const existsPreLoadRecordWithSameSha256 = (sha256: string | undefined) =>
 
 export const hasSuccessfulResponse = (record: PreLoadRecord) => record.output.statusCode === 200;
 
-export const hasSameSha256UsedInPreLoadRecordRequest =
+export const hasSameSha256UsedInPreLoadRecord =
   (newNotificationRecord: NewNotificationRecord) =>
   (preLoadRecord: PreLoadRecord): boolean =>
     pipe(
@@ -75,7 +75,7 @@ export const hasSameSha256UsedInPreLoadRecordRequest =
       )
     );
 
-export const hasSamePaymentDocumentSha256UsedInPreLoadRecordRequest =
+export const hasSamePaymentDocumentSha256UsedInPreLoadRecord =
   (newNotificationRecord: NewNotificationRecord) =>
   (preLoadRecord: PreLoadRecord): boolean =>
     pipe(
