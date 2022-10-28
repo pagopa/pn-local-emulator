@@ -18,8 +18,14 @@ import {
   isPreLoadRecord,
   PreLoadRecord,
   hasUniquePreloadIdx,
+  documentsHaveSameShaOfPreLoadRecords,
 } from '../PreLoadRepository';
-import { oneRefersToOther, isUploadToS3Record, UploadToS3Record } from '../UploadToS3RecordRepository';
+import {
+  oneRefersToOther,
+  isUploadToS3Record,
+  UploadToS3Record,
+  documentsHaveSameReferenceToUploadToS3Records,
+} from '../UploadToS3RecordRepository';
 import { existsApiKey } from '../Repository';
 import { Checklist } from './types';
 
@@ -62,24 +68,31 @@ export const uploadToS3Check = {
   ),
 };
 
-// Send notification endpoint
-//  expect a request that produces a 2xx as a response
-//      the x-api-key header should be filled
 export const createNotificationRequestCheck = {
   group,
   name: 'Expect a send notification request that matches all the criteria',
-  eval: flow(
-    RA.filterMap(isNewNotificationRecord),
-    RA.some(
+  eval: pipe(
+    R.Do,
+    R.apS('preloadRecordList', RA.filterMap(isPreLoadRecord)),
+    R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
+    R.apS('newNotificationRecordList', RA.filterMap(isNewNotificationRecord)),
+    R.map(({ preloadRecordList, uploadToS3RecordList, newNotificationRecordList }) =>
       pipe(
-        existsApiKey,
-        P.and(hasRecipientTaxId),
-        P.and(hasRecipientDigitalDomicile),
-        P.and(hasPhysicalAddress),
-        P.and(hasRegisteredLetterAsPhysicalDocumentType),
-        P.and(hasRecipientPaymentCreditorTaxId),
-        P.and(hasRecipientPaymentNoticeCode),
-        P.and(hasSuccessfulResponse)
+        newNotificationRecordList,
+        RA.some(
+          pipe(
+            existsApiKey,
+            P.and(hasRecipientTaxId),
+            P.and(hasRecipientDigitalDomicile),
+            P.and(hasPhysicalAddress),
+            P.and(hasRegisteredLetterAsPhysicalDocumentType),
+            P.and(hasRecipientPaymentCreditorTaxId),
+            P.and(hasRecipientPaymentNoticeCode),
+            P.and(hasSuccessfulResponse),
+            P.and(documentsHaveSameShaOfPreLoadRecords(preloadRecordList)),
+            P.and(documentsHaveSameReferenceToUploadToS3Records(uploadToS3RecordList))
+          )
+        )
       )
     )
   ),

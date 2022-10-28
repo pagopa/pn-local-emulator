@@ -33,13 +33,20 @@ describe('TC-SEND-01 - Send a notification with a payment document', () => {
     expect(actual2.result).toStrictEqual('ok');
   });
 
-  it.skip('should verify the conditions on NewNotificationRecord', () => {
+  it('should verify the conditions on NewNotificationRecord', () => {
     const check = evalCheck({ ...createNotificationRequestCheck });
 
     const actual0 = check([data.preLoadRecord, data.uploadToS3Record]);
     expect(actual0.result).toStrictEqual('ko');
 
-    const actual1 = check([data.preLoadRecord, data.uploadToS3Record, data.newNotificationRecord]);
+    // Just keep the first document for simplicity
+    // This because we have to add PreLoadRecord and UploadToS3Record of all the documents
+    const documents = data.newNotificationRecord.input.body.documents.slice(0, 1);
+    const newNotificationRecord = {
+      ...data.newNotificationRecord,
+      input: { ...data.newNotificationRecord.input, body: { ...data.newNotificationRecord.input.body, documents } },
+    };
+    const actual1 = check([data.preLoadRecord, data.uploadToS3Record, newNotificationRecord]);
     expect(actual1.result).toStrictEqual('ok');
   });
 });

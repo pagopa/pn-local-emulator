@@ -1,6 +1,8 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { Predicate } from 'fp-ts/lib/Predicate';
+import * as P from 'fp-ts/Predicate';
 import { AmzChecksumSHA256 } from '../generated/definitions/AmzChecksumSHA256';
 import { AmzMetaSecret } from '../generated/definitions/AmzMetaSecret';
 import { AmzSdkChecksumAlg } from '../generated/definitions/AmzSdkChecksumAlg';
@@ -9,6 +11,7 @@ import { AmzVersionId } from '../generated/definitions/AmzVersionId';
 import { Response } from './types';
 import { AllRecord, Repository } from './Repository';
 import { PreLoadRecord } from './PreLoadRepository';
+import { NewNotificationRecord } from './NewNotificationRepository';
 
 export type UploadToS3Record = {
   type: 'UploadToS3Record';
@@ -40,3 +43,57 @@ export const oneRefersToOther = (preLoadRecord: PreLoadRecord, uploadToS3Record:
         result.key === uploadToS3Record.input.key
     )
   );
+
+export const existsUploadToS3RecordWithSameVersionToken =
+  (versionToken: string | undefined): Predicate<UploadToS3Record> =>
+  (record: UploadToS3Record) =>
+    record.output.returned.toString() === versionToken;
+
+export const existsUploadToS3RecordWithSameDocumentKey =
+  (documentKey: string | undefined): Predicate<UploadToS3Record> =>
+  (uploadToS3Record: UploadToS3Record) =>
+    uploadToS3Record.input.key === documentKey;
+
+export const hasSameDocumentReferenceOfUploadToS3Record =
+  (newNotificationRecord: NewNotificationRecord) =>
+  (uploadToS3Record: UploadToS3Record): boolean =>
+    pipe(
+      newNotificationRecord.input.body.documents,
+      RA.every(({ ref }) =>
+        pipe(
+          uploadToS3Record,
+          pipe(
+            existsUploadToS3RecordWithSameVersionToken(ref.versionToken),
+            P.and(existsUploadToS3RecordWithSameDocumentKey(ref.key))
+          )
+        )
+      )
+    );
+
+export const hasSamePaymentDocumentReferenceOfUploadToS3Record =
+  (newNotificationRecord: NewNotificationRecord) =>
+  (uploadToS3Record: UploadToS3Record): boolean =>
+    pipe(
+      newNotificationRecord.input.body.recipients,
+      RA.every(({ payment }) =>
+        pipe(
+          uploadToS3Record,
+          pipe(
+            existsUploadToS3RecordWithSameVersionToken(payment?.pagoPaForm?.ref.versionToken),
+            P.and(existsUploadToS3RecordWithSameDocumentKey(payment?.pagoPaForm?.ref.key))
+          )
+        )
+      )
+    );
+
+export const documentsHaveSameReferenceToUploadToS3Records =
+  (uploadToS3Record: ReadonlyArray<UploadToS3Record>) => (record: NewNotificationRecord) =>
+    pipe(
+      uploadToS3Record,
+      RA.some(
+        pipe(
+          hasSameDocumentReferenceOfUploadToS3Record(record),
+          P.and(hasSamePaymentDocumentReferenceOfUploadToS3Record(record))
+        )
+      )
+    );

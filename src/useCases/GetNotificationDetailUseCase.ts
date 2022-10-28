@@ -8,7 +8,7 @@ import { Iun } from '../generated/definitions/Iun';
 import { GetNotificationDetailRecord } from '../domain/GetNotificationDetailRepository';
 import { authorizeApiKey } from '../domain/authorize';
 import { computeSnapshot } from '../domain/Snapshot';
-import { SystemEnv } from '../useCases/SystemEnv';
+import { SystemEnv } from './SystemEnv';
 
 // TODO: Apply the Reader monad to the environment.
 export const GetNotificationDetailUseCase =

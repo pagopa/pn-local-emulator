@@ -3,7 +3,6 @@ import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { makeLogger } from '../../logger';
-import { config } from '../../__tests__/data';
 import * as data from '../../domain/__tests__/data';
 
 const logger = makeLogger();
