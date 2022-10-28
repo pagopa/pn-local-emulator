@@ -3,6 +3,7 @@ import {
   documentsHaveSameShaOfPreLoadRecords,
   hasApplicationPdfAsContentType,
   hasUniquePreloadIdx,
+  matchProperties,
 } from '../PreLoadRepository';
 
 describe('PreLoadRepository', () => {
@@ -32,6 +33,28 @@ describe('PreLoadRepository', () => {
 
     it('should be false that request body contain unique preloadIdx', () => {
       const actual = hasUniquePreloadIdx({
+        ...data.preLoadRecord,
+        input: {
+          ...data.preLoadRecord.input,
+          body: [...data.preLoadRecord.input.body, ...data.preLoadRecord.input.body],
+        },
+      });
+      expect(actual).toStrictEqual(false);
+    });
+  });
+
+  describe('matchProperties', () => {
+    it('should be true if properties have a match', () => {
+      const actual = matchProperties(data.aSha256, data.aSecret, data.anAttachmentRef.key)(data.preLoadRecord);
+      expect(actual).toStrictEqual(true);
+    });
+
+    it('should be false if properties do not have a match', () => {
+      const actual = matchProperties(
+        data.aSha256,
+        data.aSecret,
+        ''
+      )({
         ...data.preLoadRecord,
         input: {
           ...data.preLoadRecord.input,

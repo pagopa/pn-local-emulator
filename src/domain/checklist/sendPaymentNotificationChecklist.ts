@@ -1,4 +1,4 @@
-import { flow, pipe, tuple } from 'fp-ts/lib/function';
+import { flow, pipe } from 'fp-ts/lib/function';
 import * as P from 'fp-ts/Predicate';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
@@ -21,9 +21,9 @@ import {
   documentsHaveSameShaOfPreLoadRecords,
 } from '../PreLoadRepository';
 import {
-  oneRefersToOther,
   isUploadToS3Record,
   UploadToS3Record,
+  matchAnyPreLoadRecord,
   documentsHaveSameReferenceToUploadToS3Records,
 } from '../UploadToS3RecordRepository';
 import { existsApiKey } from '../Repository';
@@ -61,7 +61,8 @@ export const uploadToS3Check = {
     R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
     R.map(({ preloadRecordList, uploadToS3RecordList }) =>
       pipe(
-        RA.comprehension([preloadRecordList, uploadToS3RecordList], tuple, oneRefersToOther),
+        uploadToS3RecordList,
+        RA.filter(matchAnyPreLoadRecord(preloadRecordList)),
         (records) => RA.size(records) >= 2
       )
     )

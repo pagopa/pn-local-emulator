@@ -53,12 +53,12 @@ export const aDate = new Date(0);
 
 export const aSenderPaId = 'aSenderPaId';
 
-const anAttachmentRef = {
+export const anAttachmentRef = {
   key: 'key',
   versionToken: '123',
 };
 
-const aSha256 = 'jezIVxlG1M1woCSUngM6KipUN3/p8cG5RMIPnuEanlE=';
+export const aSha256 = 'jezIVxlG1M1woCSUngM6KipUN3/p8cG5RMIPnuEanlE=';
 
 const aDocument0: FullSentNotification['documents'][0] = {
   docIdx: '0',
@@ -133,6 +133,9 @@ const aRecipient: FullSentNotification['recipients'][0] = {
     },
   },
 };
+
+export const aSecret = 'a-secret';
+export const aUrl = 'a-url';
 
 // PreLoadRecord //////////////////////////////////////////////////////////////
 
