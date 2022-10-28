@@ -9,7 +9,7 @@ import { CheckNotificationStatusRecord } from '../domain/CheckNotificationStatus
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { Snapshot, computeSnapshot } from '../domain/Snapshot';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
-import { SystemEnv } from '../useCases/SystemEnv';
+import { SystemEnv } from './SystemEnv';
 
 const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db: Snapshot) =>
   pipe(
