@@ -1,7 +1,7 @@
 # PnValidator
 [![CI](https://github.com/pagopa/pn-local-emulator/actions/workflows/main.yaml/badge.svg)](https://github.com/pagopa/pn-local-emulator/actions/workflows/main.yaml)
 
-A system that emulates a subset of the HTTP API provided by Piattaforma Notifiche platform and produces a report containing the coverage of expected use cases.
+A system that emulates a subset of the HTTP API provided by Piattaforma Notifiche platform, driven by well-defined use cases, and produces a report describing their coverage and correctness.
 
 ## How to use
 
@@ -19,8 +19,8 @@ If all the checks are `ok` then your integration covers the expected use cases.
 curl --location --request GET 'http://localhost:3000/checklistresult'
 ```
 
-## Which use cases case be tested
-At the moment the `PnValidator` allows the following use-case:
+## Testable use cases
+Currently, the `PnValidator` allows the emulation and testing of one single use case (TC-SEND-01). As the development proceeds, the list will expand.
 
 ### TC-SEND-01
 Create a `NotificationRequest` providing two documents: the act to notify and the pagoPA payment.
@@ -38,79 +38,79 @@ Create a `NotificationRequest` providing two documents: the act to notify and th
 
 
 ## How to run
+We provide a couple of different ways to start the `PnValidator`:
 
-### Prerequisites
-If you want to run the emulator starting from the source code, please follow these steps.
+- from the source code
+- as a [Docker](https://docker.com) image
 
-First, clone the repository using the preferred method (the next command uses SSH):
+### Run from the source code
 
-```shell
+This section describes how to start the `PnValidator` from the source code.
+
+Since this project runs with [Node.js](https://nodejs.org/en/) as specified in the [`.node_version`](.node-version) file, we strongly encourage [using nvm](https://github.com/nvm-sh/nvm).
+
+Here is what you need to do:
+
+1. clone the repository using the preferred method (the next command uses SSH):
+
+ ```shell
 git clone git@github.com:pagopa/pn-local-emulator.git
 ```
 
-Second, this project runs with [Node.js](https://nodejs.org/en/) and it has been developed with the version specified in the [`.node_version`](.node-version) file.
+2. (Optional but strongly recommended) Install the Node.js runtime using `nvm` (please, make sure the path of `.node_version` is correct. The given commands assume you are in the repository folder.).
 
-We suggest [using nvm](https://github.com/nvm-sh/nvm) to install Node.js at the same version specified in the `.node_version` file.
-
-```shell
+ ```shell
 # Install the version of Node.js specified in the .node_version file
 nvm install `cat .node-version`
 
-# Set the version of Node.js specified in the .node_version file
+ # Set the version of Node.js specified in the .node_version file
 nvm use `cat .node-version`
 ```
-Please, make sure the path of `.node_version` is correct. The given commands assume you are in the repository folder.
 
-### Run using Node.js
+3. Install the dependencies.
 
-Install the dependencies.
-
-```shell
+ ```shell
 npm install
 ```
 
-Generates code from the [OpenAPI](./openapi/index.yaml) specification.
+4. Generates code from the [OpenAPI](./openapi/index.yaml) specification.
 
-```shell
+ ```shell
 npm run generate
 ```
 
-Start the application.
+5. Start the `PnValidator`.
 
-```shell
+ ```shell
 npm run start
 ```
 
-### Run using Docker (Dockerfile)
+### Run as a Docker image
 
-The repository comes with a Dockerfile that you can use to run the application with Docker.
+Another option is to run the `PnValidator` with Docker, as simple as:
 
-Build the image.
+```
+docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
+```
 
-```shell
+> Hint: The Docker image exposes the port 3000 of the container, so you can use the -p option to map it to a port of your choice.
+
+## More advanced stuff
+
+### Build and run your local Docker image from the source code
+
+The repository comes with a Dockerfile that you can use to run the `PnValidator` with Docker.
+
+1. Build the image.
+
+ ```shell
 docker build -t pnemulator .
 ```
 
-Run the emulator.
+2. Run the `PnValidator`.
 
-```shell
+ ```shell
 docker run -p 3000:3000 pnemulator
 ```
-The [Dockerfile](./Dockerfile) exposes port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
 
-### Run using the public container image
-
-Another option is to run the container image available in the container registry.
-
-Pull the image from the container registry.
-
-```shell
-docker pull ghcr.io/pagopa/pn-local-emulator:latest
-```
-
-Run the application.
-
-
-```shell
-docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
-```
+> Hint: The [Dockerfile](./Dockerfile) exposes the port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
