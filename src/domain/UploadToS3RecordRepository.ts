@@ -40,7 +40,12 @@ export const matchAnyPreLoadRecord =
       preLoadRecordList,
       RA.exists(
         // TODO: Add insert date and check that uploadToS3Record.createdAt is bigger than the one of preLoadRecord
-        matchProperties(uploadToS3Record.input.checksum, uploadToS3Record.input.secret, uploadToS3Record.input.key)
+        matchProperties(
+          uploadToS3Record.input.checksum,
+          uploadToS3Record.input.secret,
+          uploadToS3Record.input.key,
+          uploadToS3Record.input.computedSha256
+        )
       )
     );
 
