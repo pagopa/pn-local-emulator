@@ -20,6 +20,7 @@ export type UploadToS3Record = {
     checksumAlg?: AmzSdkChecksumAlg;
     secret: AmzMetaSecret;
     checksum: AmzChecksumSHA256;
+    computedSha256: string;
   };
   output: Response<200, AmzVersionId>;
 };
