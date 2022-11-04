@@ -22,5 +22,4 @@ const convert = (input: ReportIn): Report =>
     )
   );
 
-export const evaluateReport = <T>(reportEvaluator: R.Reader<T, ReportIn>): R.Reader<T, Report> =>
-  pipe(reportEvaluator, R.map(convert));
+export const evaluateReport = R.map(convert);
