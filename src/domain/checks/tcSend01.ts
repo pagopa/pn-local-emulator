@@ -5,10 +5,9 @@ import * as NewNotificationRequestRecordChecks from './NewNotificationRequestRec
 
 export const tcSend01 = Group({
   'Request at least two upload slots': Group({
-    ...PreLoadRecordChecks.atLeastOneRequest,
-    ...PreLoadRecordChecks.atLeastOneRequestWithUniqueIdx,
-    ...PreLoadRecordChecks.atLeastTwoRequestWithContentTypePdf,
-    ...PreLoadRecordChecks.atLeastRequestedTwoValidSlots,
+    'Have you done at least one request': PreLoadRecordChecks.atLeastOnePreLoadRecordC,
+    'Have you required at least one pdf': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
+    'Have you received at least two valid slots': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
   }),
   'Upload at least two files': Group({
     ...UploadToS3RecordChecks.uploadAtLeastTwoFiles,
