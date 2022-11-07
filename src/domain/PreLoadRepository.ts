@@ -34,11 +34,6 @@ export const makePreLoadResponse = (
   key,
 });
 
-export const makePreLoadRecord = (record: Omit<PreLoadRecord, 'type'>): PreLoadRecord => ({
-  type: 'PreLoadRecord',
-  ...record,
-});
-
 export type PreLoadRecordRepository = Repository<PreLoadRecord>;
 
 export const hasUniquePreloadIdx = (record: PreLoadRecord) =>
