@@ -1,6 +1,6 @@
 import { Group } from '../reportengine/reportengine';
 import * as PreLoadRecordChecks from './PreLoadRecordChecks';
-import * as UploadToS3RecordChecks from './UploadToS3Record';
+import * as UploadToS3RecordChecks from './UploadToS3RecordChecks';
 import * as NewNotificationRequestRecordChecks from './NewNotificationRequestRecord';
 
 export const tcSend01 = Group({
@@ -10,7 +10,8 @@ export const tcSend01 = Group({
     'Have you received at least two valid slots': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
   }),
   'Upload at least two files': Group({
-    ...UploadToS3RecordChecks.uploadAtLeastTwoFiles,
+    'Have you upload two files using the information of previous step?':
+      UploadToS3RecordChecks.atLeastTwoUploadMatchingPreLoadRecordC,
   }),
   'Create a notification request': Group({
     ...NewNotificationRequestRecordChecks.atLeastOneRequest,
