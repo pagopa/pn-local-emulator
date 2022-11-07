@@ -60,7 +60,7 @@ export const anAttachmentRef = {
 
 export const aSha256 = 'jezIVxlG1M1woCSUngM6KipUN3/p8cG5RMIPnuEanlE=';
 
-const aDocument0: FullSentNotification['documents'][0] = {
+export const aDocument0: FullSentNotification['documents'][0] = {
   docIdx: '0',
   digests: {
     sha256: aSha256,
@@ -69,7 +69,7 @@ const aDocument0: FullSentNotification['documents'][0] = {
   ref: anAttachmentRef,
 };
 
-const aDocument1 = {
+export const aDocument1 = {
   ...aDocument0,
   docIdx: '1',
   ref: {
@@ -177,16 +177,19 @@ const newNotificationRequest: NewNotificationRequest = {
   physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890,
 };
 
-export const newNotificationRecord = makeNewNotificationRecord({
-  input: { apiKey: apiKey.valid, body: newNotificationRequest },
-  output: {
-    statusCode: 202,
-    returned: {
-      paProtocolNumber: paProtocolNumber.valid,
-      notificationRequestId: notificationId.valid,
+export const mkNewNotificationRecord = (documents: NewNotificationRequest['documents']) =>
+  makeNewNotificationRecord({
+    input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, documents } },
+    output: {
+      statusCode: 202,
+      returned: {
+        paProtocolNumber: paProtocolNumber.valid,
+        notificationRequestId: notificationId.valid,
+      },
     },
-  },
-});
+  });
+
+export const newNotificationRecord = mkNewNotificationRecord([{ ...aDocument0, docIdx: undefined }, aDocument1]);
 
 export const newNotificationRecordWithIdempotenceToken = makeNewNotificationRecord({
   input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, idempotenceToken: idempotenceToken.valid } },
