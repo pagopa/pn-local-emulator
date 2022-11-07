@@ -18,8 +18,6 @@ export type NewNotificationRecord = {
 export const isNewNotificationRecord = (record: AllRecord): O.Option<NewNotificationRecord> =>
   record.type === 'NewNotificationRecord' ? O.some(record) : O.none;
 
-export const hasSuccessfulResponse = (record: NewNotificationRecord) => record.output.statusCode === 202;
-
 export const hasRecipientTaxId = (record: NewNotificationRecord) =>
   pipe(
     record.input.body.recipients,

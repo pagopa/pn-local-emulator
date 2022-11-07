@@ -166,6 +166,16 @@ export const uploadToS3Record: UploadToS3Record = {
   output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken, 10) },
 };
 
+export const uploadToS3RecordDangling: UploadToS3Record = {
+  ...uploadToS3Record,
+  input: {
+    ...uploadToS3Record.input,
+    key: `${preLoadResponse.key}-dangling`,
+    secret: `${preLoadResponse.secret}-dangling`,
+    checksum: `${preLoadBody.sha256}-dangling`,
+  },
+};
+
 // NewNotificationRecord //////////////////////////////////////////////////////
 
 const newNotificationRequest: NewNotificationRequest = {

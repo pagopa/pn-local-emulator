@@ -3,9 +3,11 @@ import * as UploadToS3RecordChecks from '../UploadToS3RecordChecks';
 import * as NewNotificationRequestRecordChecks from '../NewNotificationRequestRecordChecks';
 import * as data from '../../__tests__/data';
 
+// TODO: Refactor using fast-check
 const ex0 = [data.preLoadRecord, data.preLoadRecord];
 const ex1 = [data.preLoadRecord, data.preLoadRecord, data.uploadToS3Record];
 const ex2 = [data.preLoadRecord, data.preLoadRecord, data.uploadToS3Record, data.uploadToS3Record];
+const ex21 = [data.preLoadRecord, data.preLoadRecord, data.uploadToS3Record, data.uploadToS3RecordDangling];
 const ex3 = [...ex2, data.newNotificationRecord];
 const ex4 = [...ex2, data.mkNewNotificationRecord([data.aDocument0])];
 
@@ -33,6 +35,7 @@ describe('TC-SEND-01', () => {
       expect(check([])).toStrictEqual(false);
       expect(check(ex0)).toStrictEqual(false);
       expect(check(ex1)).toStrictEqual(false);
+      expect(check(ex21)).toStrictEqual(false);
       expect(check(ex2)).toStrictEqual(true);
     });
   });

@@ -2,7 +2,6 @@ import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as s from 'fp-ts/string';
-import * as P from 'fp-ts/Predicate';
 import { PreLoadResponseBody } from '../generated/definitions/PreLoadResponseBody';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 import { ApiKey } from '../generated/definitions/ApiKey';
@@ -10,7 +9,6 @@ import { PreLoadRequest } from '../generated/definitions/PreLoadRequest';
 import { HttpMethodEnum, PreLoadResponse } from '../generated/definitions/PreLoadResponse';
 import { AllRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { NewNotificationRecord } from './NewNotificationRepository';
 
 export type PreLoadRecord = {
   type: 'PreLoadRecord';
@@ -49,56 +47,3 @@ export const hasApplicationPdfAsContentType = (record: PreLoadRecord) =>
     record.input.body,
     RA.every(({ contentType }) => contentType === 'application/pdf')
   );
-
-export const matchProperties =
-  (sha256: string, secret: string, key: string) =>
-  (record: PreLoadRecord): boolean =>
-    record.output.statusCode === 200 &&
-    pipe(
-      RA.zip(record.output.returned)(record.input.body),
-      RA.exists(([body, response]) => body.sha256 === sha256 && response.secret === secret && response.key === key)
-    );
-
-const existsPreLoadRecordWithSameSha256 = (sha256: string | undefined) => (record: PreLoadRecord) =>
-  pipe(
-    record.input.body,
-    RA.some(({ sha256: recordSha256 }) => sha256 === recordSha256)
-  );
-
-const hasSuccessfulResponse = (record: PreLoadRecord) => record.output.statusCode === 200;
-
-const hasSameSha256UsedInPreLoadRecord =
-  (newNotificationRecord: NewNotificationRecord) =>
-  (preLoadRecord: PreLoadRecord): boolean =>
-    pipe(
-      newNotificationRecord.input.body.documents,
-      RA.every(({ digests }) =>
-        pipe(
-          preLoadRecord.input.body,
-          RA.some(({ sha256 }) => sha256 === digests.sha256)
-        )
-      )
-    );
-
-const hasSamePaymentDocumentSha256UsedInPreLoadRecord =
-  (newNotificationRecord: NewNotificationRecord) =>
-  (preLoadRecord: PreLoadRecord): boolean =>
-    pipe(
-      newNotificationRecord.input.body.recipients,
-      RA.every(({ payment }) =>
-        pipe(preLoadRecord, existsPreLoadRecordWithSameSha256(payment?.pagoPaForm?.digests.sha256))
-      )
-    );
-
-export const documentsHaveSameShaOfPreLoadRecords =
-  (preloadRecordList: ReadonlyArray<PreLoadRecord>) => (record: NewNotificationRecord) =>
-    pipe(
-      preloadRecordList,
-      RA.some(
-        pipe(
-          hasSuccessfulResponse,
-          P.and(hasSameSha256UsedInPreLoadRecord(record)),
-          P.and(hasSamePaymentDocumentSha256UsedInPreLoadRecord(record))
-        )
-      )
-    );
