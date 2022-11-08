@@ -24,18 +24,19 @@ const matchAtLeastOnePreLoadRecord = (records: ReadonlyArray<PreLoadRecord>) => 
     )
   );
 
-export const atLeastTwoUploadMatchingPreLoadRecordC = pipe(
-  R.Do,
-  R.apS('preloadRecordList', RA.filterMap(isPreLoadRecord)),
-  R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
-  R.map(({ preloadRecordList, uploadToS3RecordList }) =>
-    pipe(
-      uploadToS3RecordList,
-      RA.filter(matchAtLeastOnePreLoadRecord(preloadRecordList)),
-      (records) => RA.size(records) >= 2
+export const atLeastNUploadMatchingPreLoadRecordC = (n: number) =>
+  pipe(
+    R.Do,
+    R.apS('preloadRecordList', RA.filterMap(isPreLoadRecord)),
+    R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
+    R.map(({ preloadRecordList, uploadToS3RecordList }) =>
+      pipe(
+        uploadToS3RecordList,
+        RA.filter(matchAtLeastOnePreLoadRecord(preloadRecordList)),
+        (records) => RA.size(records) >= n
+      )
     )
-  )
-);
+  );
 
 export const matchAtLeastOneUploadToS3Record =
   (records: ReadonlyArray<UploadToS3Record>) => (document: NotificationPaymentAttachment) =>

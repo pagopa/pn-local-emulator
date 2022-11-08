@@ -3,15 +3,15 @@ import * as PreLoadRecordChecks from './PreLoadRecordChecks';
 import * as UploadToS3RecordChecks from './UploadToS3RecordChecks';
 import * as NewNotificationRequestRecordChecks from './NewNotificationRequestRecordChecks';
 
-export const tcSend01 = Group({
-  'Request at least two upload slots': Group({
+export const tcSend01bis = Group({
+  'Request at least one upload slot': Group({
     'Have you done at least one request': PreLoadRecordChecks.atLeastOnePreLoadRecordC,
     'Have you required at least one pdf': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
-    'Have you received at least two valid slots': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
+    'Have you received at least one valid slot': PreLoadRecordChecks.atLeastOneValidSlotC,
   }),
-  'Upload at least two files': Group({
-    'Have you upload two files using the information of previous step?':
-      UploadToS3RecordChecks.atLeastNUploadMatchingPreLoadRecordC(2),
+  'Upload at least one file': Group({
+    'Have you upload one file using the information of previous step?':
+      UploadToS3RecordChecks.atLeastNUploadMatchingPreLoadRecordC(1),
   }),
   'Create a notification request': Group({
     'Have you done at least one request?': NewNotificationRequestRecordChecks.atLeastOneRecordC,
@@ -26,8 +26,6 @@ export const tcSend01 = Group({
       'Have you filled the following properties for every payment?': Group({
         'Have you filled the property creditorTaxId': NewNotificationRequestRecordChecks.atLeastOneValidCreditorTaxIdC,
         'Have you filled the property noticeCode': NewNotificationRequestRecordChecks.atLeastOneValidNoticeCodeC,
-        'Have you filled the property pagoPaForm with the references of a file previously uploaded?':
-          NewNotificationRequestRecordChecks.atLeastOneValidPagoPaFormC,
       }),
     }),
     'Have you filled the property documents with the references of files previously uploaded?':

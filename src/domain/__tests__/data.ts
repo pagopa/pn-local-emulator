@@ -108,7 +108,7 @@ export const makeTestSystemEnv = (
   ),
 });
 
-const aRecipient: FullSentNotification['recipients'][0] = {
+export const aRecipient: FullSentNotification['recipients'][0] = {
   recipientType: RecipientTypeEnum.PF,
   denomination: 'denomination',
   taxId: 'aTaxId',
@@ -187,9 +187,12 @@ const newNotificationRequest: NewNotificationRequest = {
   physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890,
 };
 
-export const mkNewNotificationRecord = (documents: NewNotificationRequest['documents']) =>
+export const mkNewNotificationRecord = (
+  documents: NewNotificationRequest['documents'],
+  recipients: NewNotificationRequest['recipients']
+) =>
   makeNewNotificationRecord({
-    input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, documents } },
+    input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, documents, recipients } },
     output: {
       statusCode: 202,
       returned: {
@@ -199,7 +202,10 @@ export const mkNewNotificationRecord = (documents: NewNotificationRequest['docum
     },
   });
 
-export const newNotificationRecord = mkNewNotificationRecord([{ ...aDocument0, docIdx: undefined }, aDocument1]);
+export const newNotificationRecord = mkNewNotificationRecord(
+  [{ ...aDocument0, docIdx: undefined }, aDocument1],
+  [aRecipient]
+);
 
 export const newNotificationRecordWithIdempotenceToken = makeNewNotificationRecord({
   input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, idempotenceToken: idempotenceToken.valid } },
