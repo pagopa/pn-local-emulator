@@ -39,4 +39,24 @@ describe('evaluateReport', () => {
       },
     ]);
   });
+
+  // At the moment, the order of the checks is not preserved.
+  // The aim of this test is to show this issue.
+  // Skip it until we find a way to solve it.
+  it.skip('should preserve the order', () => {
+    const report = Group({
+      "check 2": RA.exists((_) => true),
+      "check 1": RA.exists((_) => true),
+    });
+    expect(evaluateReport(report)([])).toStrictEqual([
+      {
+        description: 'check 2',
+        result: true,
+      },
+      {
+        description: 'check 1',
+        result: true,
+      },
+    ])
+  })
 });
