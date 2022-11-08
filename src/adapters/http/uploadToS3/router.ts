@@ -21,6 +21,7 @@ const handler =
       E.ap(t.union([t.undefined, AmzSdkChecksumAlg]).decode(req.headers['x-amz-sdk-checksum-algorithm'])),
       E.ap(AmzMetaSecret.decode(req.headers['x-amz-meta-secret'])),
       E.ap(AmzChecksumSHA256.decode(req.headers['x-amz-checksum-sha256'])),
+      E.ap(E.of(req.body)),
       // Create response
       E.map(
         TE.fold(
@@ -33,7 +34,7 @@ const handler =
 export const makeUploadToS3Router = (uploadToS3UseCase: UploadToS3UseCase): express.Router => {
   const router = express.Router();
 
-  router.put('/uploadS3/:key', toExpressHandler(handler(uploadToS3UseCase)));
+  router.put('/uploadS3/:key', express.raw({ type: 'application/pdf' }), toExpressHandler(handler(uploadToS3UseCase)));
 
   return router;
 };

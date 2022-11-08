@@ -45,7 +45,12 @@ describe('PreLoadRepository', () => {
 
   describe('matchProperties', () => {
     it('should be true if properties have a match', () => {
-      const actual = matchProperties(data.aSha256, data.aSecret, data.anAttachmentRef.key)(data.preLoadRecord);
+      const actual = matchProperties(
+        data.aSha256,
+        data.aSecret,
+        data.anAttachmentRef.key,
+        data.aSha256
+      )(data.preLoadRecord);
       expect(actual).toStrictEqual(true);
     });
 
@@ -53,7 +58,8 @@ describe('PreLoadRepository', () => {
       const actual = matchProperties(
         data.aSha256,
         data.aSecret,
-        ''
+        '',
+        data.aSha256
       )({
         ...data.preLoadRecord,
         input: {

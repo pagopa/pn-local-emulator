@@ -162,6 +162,7 @@ export const uploadToS3Record: UploadToS3Record = {
     checksumAlg: undefined,
     secret: preLoadResponse.secret,
     checksum: preLoadBody.sha256,
+    computedSha256: preLoadBody.sha256,
   },
   output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken, 10) },
 };
