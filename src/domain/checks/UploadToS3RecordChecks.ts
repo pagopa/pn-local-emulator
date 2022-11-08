@@ -18,7 +18,8 @@ const matchAtLeastOnePreLoadRecord = (records: ReadonlyArray<PreLoadRecord>) => 
             ([body, response]) =>
               body.sha256 === uploadToS3Record.input.checksum &&
               response.secret === uploadToS3Record.input.secret &&
-              response.key === uploadToS3Record.input.key
+              response.key === uploadToS3Record.input.key &&
+              body.sha256 === uploadToS3Record.input.computedSha256
           )
         )
     )
