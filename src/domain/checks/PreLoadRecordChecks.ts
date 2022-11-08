@@ -22,10 +22,12 @@ export const atLeastOnePreLoadRecordC = RA.exists(flow(isPreLoadRecord, O.isSome
 
 export const atLeastOnePreLoadRecordWithPdfC = RA.exists(flow(isPreLoadRecord, O.exists(hasUniquePreloadIdx)));
 
-export const atLeastTwoValidSlotC = atLeastN(2)(
-  pipe(
-    hasUniquePreloadIdx,
-    P.and(hasApplicationPdfAsContentType),
-    P.and(({ output }) => output.statusCode === 200)
-  )
+export const validSlot = pipe(
+  hasUniquePreloadIdx,
+  P.and(hasApplicationPdfAsContentType),
+  P.and(({ output }) => output.statusCode === 200)
 );
+
+export const atLeastOneValidSlotC = atLeastN(1)(validSlot);
+
+export const atLeastTwoValidSlotC = atLeastN(2)(validSlot);

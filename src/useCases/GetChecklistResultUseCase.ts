@@ -3,7 +3,7 @@ import * as Apply from 'fp-ts/Apply';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as TE from 'fp-ts/TaskEither';
 import { evaluateReport, Report } from '../domain/reportengine/reportengine';
-import { tcSend01 } from '../domain/checks/tcSend01';
+import { report } from '../domain/checks/report';
 import { SystemEnv } from './SystemEnv';
 
 export const GetChecklistResultUseCase =
@@ -18,7 +18,7 @@ export const GetChecklistResultUseCase =
       TE.map(({ preLoadList, uploadList, createNotificationRequestList }) =>
         pipe(preLoadList, RA.concatW(uploadList), RA.concatW(createNotificationRequestList))
       ),
-      TE.map(evaluateReport(tcSend01))
+      TE.map(evaluateReport(report))
     );
 
 export type GetChecklistResultUseCase = ReturnType<typeof GetChecklistResultUseCase>;

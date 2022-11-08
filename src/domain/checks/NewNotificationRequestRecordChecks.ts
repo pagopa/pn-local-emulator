@@ -75,7 +75,7 @@ export const atLeastOneRequestWithValidDocumentsC = pipe(
   )
 );
 
-export const atLeastOneNotificationSentC = pipe(
+export const atLeastOneNotificationSentNoPayment = pipe(
   R.Do,
   R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
   R.apS('newNotificationRecordList', RA.filterMap(isNewNotificationRecord)),
@@ -92,9 +92,25 @@ export const atLeastOneNotificationSentC = pipe(
             P.and(atLeastOneValidPhysicalAddressC),
             P.and(atLeastOneValidCreditorTaxIdC),
             P.and(atLeastOneValidNoticeCodeC),
-            P.and(atLeastOneValidPagoPaFormC),
             P.and(atLeastOneRequestWithValidDocumentsC)
           )
+        )
+      )
+    )
+  )
+);
+
+export const atLeastOneNotificationSentC = pipe(
+  R.Do,
+  R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
+  R.apS('newNotificationRecordList', RA.filterMap(isNewNotificationRecord)),
+  R.map(({ uploadToS3RecordList, newNotificationRecordList }) =>
+    pipe(
+      newNotificationRecordList,
+      RA.exists((record) =>
+        pipe(
+          [...uploadToS3RecordList, record],
+          pipe(atLeastOneNotificationSentNoPayment, P.and(atLeastOneValidPagoPaFormC))
         )
       )
     )

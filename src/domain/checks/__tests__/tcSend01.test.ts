@@ -31,7 +31,7 @@ describe('TC-SEND-01', () => {
   });
   describe('Upload at at least two files', () => {
     it('atLeastTwoUploadMatchingPreLoadRecordC', () => {
-      const check = UploadToS3RecordChecks.atLeastTwoUploadMatchingPreLoadRecordC;
+      const check = UploadToS3RecordChecks.atLeastNUploadMatchingPreLoadRecordC(2);
       expect(check([])).toStrictEqual(false);
       expect(check(ex0)).toStrictEqual(false);
       expect(check(ex1)).toStrictEqual(false);
