@@ -6,7 +6,6 @@ import * as TE from 'fp-ts/TaskEither';
 import * as Problem from '../Problem';
 import { GetChecklistResultUseCase } from '../../../useCases/GetChecklistResultUseCase';
 import { Handler, toExpressHandler } from '../Handler';
-// import * as codec from './codec';
 
 const getChecklistResultHandler =
   (getChecklistResultUseCase: GetChecklistResultUseCase): Handler =>
@@ -16,7 +15,7 @@ const getChecklistResultHandler =
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          // FIXME: Once we discover how to generate recursive structure
+          // FIXME: Once we discover how to generate recursive structures
           (result) => T.of(res.status(200).send(result))
         )
       )
