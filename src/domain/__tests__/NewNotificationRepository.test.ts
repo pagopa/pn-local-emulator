@@ -6,9 +6,7 @@ import {
   hasRecipientPaymentNoticeCode,
   hasRecipientTaxId,
   hasRegisteredLetterAsPhysicalDocumentType,
-  hasSuccessfulResponse,
 } from '../NewNotificationRepository';
-import { unauthorizedResponse } from '../types';
 import { PhysicalCommunicationTypeEnum } from '../../generated/definitions/NewNotificationRequest';
 
 const validOverridingBody = (body: Partial<typeof data.newNotificationRecord['input']['body']>) => ({
@@ -18,11 +16,6 @@ const validOverridingBody = (body: Partial<typeof data.newNotificationRecord['in
 
 describe('NewNotificationRepository', () => {
   const validRecord = data.newNotificationRecord;
-
-  it('should return true if the response status code is 202', () => {
-    expect(hasSuccessfulResponse(validRecord)).toStrictEqual(true);
-    expect(hasSuccessfulResponse({ ...validRecord, output: unauthorizedResponse })).toStrictEqual(false);
-  });
 
   it('should return true if the record has the recipient tax id', () => {
     expect(hasRecipientTaxId(validRecord)).toStrictEqual(true);

@@ -60,7 +60,7 @@ export const anAttachmentRef = {
 
 export const aSha256 = 'jezIVxlG1M1woCSUngM6KipUN3/p8cG5RMIPnuEanlE=';
 
-const aDocument0: FullSentNotification['documents'][0] = {
+export const aDocument0: FullSentNotification['documents'][0] = {
   docIdx: '0',
   digests: {
     sha256: aSha256,
@@ -69,7 +69,7 @@ const aDocument0: FullSentNotification['documents'][0] = {
   ref: anAttachmentRef,
 };
 
-const aDocument1 = {
+export const aDocument1 = {
   ...aDocument0,
   docIdx: '1',
   ref: {
@@ -108,7 +108,7 @@ export const makeTestSystemEnv = (
   ),
 });
 
-const aRecipient: FullSentNotification['recipients'][0] = {
+export const aRecipient: FullSentNotification['recipients'][0] = {
   recipientType: RecipientTypeEnum.PF,
   denomination: 'denomination',
   taxId: 'aTaxId',
@@ -167,6 +167,16 @@ export const uploadToS3Record: UploadToS3Record = {
   output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken, 10) },
 };
 
+export const uploadToS3RecordDangling: UploadToS3Record = {
+  ...uploadToS3Record,
+  input: {
+    ...uploadToS3Record.input,
+    key: `${preLoadResponse.key}-dangling`,
+    secret: `${preLoadResponse.secret}-dangling`,
+    checksum: `${preLoadBody.sha256}-dangling`,
+  },
+};
+
 // NewNotificationRecord //////////////////////////////////////////////////////
 
 const newNotificationRequest: NewNotificationRequest = {
@@ -178,16 +188,25 @@ const newNotificationRequest: NewNotificationRequest = {
   physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890,
 };
 
-export const newNotificationRecord = makeNewNotificationRecord({
-  input: { apiKey: apiKey.valid, body: newNotificationRequest },
-  output: {
-    statusCode: 202,
-    returned: {
-      paProtocolNumber: paProtocolNumber.valid,
-      notificationRequestId: notificationId.valid,
+export const mkNewNotificationRecord = (
+  documents: NewNotificationRequest['documents'],
+  recipients: NewNotificationRequest['recipients']
+) =>
+  makeNewNotificationRecord({
+    input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, documents, recipients } },
+    output: {
+      statusCode: 202,
+      returned: {
+        paProtocolNumber: paProtocolNumber.valid,
+        notificationRequestId: notificationId.valid,
+      },
     },
-  },
-});
+  });
+
+export const newNotificationRecord = mkNewNotificationRecord(
+  [{ ...aDocument0, docIdx: undefined }, aDocument1],
+  [aRecipient]
+);
 
 export const newNotificationRecordWithIdempotenceToken = makeNewNotificationRecord({
   input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, idempotenceToken: idempotenceToken.valid } },

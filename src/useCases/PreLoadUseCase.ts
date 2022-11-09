@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import { makePreLoadRecord, makePreLoadResponse, PreLoadRecord } from '../domain/PreLoadRepository';
+import { makePreLoadResponse, PreLoadRecord } from '../domain/PreLoadRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody';
 import { PreLoadResponse } from '../generated/definitions/PreLoadResponse';
@@ -24,7 +24,7 @@ export const PreLoadUseCase =
       E.map((_) => makeResponsePayload(uploadToS3URL.href, body)),
       E.map((returned) => ({ statusCode: 200 as const, returned })),
       E.toUnion,
-      (output) => makePreLoadRecord({ input: { apiKey, body }, output }),
+      (output) => ({ type: 'PreLoadRecord' as const, input: { apiKey, body }, output }),
       preLoadRecordRepository.insert,
       TE.map((record) => record.output)
     );
