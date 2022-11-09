@@ -36,6 +36,22 @@ Create a `NotificationRequest` providing two documents: the act to notify and th
       - `payment` referencing one file uploaded previously
    - the `documents` field providing one file uploaded previously
 
+### TC-SEND-01bis
+Create a `NotificationRequest` providing only the act to notify.
+
+1. Request an upload slot
+2. Consume the upload slot uploading the document to notify (use the information provided in the previous request).
+3. Create a notification request providing the following information:
+    - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
+    - the `recipients` field providing:
+        - `taxId`
+        - `digitalDomicile`
+        - `physicalAddress`
+        - `payment` referencing one file uploaded previously
+    - the `documents` field providing the file uploaded previously
+
+__Note__: this use case differs from the previous one in that the `documents` field contains only one file
+(the act to notify) and doesn't contain the pagoPA payment.
 
 ## How to run
 We provide a couple of different ways to start the `PnValidator`:
