@@ -20,38 +20,34 @@ curl --location --request GET 'http://localhost:3000/checklistresult'
 ```
 
 ## Testable use cases
-Currently, the `PnValidator` allows the emulation and testing of one single use case (TC-SEND-01). As the development proceeds, the list will expand.
+Currently, the `PnValidator` allows the emulation and testing of two use cases (TC-SEND-01 / TC-SEND-01-bis). As the development proceeds, the list will expand.
 
 ### TC-SEND-01
-Create a `NotificationRequest` providing two documents: the act to notify and the pagoPA payment.
+Create a `NotificationRequest` providing two documents, the act to be notified and the pagoPA payment.
 
-1. Request two upload slots
-2. Consume the two upload slots uploading two documents (use the information provided in the previous request).
-3. Create a notification request providing the following information:
+1. Request two upload slots.
+2. Upload the two documents, act and payment, using the returned slots.
+3. Create a notification request carrying the following information:
    - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
-   - the `recipients` field providing:
+   - the `recipients` field containing:
       - `taxId`
       - `digitalDomicile`
       - `physicalAddress`
-      - `payment` referencing one file uploaded previously
-   - the `documents` field providing one file uploaded previously
+      - `payment` referencing the payment file previously uploaded
+   - the `documents` field providing the act file previously uploaded
 
 ### TC-SEND-01bis
-Create a `NotificationRequest` providing only the act to notify.
+Create a `NotificationRequest` providing the act to be notified only (no payments are involved).
 
-1. Request an upload slot
-2. Consume the upload slot uploading the document to notify (use the information provided in the previous request).
-3. Create a notification request providing the following information:
+1. Request an upload slot.
+2. Upload the act document using the returned slot.
+3. Create a notification request carrying the following information:
     - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
-    - the `recipients` field providing:
+    - the `recipients` field containing:
         - `taxId`
         - `digitalDomicile`
         - `physicalAddress`
-        - `payment` referencing one file uploaded previously
-    - the `documents` field providing the file uploaded previously
-
-__Note__: this use case differs from the previous one in that the `documents` field contains only one file
-(the act to notify) and doesn't contain the pagoPA payment.
+    - the `documents` field providing the act file previously uploaded
 
 ## How to run
 We provide a couple of different ways to start the `PnValidator`:
