@@ -5,9 +5,9 @@ import * as NewNotificationRequestRecordChecks from './NewNotificationRequestRec
 
 export const tcSend01 = Group({
   'Request at least two upload slots': Group({
-    'Have you done at least one request': PreLoadRecordChecks.atLeastOnePreLoadRecordC,
-    'Have you required at least one pdf': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
-    'Have you received at least two valid slots': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
+    'Have you done at least one request?': PreLoadRecordChecks.atLeastOnePreLoadRecordC,
+    'Have you required at least one pdf?': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
+    'Have you received at least two valid slots?': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
   }),
   'Upload at least two files': Group({
     'Have you upload two files using the information of previous step?':
@@ -24,14 +24,14 @@ export const tcSend01 = Group({
       'Have you filled the property physicalAddress?':
         NewNotificationRequestRecordChecks.atLeastOneValidPhysicalAddressC,
       'Have you filled the following properties for every payment?': Group({
-        'Have you filled the property creditorTaxId': NewNotificationRequestRecordChecks.atLeastOneValidCreditorTaxIdC,
-        'Have you filled the property noticeCode': NewNotificationRequestRecordChecks.atLeastOneValidNoticeCodeC,
+        'Have you filled the property creditorTaxId?': NewNotificationRequestRecordChecks.atLeastOneValidCreditorTaxIdC,
+        'Have you filled the property noticeCode?': NewNotificationRequestRecordChecks.atLeastOneValidNoticeCodeC,
         'Have you filled the property pagoPaForm with the references of a file previously uploaded?':
           NewNotificationRequestRecordChecks.atLeastOneValidPagoPaFormC,
       }),
     }),
     'Have you filled the property documents with the references of files previously uploaded?':
       NewNotificationRequestRecordChecks.atLeastOneRequestWithValidDocumentsC,
-    'Have you created at least one valid notification': NewNotificationRequestRecordChecks.atLeastOneNotificationSentC,
+    'Have you created at least one valid notification?': NewNotificationRequestRecordChecks.atLeastOneNotificationSentC,
   }),
 });
