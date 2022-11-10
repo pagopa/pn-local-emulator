@@ -17,7 +17,7 @@ export const tcSend01 = Group({
     'Have you done at least one request?': NewNotificationRequestRecordChecks.atLeastOneRecordC,
     'Have you provided the value REGISTERED_LETTER_890 for the property physicalCommunicationType?':
       NewNotificationRequestRecordChecks.atLeastOneRegisteredLetter890C,
-    'Have you filled the following properties for every recipients?': Group({
+    'Have you filled the following properties for every recipient?': Group({
       'Have you filled the property taxId?': NewNotificationRequestRecordChecks.atLeastOneValidTaxIdC,
       'Have you filled the property digitalDomicile?':
         NewNotificationRequestRecordChecks.atLeastOneValidDigitalDomicileC,
