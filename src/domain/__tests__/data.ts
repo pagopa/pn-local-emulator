@@ -24,6 +24,7 @@ import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 import { unsafeCoerce } from 'fp-ts/function';
 import { config } from '../../__tests__/data';
+import { LegalFactDownloadMetadataRecord } from '../LegalFactDownloadMetadataRecordRepository';
 
 export const apiKey = {
   valid: 'key-value',
@@ -106,6 +107,7 @@ export const makeTestSystemEnv = (
   getPaymentNotificationMetadataRecordRepository: inMemory.makeRepository(logger)<GetPaymentNotificationMetadataRecord>(
     []
   ),
+  getLegalFactDownloadMetadataRecordRepository: inMemory.makeRepository(logger)<LegalFactDownloadMetadataRecord>([]),
 });
 
 export const aRecipient: FullSentNotification['recipients'][0] = {

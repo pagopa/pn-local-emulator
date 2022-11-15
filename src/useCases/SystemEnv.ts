@@ -8,6 +8,7 @@ import { DomainEnv } from '../domain/DomainEnv';
 import { PreLoadRecordRepository } from '../domain/PreLoadRepository';
 import { UploadToS3RecordRepository } from '../domain/UploadToS3RecordRepository';
 import { CreateEventStreamRecordRepository } from '../domain/CreateEventStreamRecordRepository';
+import { LegalFactDownloadMetadataRecordRepository } from '../domain/LegalFactDownloadMetadataRecordRepository';
 
 export type SystemEnv = DomainEnv & {
   // repositories
@@ -20,6 +21,7 @@ export type SystemEnv = DomainEnv & {
   getNotificationDetailRecordRepository: GetNotificationDetailRecordRepository;
   getNotificationDocumentMetadataRecordRepository: GetNotificationDocumentMetadataRecordRepository;
   getPaymentNotificationMetadataRecordRepository: GetPaymentNotificationMetadataRecordRepository;
+  getLegalFactDownloadMetadataRecordRepository: LegalFactDownloadMetadataRecordRepository;
   // custom env
   uploadToS3URL: URL;
 };

@@ -24,6 +24,8 @@ import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificati
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
 import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRecordRepository';
+import { GetLegalFactDownloadMetadataUseCase } from './useCases/GetLegalFactDownloadMetadataUseCase';
+import { LegalFactDownloadMetadataRecord } from './domain/LegalFactDownloadMetadataRecordRepository';
 import { SystemEnv } from './useCases/SystemEnv';
 
 pipe(
@@ -41,6 +43,7 @@ pipe(
     const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
     const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
+    const getLegalFactDownloadMetadataRecordRepository = mkRepository<LegalFactDownloadMetadataRecord>([]);
 
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
@@ -58,6 +61,7 @@ pipe(
       getNotificationDetailRecordRepository: getNotificationDetailRepository,
       getNotificationDocumentMetadataRecordRepository,
       getPaymentNotificationMetadataRecordRepository,
+      getLegalFactDownloadMetadataRecordRepository,
       uploadToS3URL: config.server.uploadToS3URL,
     };
 
@@ -72,6 +76,7 @@ pipe(
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
     const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
     const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(systemEnv);
+    const getLegalFactDownloadMetadataUseCase = GetLegalFactDownloadMetadataUseCase(systemEnv);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
@@ -84,7 +89,8 @@ pipe(
       consumeEventStreamUseCase,
       getChecklistResultUseCase,
       getNotificationDocumentMetadataUseCase,
-      getPaymentNotificationMetadataUseCase
+      getPaymentNotificationMetadataUseCase,
+      getLegalFactDownloadMetadataUseCase
     );
     http.startApplication(logger, config, application);
   }),
