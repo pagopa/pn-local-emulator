@@ -24,7 +24,10 @@ import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 import { unsafeCoerce } from 'fp-ts/function';
 import { config } from '../../__tests__/data';
-import { LegalFactDownloadMetadataRecord, makeLegalFactDownloadMetadataResponse } from '../LegalFactDownloadMetadataRecordRepository';
+import {
+  LegalFactDownloadMetadataRecord,
+  makeLegalFactDownloadMetadataResponse,
+} from '../LegalFactDownloadMetadataRecordRepository';
 import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
 
 export const apiKey = {
@@ -51,9 +54,9 @@ export const streamId = {
   valid: 'streamId',
 };
 
-export const aLegalFactId = "aLegalFactId";
+export const aLegalFactId = 'aLegalFactId';
 
-export const aLegalFactType = LegalFactCategoryEnum.ANALOG_DELIVERY
+export const aLegalFactType = LegalFactCategoryEnum.ANALOG_DELIVERY;
 
 export const aDate = new Date(0);
 
