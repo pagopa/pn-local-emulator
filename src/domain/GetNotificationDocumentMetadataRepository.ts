@@ -1,12 +1,12 @@
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { Iun } from '../generated/definitions/Iun';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/definitions/NotificationAttachmentDownloadMetadataResponse';
-import { Repository } from './Repository';
+import { AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 
-export type GetNotificationDocumentMetadataRecord = {
+export type GetNotificationDocumentMetadataRecord = AuditRecord & {
   type: 'GetNotificationDocumentMetadataRecord';
   input: { apiKey: ApiKey; iun: Iun; docIdx: number };
   output:

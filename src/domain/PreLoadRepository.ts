@@ -7,10 +7,10 @@ import { PreLoadRequestBody } from '../generated/definitions/PreLoadRequestBody'
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { PreLoadRequest } from '../generated/definitions/PreLoadRequest';
 import { HttpMethodEnum, PreLoadResponse } from '../generated/definitions/PreLoadResponse';
-import { AllRecord, Repository } from './Repository';
+import { AllRecord, AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
-export type PreLoadRecord = {
+export type PreLoadRecord = AuditRecord & {
   type: 'PreLoadRecord';
   input: { apiKey: ApiKey; body: PreLoadRequestBody };
   output: Response<200, PreLoadResponseBody> | Response<403, UnauthorizedMessageBody>;

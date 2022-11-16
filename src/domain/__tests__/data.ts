@@ -85,28 +85,27 @@ export const makeTestSystemEnv = (
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
   logger: Logger = makeLogger()
-): SystemEnv => ({
-  uploadToS3URL: config.server.uploadToS3URL,
-  downloadDocumentURL: new URL('http://localhost/downloaddocument'),
-  sampleStaticPdfFileName: 'sample.pdf',
-  occurrencesAfterComplete: 2,
-  senderPAId: aSenderPaId,
-  iunGenerator: crypto.randomUUID,
-  dateGenerator: () => new Date(),
-  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>(preloadRecords),
-  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>(uploadToS3Records),
-  createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
-  findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
-  createEventStreamRecordRepository: inMemory.makeRepository(logger)<CreateEventStreamRecord>([]),
-  consumeEventStreamRecordRepository: inMemory.makeRepository(logger)(consumeEventStreamRecords),
-  getNotificationDetailRecordRepository: inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
-  getNotificationDocumentMetadataRecordRepository: inMemory.makeRepository(
-    logger
-  )<GetNotificationDocumentMetadataRecord>([]),
-  getPaymentNotificationMetadataRecordRepository: inMemory.makeRepository(logger)<GetPaymentNotificationMetadataRecord>(
-    []
-  ),
-});
+): SystemEnv => {
+  const baseRepository = inMemory.makeRepository(logger);
+  return {
+    uploadToS3URL: config.server.uploadToS3URL,
+    downloadDocumentURL: new URL('http://localhost/downloaddocument'),
+    sampleStaticPdfFileName: 'sample.pdf',
+    occurrencesAfterComplete: 2,
+    senderPAId: aSenderPaId,
+    iunGenerator: crypto.randomUUID,
+    dateGenerator: () => new Date(),
+    preLoadRecordRepository: baseRepository<PreLoadRecord>(preloadRecords),
+    uploadToS3RecordRepository: baseRepository<UploadToS3Record>(uploadToS3Records),
+    createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
+    findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
+    createEventStreamRecordRepository: baseRepository<CreateEventStreamRecord>([]),
+    consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
+    getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
+    getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
+    getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
+  };
+};
 
 export const aRecipient: FullSentNotification['recipients'][0] = {
   recipientType: RecipientTypeEnum.PF,
@@ -146,12 +145,14 @@ export const preLoadRecord: PreLoadRecord = {
   type: 'PreLoadRecord',
   input: { apiKey: apiKey.valid, body: [preLoadBody] },
   output: { statusCode: 200, returned: [preLoadResponse] },
+  createdAt: aDate,
 };
 
 export const preLoadRecordBulk: PreLoadRecord = {
   type: 'PreLoadRecord',
   input: { apiKey: apiKey.valid, body: [preLoadBody, { ...preLoadBody, preloadIdx: '1' }] },
   output: { statusCode: 200, returned: [preLoadResponse, { ...preLoadResponse, preloadIdx: '1' }] },
+  createdAt: aDate,
 };
 // UploadToS3Record ///////////////////////////////////////////////////////////
 
@@ -165,6 +166,7 @@ export const uploadToS3Record: UploadToS3Record = {
     computedSha256: preLoadBody.sha256,
   },
   output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken, 10) },
+  createdAt: aDate,
 };
 
 export const uploadToS3RecordDangling: UploadToS3Record = {
@@ -201,6 +203,7 @@ export const mkNewNotificationRecord = (
         notificationRequestId: notificationId.valid,
       },
     },
+    createdAt: aDate,
   });
 
 export const newNotificationRecord = mkNewNotificationRecord(
@@ -218,6 +221,7 @@ export const newNotificationRecordWithIdempotenceToken = makeNewNotificationReco
       notificationRequestId: notificationId.valid,
     },
   },
+  createdAt: aDate,
 });
 
 // CheckNotificationStatusRecord //////////////////////////////////////////////
@@ -238,6 +242,7 @@ export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
     statusCode: 200,
     returned: checkNotificationStatusRecordReturned,
   },
+  createdAt: aDate,
 };
 
 export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecord = {
@@ -251,6 +256,7 @@ export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecor
       iun: aIun.valid,
     },
   },
+  createdAt: aDate,
 };
 
 export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificationStatusRecord = {
@@ -264,6 +270,7 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
       notificationRequestStatus: 'WAITING',
     },
   },
+  createdAt: aDate,
 };
 
 // CreateEventStreamRecord ////////////////////////////////////////////////////
@@ -281,6 +288,7 @@ export const createEventStreamRecord: CreateEventStreamRecord = {
   type: 'CreateEventStreamRecord',
   input: { apiKey: apiKey.valid, body: streamCreationRequest },
   output: createEventStreamResponse,
+  createdAt: aDate,
 };
 
 // ConsumeEventStreamRecord ///////////////////////////////////////////////////
@@ -300,6 +308,7 @@ export const consumeEventStreamRecord: ConsumeEventStreamRecord = {
   type: 'ConsumeEventStreamRecord',
   input: { apiKey: apiKey.valid, streamId: streamId.valid },
   output: consumeEventStreamResponse,
+  createdAt: aDate,
 };
 
 export const consumeEventStreamRecordDelivered = {
@@ -326,6 +335,7 @@ export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = 
   type: 'GetNotificationDetailRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid },
   output: { statusCode: 200, returned: acceptedNotification },
+  createdAt: aDate,
 };
 
 // GetNotificationDocumentMetadataRecord //////////////////////////////////////
@@ -337,6 +347,7 @@ export const getNotificationDocumentMetadataRecord0: GetNotificationDocumentMeta
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
   },
+  createdAt: aDate,
 };
 
 export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMetadataRecord = {
@@ -346,6 +357,7 @@ export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMeta
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument1),
   },
+  createdAt: aDate,
 };
 
 // GetPaymentNotificationMetadataRecord //////////////////////////////////////
@@ -357,4 +369,5 @@ export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadat
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
   },
+  createdAt: aDate,
 };
