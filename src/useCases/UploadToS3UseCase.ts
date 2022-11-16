@@ -21,7 +21,7 @@ export const UploadToS3UseCase =
     const input = { key, checksumAlg, secret, checksum, computedSha256: computeSha256(documentAsBytes) };
     const output = { statusCode: 200 as const, returned: Math.random() };
     return pipe(
-      uploadToS3RecordRepository.insert({ type: 'UploadToS3Record', input, output, createdAt: dateGenerator() }),
+      uploadToS3RecordRepository.insert({ type: 'UploadToS3Record', input, output, loggedAt: dateGenerator() }),
       TE.map((_) => output.returned)
     );
   };

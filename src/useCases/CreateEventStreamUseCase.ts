@@ -25,7 +25,7 @@ export const CreateEventStreamUseCase =
         type: 'CreateEventStreamRecord' as const,
         input: { apiKey, body: input },
         output,
-        createdAt: dateGenerator(),
+        loggedAt: dateGenerator(),
       }),
       createEventStreamRecordRepository.insert,
       TE.map(({ output }) => output)

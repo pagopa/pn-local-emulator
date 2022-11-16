@@ -47,7 +47,7 @@ export const GetNotificationDocumentMetadataUseCase =
         type: 'GetNotificationDocumentMetadataRecord' as const,
         input: { iun, apiKey, docIdx },
         output,
-        createdAt: env.dateGenerator(),
+        loggedAt: env.dateGenerator(),
       })),
       TE.chain(env.getNotificationDocumentMetadataRecordRepository.insert),
       TE.map((record) => record.output)

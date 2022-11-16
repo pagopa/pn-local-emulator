@@ -61,7 +61,7 @@ export const CheckNotificationStatusUseCase =
           type: 'CheckNotificationStatusRecord' as const,
           input,
           output,
-          createdAt: env.dateGenerator(),
+          loggedAt: env.dateGenerator(),
         }))
       ),
       TE.chain(env.findNotificationRequestRecordRepository.insert),

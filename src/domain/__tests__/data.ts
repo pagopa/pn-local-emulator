@@ -145,14 +145,14 @@ export const preLoadRecord: PreLoadRecord = {
   type: 'PreLoadRecord',
   input: { apiKey: apiKey.valid, body: [preLoadBody] },
   output: { statusCode: 200, returned: [preLoadResponse] },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 export const preLoadRecordBulk: PreLoadRecord = {
   type: 'PreLoadRecord',
   input: { apiKey: apiKey.valid, body: [preLoadBody, { ...preLoadBody, preloadIdx: '1' }] },
   output: { statusCode: 200, returned: [preLoadResponse, { ...preLoadResponse, preloadIdx: '1' }] },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 // UploadToS3Record ///////////////////////////////////////////////////////////
 
@@ -166,7 +166,7 @@ export const uploadToS3Record: UploadToS3Record = {
     computedSha256: preLoadBody.sha256,
   },
   output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken, 10) },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 export const uploadToS3RecordDangling: UploadToS3Record = {
@@ -203,7 +203,7 @@ export const mkNewNotificationRecord = (
         notificationRequestId: notificationId.valid,
       },
     },
-    createdAt: aDate,
+    loggedAt: aDate,
   });
 
 export const newNotificationRecord = mkNewNotificationRecord(
@@ -221,7 +221,7 @@ export const newNotificationRecordWithIdempotenceToken = makeNewNotificationReco
       notificationRequestId: notificationId.valid,
     },
   },
-  createdAt: aDate,
+  loggedAt: aDate,
 });
 
 // CheckNotificationStatusRecord //////////////////////////////////////////////
@@ -242,7 +242,7 @@ export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
     statusCode: 200,
     returned: checkNotificationStatusRecordReturned,
   },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecord = {
@@ -256,7 +256,7 @@ export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecor
       iun: aIun.valid,
     },
   },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificationStatusRecord = {
@@ -270,7 +270,7 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
       notificationRequestStatus: 'WAITING',
     },
   },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 // CreateEventStreamRecord ////////////////////////////////////////////////////
@@ -288,7 +288,7 @@ export const createEventStreamRecord: CreateEventStreamRecord = {
   type: 'CreateEventStreamRecord',
   input: { apiKey: apiKey.valid, body: streamCreationRequest },
   output: createEventStreamResponse,
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 // ConsumeEventStreamRecord ///////////////////////////////////////////////////
@@ -308,7 +308,7 @@ export const consumeEventStreamRecord: ConsumeEventStreamRecord = {
   type: 'ConsumeEventStreamRecord',
   input: { apiKey: apiKey.valid, streamId: streamId.valid },
   output: consumeEventStreamResponse,
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 export const consumeEventStreamRecordDelivered = {
@@ -335,7 +335,7 @@ export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = 
   type: 'GetNotificationDetailRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid },
   output: { statusCode: 200, returned: acceptedNotification },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 // GetNotificationDocumentMetadataRecord //////////////////////////////////////
@@ -347,7 +347,7 @@ export const getNotificationDocumentMetadataRecord0: GetNotificationDocumentMeta
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
   },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMetadataRecord = {
@@ -357,7 +357,7 @@ export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMeta
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument1),
   },
-  createdAt: aDate,
+  loggedAt: aDate,
 };
 
 // GetPaymentNotificationMetadataRecord //////////////////////////////////////
@@ -369,5 +369,5 @@ export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadat
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
   },
-  createdAt: aDate,
+  loggedAt: aDate,
 };

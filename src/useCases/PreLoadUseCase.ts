@@ -24,7 +24,7 @@ export const PreLoadUseCase =
       E.map((_) => makeResponsePayload(uploadToS3URL.href, body)),
       E.map((returned) => ({ statusCode: 200 as const, returned })),
       E.toUnion,
-      (output) => ({ type: 'PreLoadRecord' as const, input: { apiKey, body }, output, createdAt: dateGenerator() }),
+      (output) => ({ type: 'PreLoadRecord' as const, input: { apiKey, body }, output, loggedAt: dateGenerator() }),
       preLoadRecordRepository.insert,
       TE.map((record) => record.output)
     );

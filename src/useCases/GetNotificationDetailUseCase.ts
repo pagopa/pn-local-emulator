@@ -35,7 +35,7 @@ export const GetNotificationDetailUseCase =
         type: 'GetNotificationDetailRecord' as const,
         input: { iun, apiKey },
         output,
-        createdAt: env.dateGenerator(),
+        loggedAt: env.dateGenerator(),
       })),
       TE.chain(env.getNotificationDetailRecordRepository.insert),
       TE.map((record) => record.output)

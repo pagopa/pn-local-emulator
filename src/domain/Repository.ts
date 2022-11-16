@@ -13,7 +13,7 @@ export type Repository<A> = {
 };
 
 export type AuditRecord = {
-  createdAt: Date;
+  loggedAt: Date;
 };
 
 // TODO: Add missing records or find another solution
