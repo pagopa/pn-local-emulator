@@ -10,13 +10,13 @@ export const twoPreLoadRecordsOneUploadRecord = [data.preLoadRecord, data.preLoa
 export const evenPreLoadAndUploadRecordsThatAreLinked = [
   data.preLoadRecord,
   data.preLoadRecord,
-  data.uploadToS3Record,
-  data.uploadToS3Record,
+  { ...data.uploadToS3Record, loggedAt: new Date(703429620000) },
+  { ...data.uploadToS3Record, loggedAt: new Date(703429620000) },
 ];
 
 export const evenPreLoadAndUploadRecordsThatAreNotLinked = [
   data.preLoadRecord,
   data.preLoadRecord,
-  data.uploadToS3Record,
-  data.uploadToS3RecordDangling,
+  { ...data.uploadToS3Record, loggedAt: new Date(703429620000) },
+  { ...data.uploadToS3RecordDangling, loggedAt: new Date(703429620000) },
 ];
