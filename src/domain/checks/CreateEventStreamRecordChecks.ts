@@ -8,7 +8,7 @@ import {
   isSuccessfulResponse,
 } from '../CreateEventStreamRecordRepository';
 
-export const hasCreateStreamWithEventTypeTimeline = flow(
+export const hasCreatedStreamWithEventTypeTimeline = flow(
   RA.filterMap(
     flow(isCreateEventStreamRecord, O.filter(pipe(hasTimelineEventTypeToTimeline, and(isSuccessfulResponse))))
   ),

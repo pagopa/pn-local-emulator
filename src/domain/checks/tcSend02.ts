@@ -7,7 +7,7 @@ const mockCheck = () => false;
 export const tcSend02 = Group({
   'Configure a stream where you can get the timeline events of a notification': Group({
     'Have you created the stream with the property "eventType" set to "TIMELINE"?':
-      CreateEventStreamRecordChecks.hasCreateStreamWithEventTypeTimeline,
+      CreateEventStreamRecordChecks.hasCreatedStreamWithEventTypeTimeline,
   }),
   'Consume events from a stream': Group({
     'Have you make a request to get the stream with the streamId provided during the creation of the stream?':
