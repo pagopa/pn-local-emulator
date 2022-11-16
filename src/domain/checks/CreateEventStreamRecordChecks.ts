@@ -11,7 +11,7 @@ import {
 const hasCreatedStreamWithEventTypeTimelinePredicate = pipe(hasTimelineEventTypeToTimeline, and(isSuccessfulResponse));
 
 // TODO: Maybe we can refactor this and create a generic atLeastN function
-export const hasCreatedStreamWithEventTypeTimeline = flow(
+export const hasCreatedStreamWithEventTypeTimelineC = flow(
   RA.filterMap(flow(isCreateEventStreamRecord, O.filter(hasCreatedStreamWithEventTypeTimelinePredicate))),
   RA.isNonEmpty
 );
