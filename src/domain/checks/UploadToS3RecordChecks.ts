@@ -10,7 +10,6 @@ const matchAtLeastOnePreLoadRecord = (records: ReadonlyArray<PreLoadRecord>) => 
     records,
     RA.exists(
       (record) =>
-        // TODO: Add insert date and check that uploadToS3Record.createdAt is bigger than the one of preLoadRecord
         record.output.statusCode === 200 &&
         pipe(
           RA.zip(record.output.returned)(record.input.body),
