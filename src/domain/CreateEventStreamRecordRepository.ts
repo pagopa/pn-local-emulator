@@ -16,7 +16,6 @@ export type CreateEventStreamRecordRepository = Repository<CreateEventStreamReco
 export const isCreateEventStreamRecord = (record: AllRecord): O.Option<CreateEventStreamRecord> =>
   record.type === 'CreateEventStreamRecord' ? O.some(record) : O.none;
 
-// TODO: Add missing unit tests
 export const hasTimelineEventTypeToTimeline = (record: CreateEventStreamRecord) =>
   record.input.body.eventType === EventTypeEnum.TIMELINE;
 
