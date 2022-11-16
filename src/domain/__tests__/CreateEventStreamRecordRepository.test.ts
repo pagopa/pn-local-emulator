@@ -1,4 +1,8 @@
-import { hasTimelineEventTypeToTimeline, isSuccessfulResponse } from '../CreateEventStreamRecordRepository';
+import {
+  existsCreateEventStreamRecordWhitStreamId,
+  hasTimelineEventTypeToTimeline,
+  isSuccessfulResponse,
+} from '../CreateEventStreamRecordRepository';
 import * as data from './data';
 import { unauthorizedResponse } from '../types';
 import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
@@ -35,6 +39,33 @@ describe('CreateEventStreamRecordRepository', () => {
         output: unauthorizedResponse,
       });
       expect(actual).toStrictEqual(false);
+    });
+  });
+
+  describe('existsCreateEventStreamRecordWhitStreamId', () => {
+    const streamId = data.streamId.valid;
+    it('should find a record with the provided streamId', () => {
+      const actual = existsCreateEventStreamRecordWhitStreamId([data.createEventStreamRecord])(streamId);
+      expect(actual).toStrictEqual(true);
+
+      const actual2 = existsCreateEventStreamRecordWhitStreamId([
+        { ...data.createEventStreamRecord, output: unauthorizedResponse },
+        data.createEventStreamRecord,
+      ])(streamId);
+      expect(actual2).toStrictEqual(true);
+    });
+
+    it('should find a record with the provided streamId', () => {
+      const actual = existsCreateEventStreamRecordWhitStreamId([])(streamId);
+      expect(actual).toStrictEqual(false);
+
+      const actual2 = existsCreateEventStreamRecordWhitStreamId([data.createEventStreamRecord])('anotherStreamId');
+      expect(actual2).toStrictEqual(false);
+
+      const actual3 = existsCreateEventStreamRecordWhitStreamId([
+        { ...data.createEventStreamRecord, output: unauthorizedResponse },
+      ])(streamId);
+      expect(actual3).toStrictEqual(false);
     });
   });
 });
