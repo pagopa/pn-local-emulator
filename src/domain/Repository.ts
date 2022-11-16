@@ -12,6 +12,10 @@ export type Repository<A> = {
   list: () => TE.TaskEither<Error, ReadonlyArray<A>>;
 };
 
+export type AuditRecord = {
+  createdAt: Date;
+};
+
 // TODO: Add missing records or find another solution
 export type AllRecord = PreLoadRecord | UploadToS3Record | NewNotificationRecord;
 
