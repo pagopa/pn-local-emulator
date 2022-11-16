@@ -7,7 +7,7 @@ import { ProgressResponse } from '../generated/streams/ProgressResponse';
 import { NewStatusEnum, ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
-import { Repository } from './Repository';
+import { AllRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
 export type ConsumeEventStreamRecord = {
@@ -15,6 +15,11 @@ export type ConsumeEventStreamRecord = {
   input: { apiKey: ApiKey; streamId: string; lastEventId?: string };
   output: Response<200, ProgressResponse> | Response<403, UnauthorizedMessageBody> | Response<419>;
 };
+
+export const isConsumeEventStreamRecord = (record: AllRecord): O.Option<ConsumeEventStreamRecord> =>
+  record.type === 'ConsumeEventStreamRecord' ? O.some(record) : O.none;
+
+export const hasSuccessfulResponse = (record: ConsumeEventStreamRecord) => record.output.statusCode === 200;
 
 const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
   record.output.statusCode === 200 ? O.some(record.output.returned) : O.none;
