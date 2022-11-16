@@ -40,3 +40,10 @@ export const failedRequestCreateEventStream = [
     output: unauthorizedResponse,
   },
 ];
+
+export const consumeEventStreamRecord = [data.consumeEventStreamRecord];
+
+export const consumeEventsOnCreatedStream = [
+  ...createEventStreamRecordWithEventTypeTimeline,
+  ...consumeEventStreamRecord,
+];

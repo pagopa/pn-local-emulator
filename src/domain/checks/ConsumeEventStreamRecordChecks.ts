@@ -1,9 +1,10 @@
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as R from 'fp-ts/Reader';
 import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecordRepository';
 import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecordRepository';
+import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 
 export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
   R.Do,
@@ -20,5 +21,17 @@ export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
         CreateEventStreamRecordRepository.existsCreateEventStreamRecordWhitStreamId(createEventStreamRecordList)
       )
     )
+  )
+);
+
+export const hasReceivedEventWithStatusAcceptedC = flow(
+  RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
+  RA.exists(
+    ({ output }) =>
+      output.statusCode === 200 &&
+      pipe(
+        output.returned,
+        RA.exists(({ newStatus }) => newStatus === NewStatusEnum.ACCEPTED)
+      )
   )
 );

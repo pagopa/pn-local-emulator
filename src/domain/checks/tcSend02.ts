@@ -14,6 +14,7 @@ export const tcSend02 = Group({
     'Have you make a request to get the stream with the streamId provided during the creation of the stream?':
       ConsumeEventStreamRecordChecks.requestWithStreamIdProvidedHasBeenMadeC,
     'Have you honored the "retryAfter" value?': mockCheck,
-    'Have you received the event with status "ACCEPTED"?': mockCheck,
+    'Have you received the event with status "ACCEPTED"?':
+      ConsumeEventStreamRecordChecks.hasReceivedEventWithStatusAcceptedC,
   }),
 });
