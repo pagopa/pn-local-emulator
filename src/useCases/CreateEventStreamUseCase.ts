@@ -10,7 +10,7 @@ import { SystemEnv } from './SystemEnv';
 
 export const CreateEventStreamUseCase =
   (
-    { createEventStreamRecordRepository }: SystemEnv,
+    { createEventStreamRecordRepository, dateGenerator }: SystemEnv,
     streamIdGenerator: () => string = () => crypto.randomUUID(),
     nowDate: () => Date = () => new Date()
   ) =>
@@ -25,6 +25,7 @@ export const CreateEventStreamUseCase =
         type: 'CreateEventStreamRecord' as const,
         input: { apiKey, body: input },
         output,
+        createdAt: dateGenerator(),
       }),
       createEventStreamRecordRepository.insert,
       TE.map(({ output }) => output)

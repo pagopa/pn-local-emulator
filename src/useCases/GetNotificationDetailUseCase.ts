@@ -31,7 +31,12 @@ export const GetNotificationDetailUseCase =
       ),
       E.sequence(TE.ApplicativePar),
       TE.map(E.toUnion),
-      TE.map((output) => ({ type: 'GetNotificationDetailRecord' as const, input: { iun, apiKey }, output })),
+      TE.map((output) => ({
+        type: 'GetNotificationDetailRecord' as const,
+        input: { iun, apiKey },
+        output,
+        createdAt: env.dateGenerator(),
+      })),
       TE.chain(env.getNotificationDetailRecordRepository.insert),
       TE.map((record) => record.output)
     );
