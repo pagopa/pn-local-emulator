@@ -24,6 +24,11 @@ import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 import { unsafeCoerce } from 'fp-ts/function';
 import { config } from '../../__tests__/data';
+import {
+  LegalFactDownloadMetadataRecord,
+  makeLegalFactDownloadMetadataResponse,
+} from '../LegalFactDownloadMetadataRecordRepository';
+import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
 
 export const apiKey = {
   valid: 'key-value',
@@ -48,6 +53,10 @@ export const aIun = {
 export const streamId = {
   valid: 'streamId',
 };
+
+export const aLegalFactId = 'aLegalFactId';
+
+export const aLegalFactType = LegalFactCategoryEnum.ANALOG_DELIVERY;
 
 export const aDate = new Date(0);
 
@@ -106,6 +115,7 @@ export const makeTestSystemEnv = (
   getPaymentNotificationMetadataRecordRepository: inMemory.makeRepository(logger)<GetPaymentNotificationMetadataRecord>(
     []
   ),
+  getLegalFactDownloadMetadataRecordRepository: inMemory.makeRepository(logger)<LegalFactDownloadMetadataRecord>([]),
 });
 
 export const aRecipient: FullSentNotification['recipients'][0] = {
@@ -356,5 +366,16 @@ export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadat
   output: {
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
+  },
+};
+
+// GetLegalFactDownloadMetadataRecord //////////////////////////////////////
+
+export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord = {
+  type: 'LegalFactDownloadMetadataRecord',
+  input: { apiKey: apiKey.valid, iun: aIun.valid, legalFactType: aLegalFactType, legalFactId: aLegalFactId },
+  output: {
+    statusCode: 200,
+    returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),
   },
 };
