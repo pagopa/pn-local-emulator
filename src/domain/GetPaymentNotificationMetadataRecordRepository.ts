@@ -3,10 +3,10 @@ import { Iun } from '../generated/definitions/Iun';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/definitions/NotificationAttachmentDownloadMetadataResponse';
 import { NotificationPaymentAttachment } from '../generated/definitions/NotificationPaymentAttachment';
 import { DomainEnv } from './DomainEnv';
-import { Repository } from './Repository';
+import { AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
-export type GetPaymentNotificationMetadataRecord = {
+export type GetPaymentNotificationMetadataRecord = AuditRecord & {
   type: 'GetPaymentNotificationMetadataRecord';
   input: { apiKey: ApiKey; iun: Iun; recipientId: number; attachmentName: string };
   output:

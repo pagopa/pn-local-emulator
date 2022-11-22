@@ -12,7 +12,7 @@ import { SystemEnv } from './SystemEnv';
 const computeSha256 = (bytes: Buffer) => crypto.createHash('sha256').update(bytes).digest('base64');
 
 export const UploadToS3UseCase =
-  ({ uploadToS3RecordRepository }: SystemEnv) =>
+  ({ uploadToS3RecordRepository, dateGenerator }: SystemEnv) =>
   (key: AmzDocumentKey) =>
   (checksumAlg?: AmzSdkChecksumAlg) =>
   (secret: AmzMetaSecret) =>
@@ -21,7 +21,7 @@ export const UploadToS3UseCase =
     const input = { key, checksumAlg, secret, checksum, computedSha256: computeSha256(documentAsBytes) };
     const output = { statusCode: 200 as const, returned: Math.random() };
     return pipe(
-      uploadToS3RecordRepository.insert({ type: 'UploadToS3Record', input, output }),
+      uploadToS3RecordRepository.insert({ type: 'UploadToS3Record', input, output, loggedAt: dateGenerator() }),
       TE.map((_) => output.returned)
     );
   };

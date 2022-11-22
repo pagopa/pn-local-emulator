@@ -6,11 +6,11 @@ import { NotificationStatusEnum } from '../generated/definitions/NotificationSta
 import { NotificationStatusHistoryElement } from '../generated/definitions/NotificationStatusHistoryElement';
 import { TimelineElementCategoryEnum } from '../generated/definitions/TimelineElementCategory';
 import { TimelineElement } from '../generated/definitions/TimelineElement';
-import { Repository } from './Repository';
+import { AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';
 
-export type GetNotificationDetailRecord = {
+export type GetNotificationDetailRecord = AuditRecord & {
   type: 'GetNotificationDetailRecord';
   input: { apiKey: ApiKey; iun: Iun };
   output: Response<200, FullSentNotification> | Response<403, UnauthorizedMessageBody> | Response<404>;
