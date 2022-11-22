@@ -63,15 +63,13 @@ Since this project runs with [Node.js](https://nodejs.org/en/) as specified in t
 
 Here is what you need to do:
 
-1. clone the repository using the preferred method (the next command uses SSH):
-
- ```shell
+1. Clone the repository using the preferred method (the next command uses SSH):
+```shell
 git clone git@github.com:pagopa/pn-local-emulator.git
 ```
 
 2. (Optional but strongly recommended) Install the Node.js runtime using `nvm` (please, make sure the path of `.node_version` is correct. The given commands assume you are in the repository folder.).
-
- ```shell
+```shell
 # Install the version of Node.js specified in the .node_version file
 nvm install `cat .node-version`
 
@@ -80,28 +78,33 @@ nvm use `cat .node-version`
 ```
 
 3. Install the dependencies.
-
- ```shell
+```shell
 npm install
 ```
 
-4. Generates code from the [OpenAPI](./openapi/index.yaml) specification.
-
- ```shell
+4. Generate code from the [OpenAPI](./openapi/index.yaml) specification.
+```shell
 npm run generate
 ```
 
 5. Start the `PnValidator`.
-
- ```shell
+```shell
 npm run start
 ```
 
 ### Run as a Docker image
 
-Another option is to run the `PnValidator` with Docker, as simple as:
+Another option is to run the `PnValidator` with Docker.
 
+These are the steps:
+
+1. Download the latest image version of the tool from the registry.
+```shell
+docker pull ghcr.io/pagopa/pn-local-emulator:latest
 ```
+
+2. Start the container.
+```shell
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
 
