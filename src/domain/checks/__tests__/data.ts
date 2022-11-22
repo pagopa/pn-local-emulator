@@ -11,7 +11,7 @@ export const evenPreLoadAndUploadRecordsThatAreLinked = [
   data.preLoadRecord,
   data.preLoadRecord,
   data.uploadToS3Record,
-  { ...data.uploadToS3Record, loggedAt: new Date(data.preLoadRecord.loggedAt.getTime() + 50000) },
+  data.uploadToS3Record,
 ];
 
 export const evenPreLoadAndUploadRecordsThatAreNotLinked = [
