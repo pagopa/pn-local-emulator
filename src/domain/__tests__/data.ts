@@ -94,29 +94,28 @@ export const makeTestSystemEnv = (
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
   logger: Logger = makeLogger()
-): SystemEnv => ({
-  uploadToS3URL: config.server.uploadToS3URL,
-  downloadDocumentURL: new URL('http://localhost/downloaddocument'),
-  sampleStaticPdfFileName: 'sample.pdf',
-  occurrencesAfterComplete: 2,
-  senderPAId: aSenderPaId,
-  iunGenerator: crypto.randomUUID,
-  dateGenerator: () => new Date(),
-  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>(preloadRecords),
-  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>(uploadToS3Records),
-  createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
-  findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
-  createEventStreamRecordRepository: inMemory.makeRepository(logger)<CreateEventStreamRecord>([]),
-  consumeEventStreamRecordRepository: inMemory.makeRepository(logger)(consumeEventStreamRecords),
-  getNotificationDetailRecordRepository: inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
-  getNotificationDocumentMetadataRecordRepository: inMemory.makeRepository(
-    logger
-  )<GetNotificationDocumentMetadataRecord>([]),
-  getPaymentNotificationMetadataRecordRepository: inMemory.makeRepository(logger)<GetPaymentNotificationMetadataRecord>(
-    []
-  ),
-  getLegalFactDownloadMetadataRecordRepository: inMemory.makeRepository(logger)<LegalFactDownloadMetadataRecord>([]),
-});
+): SystemEnv => {
+  const baseRepository = inMemory.makeRepository(logger);
+  return {
+    uploadToS3URL: config.server.uploadToS3URL,
+    downloadDocumentURL: new URL('http://localhost/downloaddocument'),
+    sampleStaticPdfFileName: 'sample.pdf',
+    occurrencesAfterComplete: 2,
+    senderPAId: aSenderPaId,
+    iunGenerator: crypto.randomUUID,
+    dateGenerator: () => new Date(),
+    preLoadRecordRepository: baseRepository(preloadRecords),
+    uploadToS3RecordRepository: baseRepository(uploadToS3Records),
+    createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
+    findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
+    createEventStreamRecordRepository: baseRepository<CreateEventStreamRecord>([]),
+    consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
+    getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
+    getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
+    getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
+    getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
+  };
+};
 
 export const aRecipient: FullSentNotification['recipients'][0] = {
   recipientType: RecipientTypeEnum.PF,
