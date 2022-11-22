@@ -19,7 +19,7 @@ const matchAtLeastOnePreLoadRecord = (records: ReadonlyArray<PreLoadRecord>) => 
               response.secret === uploadToS3Record.input.secret &&
               response.key === uploadToS3Record.input.key &&
               body.sha256 === uploadToS3Record.input.computedSha256 &&
-              uploadToS3Record.loggedAt.getDate() > record.loggedAt.getDate()
+              record.loggedAt.getDate() < uploadToS3Record.loggedAt.getDate()
           )
         )
     )
