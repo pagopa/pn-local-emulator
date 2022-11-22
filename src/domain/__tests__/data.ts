@@ -24,6 +24,11 @@ import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 import { unsafeCoerce } from 'fp-ts/function';
 import { config } from '../../__tests__/data';
+import {
+  LegalFactDownloadMetadataRecord,
+  makeLegalFactDownloadMetadataResponse,
+} from '../LegalFactDownloadMetadataRecordRepository';
+import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
 
 export const apiKey = {
   valid: 'key-value',
@@ -48,6 +53,10 @@ export const aIun = {
 export const streamId = {
   valid: 'streamId',
 };
+
+export const aLegalFactId = 'aLegalFactId';
+
+export const aLegalFactType = LegalFactCategoryEnum.ANALOG_DELIVERY;
 
 export const aDate = new Date(0);
 
@@ -95,8 +104,8 @@ export const makeTestSystemEnv = (
     senderPAId: aSenderPaId,
     iunGenerator: crypto.randomUUID,
     dateGenerator: () => new Date(),
-    preLoadRecordRepository: baseRepository<PreLoadRecord>(preloadRecords),
-    uploadToS3RecordRepository: baseRepository<UploadToS3Record>(uploadToS3Records),
+    preLoadRecordRepository: baseRepository(preloadRecords),
+    uploadToS3RecordRepository: baseRepository(uploadToS3Records),
     createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
     findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
     createEventStreamRecordRepository: baseRepository<CreateEventStreamRecord>([]),
@@ -104,6 +113,7 @@ export const makeTestSystemEnv = (
     getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
+    getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
   };
 };
 
@@ -370,4 +380,15 @@ export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadat
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
   },
   loggedAt: aDate,
+};
+
+// GetLegalFactDownloadMetadataRecord //////////////////////////////////////
+
+export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord = {
+  type: 'LegalFactDownloadMetadataRecord',
+  input: { apiKey: apiKey.valid, iun: aIun.valid, legalFactType: aLegalFactType, legalFactId: aLegalFactId },
+  output: {
+    statusCode: 200,
+    returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),
+  },
 };

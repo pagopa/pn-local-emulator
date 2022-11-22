@@ -12,6 +12,7 @@ import { GetNotificationDetailUseCase } from '../../useCases/GetNotificationDeta
 import { ConsumeEventStreamUseCase } from '../../useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from '../../useCases/GetNotificationDocumentMetadataUseCase';
 import { GetPaymentNotificationMetadataUseCase } from '../../useCases/GetPaymentNotificationMetadataUseCase';
+import { GetLegalFactDownloadMetadataUseCase } from '../../useCases/GetLegalFactDownloadMetadataUseCase';
 import { makePreLoadRouter } from './preLoad/router';
 import { makeUploadToS3Router } from './uploadToS3/router';
 import { makeSendNotificationRouter } from './sendNotification/router';
@@ -23,6 +24,7 @@ import { makeConsumeEventStreamRouter } from './consumeEventStream/router';
 import { makeGetNotificationDocumentMetadataRouter } from './getNotificationDocumentMetadata/router';
 import { makeGetPaymentNotificationMetadataRouter } from './getPaymentNotificationMetadata/router';
 import { makeDownloadDocumentRouter } from './download/router';
+import { makeGetLegalFactDocumentRouter } from './getLegalFactDocument/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
@@ -34,7 +36,8 @@ export const makeApplication = (
   consumeEventStreamUseCase: ConsumeEventStreamUseCase,
   getChecklistResultUseCase: GetChecklistResultUseCase,
   getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
-  getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase
+  getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase,
+  getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase
 ): express.Application => {
   const app = express();
   app.use(express.json());
@@ -49,6 +52,7 @@ export const makeApplication = (
   app.use(makeGetNotificationDetailRouter(getNotificationDetailUseCase));
   app.use(makeGetNotificationDocumentMetadataRouter(getNotificationDocumentMetadataUseCase));
   app.use(makeGetPaymentNotificationMetadataRouter(getPaymentNotificationMetadataUseCase));
+  app.use(makeGetLegalFactDocumentRouter(getLegalFactDownloadMetadataUseCase));
   app.use(makeDownloadDocumentRouter());
   return app;
 };
