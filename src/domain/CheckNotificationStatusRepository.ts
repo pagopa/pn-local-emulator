@@ -2,10 +2,10 @@ import { NewNotificationRequestStatusResponse } from '../generated/definitions/N
 import { PaProtocolNumber } from '../generated/definitions/PaProtocolNumber';
 import { IdempotenceToken } from '../generated/definitions/IdempotenceToken';
 import { NotificationRequestId } from '../generated/definitions/NotificationRequestId';
-import { Repository } from './Repository';
+import { AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
-export type CheckNotificationStatusRecord = {
+export type CheckNotificationStatusRecord = AuditRecord & {
   type: 'CheckNotificationStatusRecord';
   input:
     | { paProtocolNumber: PaProtocolNumber; idempotenceToken?: IdempotenceToken }

@@ -5,9 +5,9 @@ import { AmzSdkChecksumAlg } from '../generated/definitions/AmzSdkChecksumAlg';
 import { AmzDocumentKey } from '../generated/definitions/AmzDocumentKey';
 import { AmzVersionId } from '../generated/definitions/AmzVersionId';
 import { Response } from './types';
-import { AllRecord, Repository } from './Repository';
+import { AllRecord, AuditRecord, Repository } from './Repository';
 
-export type UploadToS3Record = {
+export type UploadToS3Record = AuditRecord & {
   type: 'UploadToS3Record';
   input: {
     key: AmzDocumentKey;

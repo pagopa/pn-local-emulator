@@ -24,6 +24,11 @@ import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
 import { unsafeCoerce } from 'fp-ts/function';
 import { config } from '../../__tests__/data';
+import {
+  LegalFactDownloadMetadataRecord,
+  makeLegalFactDownloadMetadataResponse,
+} from '../LegalFactDownloadMetadataRecordRepository';
+import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
 
 export const apiKey = {
   valid: 'key-value',
@@ -48,6 +53,10 @@ export const aIun = {
 export const streamId = {
   valid: 'streamId',
 };
+
+export const aLegalFactId = 'aLegalFactId';
+
+export const aLegalFactType = LegalFactCategoryEnum.ANALOG_DELIVERY;
 
 export const aDate = new Date(0);
 
@@ -85,28 +94,28 @@ export const makeTestSystemEnv = (
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
   logger: Logger = makeLogger()
-): SystemEnv => ({
-  uploadToS3URL: config.server.uploadToS3URL,
-  downloadDocumentURL: new URL('http://localhost/downloaddocument'),
-  sampleStaticPdfFileName: 'sample.pdf',
-  occurrencesAfterComplete: 2,
-  senderPAId: aSenderPaId,
-  iunGenerator: crypto.randomUUID,
-  dateGenerator: () => new Date(),
-  preLoadRecordRepository: inMemory.makeRepository(logger)<PreLoadRecord>(preloadRecords),
-  uploadToS3RecordRepository: inMemory.makeRepository(logger)<UploadToS3Record>(uploadToS3Records),
-  createNotificationRequestRecordRepository: inMemory.makeRepository(logger)(createNotificationRequestRecords),
-  findNotificationRequestRecordRepository: inMemory.makeRepository(logger)(findNotificationRequestRecords),
-  createEventStreamRecordRepository: inMemory.makeRepository(logger)<CreateEventStreamRecord>([]),
-  consumeEventStreamRecordRepository: inMemory.makeRepository(logger)(consumeEventStreamRecords),
-  getNotificationDetailRecordRepository: inMemory.makeRepository(logger)<GetNotificationDetailRecord>([]),
-  getNotificationDocumentMetadataRecordRepository: inMemory.makeRepository(
-    logger
-  )<GetNotificationDocumentMetadataRecord>([]),
-  getPaymentNotificationMetadataRecordRepository: inMemory.makeRepository(logger)<GetPaymentNotificationMetadataRecord>(
-    []
-  ),
-});
+): SystemEnv => {
+  const baseRepository = inMemory.makeRepository(logger);
+  return {
+    uploadToS3URL: config.server.uploadToS3URL,
+    downloadDocumentURL: new URL('http://localhost/downloaddocument'),
+    sampleStaticPdfFileName: 'sample.pdf',
+    occurrencesAfterComplete: 2,
+    senderPAId: aSenderPaId,
+    iunGenerator: crypto.randomUUID,
+    dateGenerator: () => new Date(),
+    preLoadRecordRepository: baseRepository(preloadRecords),
+    uploadToS3RecordRepository: baseRepository(uploadToS3Records),
+    createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
+    findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
+    createEventStreamRecordRepository: baseRepository<CreateEventStreamRecord>([]),
+    consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
+    getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
+    getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
+    getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
+    getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
+  };
+};
 
 export const aRecipient: FullSentNotification['recipients'][0] = {
   recipientType: RecipientTypeEnum.PF,
@@ -146,12 +155,14 @@ export const preLoadRecord: PreLoadRecord = {
   type: 'PreLoadRecord',
   input: { apiKey: apiKey.valid, body: [preLoadBody] },
   output: { statusCode: 200, returned: [preLoadResponse] },
+  loggedAt: aDate,
 };
 
 export const preLoadRecordBulk: PreLoadRecord = {
   type: 'PreLoadRecord',
   input: { apiKey: apiKey.valid, body: [preLoadBody, { ...preLoadBody, preloadIdx: '1' }] },
   output: { statusCode: 200, returned: [preLoadResponse, { ...preLoadResponse, preloadIdx: '1' }] },
+  loggedAt: aDate,
 };
 // UploadToS3Record ///////////////////////////////////////////////////////////
 
@@ -165,6 +176,7 @@ export const uploadToS3Record: UploadToS3Record = {
     computedSha256: preLoadBody.sha256,
   },
   output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken, 10) },
+  loggedAt: new Date(preLoadRecord.loggedAt.getTime() + 1000),
 };
 
 export const uploadToS3RecordDangling: UploadToS3Record = {
@@ -201,6 +213,7 @@ export const mkNewNotificationRecord = (
         notificationRequestId: notificationId.valid,
       },
     },
+    loggedAt: aDate,
   });
 
 export const newNotificationRecord = mkNewNotificationRecord(
@@ -218,6 +231,7 @@ export const newNotificationRecordWithIdempotenceToken = makeNewNotificationReco
       notificationRequestId: notificationId.valid,
     },
   },
+  loggedAt: aDate,
 });
 
 // CheckNotificationStatusRecord //////////////////////////////////////////////
@@ -238,6 +252,7 @@ export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
     statusCode: 200,
     returned: checkNotificationStatusRecordReturned,
   },
+  loggedAt: aDate,
 };
 
 export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecord = {
@@ -251,6 +266,7 @@ export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecor
       iun: aIun.valid,
     },
   },
+  loggedAt: aDate,
 };
 
 export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificationStatusRecord = {
@@ -264,6 +280,7 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
       notificationRequestStatus: 'WAITING',
     },
   },
+  loggedAt: aDate,
 };
 
 // CreateEventStreamRecord ////////////////////////////////////////////////////
@@ -281,6 +298,7 @@ export const createEventStreamRecord: CreateEventStreamRecord = {
   type: 'CreateEventStreamRecord',
   input: { apiKey: apiKey.valid, body: streamCreationRequest },
   output: createEventStreamResponse,
+  loggedAt: aDate,
 };
 
 // ConsumeEventStreamRecord ///////////////////////////////////////////////////
@@ -300,6 +318,7 @@ export const consumeEventStreamRecord: ConsumeEventStreamRecord = {
   type: 'ConsumeEventStreamRecord',
   input: { apiKey: apiKey.valid, streamId: streamId.valid },
   output: consumeEventStreamResponse,
+  loggedAt: aDate,
 };
 
 export const consumeEventStreamRecordDelivered = {
@@ -326,6 +345,7 @@ export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = 
   type: 'GetNotificationDetailRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid },
   output: { statusCode: 200, returned: acceptedNotification },
+  loggedAt: aDate,
 };
 
 // GetNotificationDocumentMetadataRecord //////////////////////////////////////
@@ -337,6 +357,7 @@ export const getNotificationDocumentMetadataRecord0: GetNotificationDocumentMeta
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
   },
+  loggedAt: aDate,
 };
 
 export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMetadataRecord = {
@@ -346,6 +367,7 @@ export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMeta
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument1),
   },
+  loggedAt: aDate,
 };
 
 // GetPaymentNotificationMetadataRecord //////////////////////////////////////
@@ -356,5 +378,17 @@ export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadat
   output: {
     statusCode: 200,
     returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
+  },
+  loggedAt: aDate,
+};
+
+// GetLegalFactDownloadMetadataRecord //////////////////////////////////////
+
+export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord = {
+  type: 'LegalFactDownloadMetadataRecord',
+  input: { apiKey: apiKey.valid, iun: aIun.valid, legalFactType: aLegalFactType, legalFactId: aLegalFactId },
+  output: {
+    statusCode: 200,
+    returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),
   },
 };

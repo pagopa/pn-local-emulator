@@ -56,7 +56,14 @@ export const CheckNotificationStatusUseCase =
         )
       ),
       E.sequence(TE.ApplicativePar),
-      TE.map(flow(E.toUnion, (output) => ({ type: 'CheckNotificationStatusRecord' as const, input, output }))),
+      TE.map(
+        flow(E.toUnion, (output) => ({
+          type: 'CheckNotificationStatusRecord' as const,
+          input,
+          output,
+          loggedAt: env.dateGenerator(),
+        }))
+      ),
       TE.chain(env.findNotificationRequestRecordRepository.insert),
       TE.map((record) => record.output)
     );

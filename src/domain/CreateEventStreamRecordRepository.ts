@@ -4,10 +4,10 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { EventTypeEnum, StreamCreationRequest } from '../generated/streams/StreamCreationRequest';
 import { StreamMetadataResponse } from '../generated/streams/StreamMetadataResponse';
-import { AllRecord, Repository } from './Repository';
+import { AllRecord, AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
-export type CreateEventStreamRecord = {
+export type CreateEventStreamRecord = AuditRecord & {
   type: 'CreateEventStreamRecord';
   input: { apiKey: ApiKey; body: StreamCreationRequest };
   output: Response<200, StreamMetadataResponse> | Response<403, UnauthorizedMessageBody>;

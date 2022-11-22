@@ -7,10 +7,10 @@ import { ProgressResponse } from '../generated/streams/ProgressResponse';
 import { NewStatusEnum, ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
-import { AllRecord, Repository } from './Repository';
+import { AllRecord, AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
-export type ConsumeEventStreamRecord = {
+export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';
   input: { apiKey: ApiKey; streamId: string; lastEventId?: string };
   output: Response<200, ProgressResponse> | Response<403, UnauthorizedMessageBody> | Response<419>;

@@ -63,6 +63,7 @@ export const GetPaymentNotificationMetadataUseCase =
         type: 'GetPaymentNotificationMetadataRecord' as const,
         input: { apiKey, iun, recipientId, attachmentName },
         output,
+        loggedAt: env.dateGenerator(),
       })),
       TE.chain(env.getPaymentNotificationMetadataRecordRepository.insert),
       TE.map((record) => record.output)

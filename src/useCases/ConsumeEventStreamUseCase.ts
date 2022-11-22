@@ -40,6 +40,7 @@ export const ConsumeEventStreamUseCase =
           type: 'ConsumeEventStreamRecord' as const,
           input: { apiKey, streamId, lastEventId },
           output,
+          loggedAt: env.dateGenerator(),
         }))
       ),
       TE.chain(env.consumeEventStreamRecordRepository.insert),

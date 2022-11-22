@@ -14,6 +14,10 @@ export type Repository<A> = {
   list: () => TE.TaskEither<Error, ReadonlyArray<A>>;
 };
 
+export type AuditRecord = {
+  loggedAt: Date;
+};
+
 // TODO: Add missing records or find another solution
 export type AllRecord =
   | PreLoadRecord

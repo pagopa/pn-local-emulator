@@ -4,12 +4,12 @@ import { pipe } from 'fp-ts/lib/function';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRequest, PhysicalCommunicationTypeEnum } from '../generated/definitions/NewNotificationRequest';
 import { NewNotificationResponse } from '../generated/definitions/NewNotificationResponse';
-import { AllRecord, Repository } from './Repository';
+import { AllRecord, AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
 export type Notification = NewNotificationRequest & NewNotificationResponse;
 
-export type NewNotificationRecord = {
+export type NewNotificationRecord = AuditRecord & {
   type: 'NewNotificationRecord';
   input: { apiKey: ApiKey; body: NewNotificationRequest };
   output: Response<202, NewNotificationResponse> | Response<403, UnauthorizedMessageBody>;

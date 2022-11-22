@@ -16,7 +16,7 @@ const makeResponsePayload = (baseUrl: string, body: PreLoadRequestBody): Readonl
   );
 
 export const PreLoadUseCase =
-  ({ uploadToS3URL, preLoadRecordRepository }: SystemEnv) =>
+  ({ uploadToS3URL, preLoadRecordRepository, dateGenerator }: SystemEnv) =>
   (apiKey: ApiKey) =>
   (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> =>
     pipe(
@@ -24,7 +24,7 @@ export const PreLoadUseCase =
       E.map((_) => makeResponsePayload(uploadToS3URL.href, body)),
       E.map((returned) => ({ statusCode: 200 as const, returned })),
       E.toUnion,
-      (output) => ({ type: 'PreLoadRecord' as const, input: { apiKey, body }, output }),
+      (output) => ({ type: 'PreLoadRecord' as const, input: { apiKey, body }, output, loggedAt: dateGenerator() }),
       preLoadRecordRepository.insert,
       TE.map((record) => record.output)
     );
