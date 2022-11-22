@@ -70,6 +70,8 @@ components:
       type: string
     Iun:
       $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/IUN"
+    LegalFactId:
+      type: string
     PreLoadRequestBody:
       type: array
       items:
@@ -826,6 +828,8 @@ components:
       description: Indirizzo fisico scoperto durante fase di consegna
     NotificationAttachmentDownloadMetadataResponse:
       $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/f1845e78c4d93f164d79f841ab92cd980c2c3125/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationAttachmentDownloadMetadataResponse'
+    LegalFactDownloadMetadataResponse:
+      $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/420044ea49722d3fe0d99c0c25ea28c1079054ac/docs/openapi/remote-refs.yaml#/components/schemas/LegalFactDownloadMetadataResponse'
 
   responses:
     200UploadS3Response:
