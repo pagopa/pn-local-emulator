@@ -176,7 +176,7 @@ export const uploadToS3Record: UploadToS3Record = {
     computedSha256: preLoadBody.sha256,
   },
   output: { statusCode: 200, returned: parseInt(anAttachmentRef.versionToken, 10) },
-  loggedAt: aDate,
+  loggedAt: new Date(preLoadRecord.loggedAt.getTime() + 1000),
 };
 
 export const uploadToS3RecordDangling: UploadToS3Record = {
