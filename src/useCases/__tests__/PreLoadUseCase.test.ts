@@ -2,10 +2,8 @@ import { PreLoadUseCase } from '../PreLoadUseCase';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { makeLogger } from '../../logger';
 import * as data from '../../domain/__tests__/data';
 
-const logger = makeLogger();
 const body = [
   {
     preloadIdx: '0',
@@ -25,7 +23,7 @@ describe('PreLoadUseCase', () => {
           element.statusCode === 200 &&
           pipe(
             element.returned,
-            RA.every((_) => (_.url && _.key ? _.url.endsWith(_.key) : false))
+            RA.every((_) => (_.url && _.key ? _.url.includes(_.key) : false))
           )
       )
     );
