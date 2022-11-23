@@ -9,18 +9,19 @@ import { PreLoadResponse } from '../generated/definitions/PreLoadResponse';
 import { authorizeApiKey } from '../domain/authorize';
 import { SystemEnv } from './SystemEnv';
 
-const queryParams =
-  'X-Amz-Algorithm=AWS4-HMAC-SHA256' +
-  '&X-Amz-Credential=AS%2F20221021%2Feu-south-1%2Fs3%2Faws4_re' +
-  '&X-Amz-SignedHeaders=content-type%3Bhost%3Bx-amz-checksum-sha256%3Bx-amz-meta-secret' +
-  '&X-Amz-Security-Token=IQoJ%2F%2F%2F%2F%2EaCmV1L%2BhA4zxI%2BJM9e0olwA%2O7vc3oaFv';
+const makeURL = (baseUrl: string, key: string) => {
+  const url = new URL(`${baseUrl}/${key}`);
+  url.searchParams.append('X-Amz-Algorithm', 'AWS4-HMAC-SHA256');
+  url.searchParams.append('X-Amz-Credential', 'AKIDEXAMPLE/20150830/us-east-1/iam/aws4_request');
+  url.searchParams.append('X-Amz-SignedHeaders', 'content-type;host;x-amz-checksum-sha256;x-amz-meta-secret');
+  url.searchParams.append('X-Amz-Security-Token', 'IQoJbJf//////////wEaCmV1i3c+bxI+JMzP+PRXYj/e2G/ti/Qkj3KnOPr');
+  return url.href;
+};
 
 // build response payload from the given request body
 const makeResponsePayload = (baseUrl: string, body: PreLoadRequestBody): ReadonlyArray<PreLoadResponse> =>
   body.map((req) =>
-    pipe(crypto.randomUUID(), (key) =>
-      makePreLoadResponse(key, crypto.randomUUID(), `${baseUrl}/${key}?${queryParams}`, req)
-    )
+    pipe(crypto.randomUUID(), (key) => makePreLoadResponse(key, crypto.randomUUID(), makeURL(baseUrl, key), req))
   );
 
 export const PreLoadUseCase =
