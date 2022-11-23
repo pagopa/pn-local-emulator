@@ -10,6 +10,7 @@ import { AllRecord, AuditRecord, Repository } from './Repository';
 export type UploadToS3Record = AuditRecord & {
   type: 'UploadToS3Record';
   input: {
+    url: string;
     key: AmzDocumentKey;
     checksumAlg?: AmzSdkChecksumAlg;
     secret: AmzMetaSecret;

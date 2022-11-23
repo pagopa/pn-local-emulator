@@ -17,6 +17,7 @@ const handler =
   (req, res) =>
     pipe(
       E.of(uploadToS3UseCase),
+      E.ap(t.string.decode(req.url)),
       E.ap(AmzDocumentKey.decode(req.params.key)),
       E.ap(t.union([t.undefined, AmzSdkChecksumAlg]).decode(req.headers['x-amz-sdk-checksum-algorithm'])),
       E.ap(AmzMetaSecret.decode(req.headers['x-amz-meta-secret'])),
