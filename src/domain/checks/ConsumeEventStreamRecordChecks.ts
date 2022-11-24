@@ -2,9 +2,12 @@ import { flow, pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as R from 'fp-ts/Reader';
+import * as P from 'fp-ts/Predicate';
+import { Reader } from 'fp-ts/Reader';
 import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecordRepository';
 import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecordRepository';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
+import { AllRecord } from '../Repository';
 
 export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
   R.Do,
@@ -46,4 +49,8 @@ export const hasIunPopulatedC = flow(
         RA.exists(({ iun }) => pipe(iun, O.fromNullable, O.isSome))
       )
   )
+);
+
+export const hasProperlyConsumedEvents: Reader<ReadonlyArray<AllRecord>, boolean> = RA.exists(
+  flow(RA.of, pipe(hasNewStatusPropertySetToAcceptedC, P.and(hasIunPopulatedC)))
 );
