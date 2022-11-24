@@ -21,7 +21,7 @@ const matchAtLeastOnePreLoadRecord = (records: ReadonlyArray<PreLoadRecord>) => 
               body.sha256 === uploadToS3Record.input.computedSha256 &&
               record.loggedAt.getTime() < uploadToS3Record.loggedAt.getTime() &&
               // the response.url contains also the protocol, the hostname and the port
-              // the uploadToS3Record.input.url doens't
+              // the uploadToS3Record.input.url doesn't
               (response.url?.endsWith(uploadToS3Record.input.url) || false)
           )
         )
