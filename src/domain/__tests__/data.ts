@@ -169,6 +169,7 @@ export const preLoadRecordBulk: PreLoadRecord = {
 export const uploadToS3Record: UploadToS3Record = {
   type: 'UploadToS3Record',
   input: {
+    url: preLoadResponse.url,
     key: preLoadResponse.key,
     checksumAlg: undefined,
     secret: preLoadResponse.secret,
