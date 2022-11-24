@@ -55,7 +55,7 @@ Create an `EventStream` and consume it until the stream provides one or more not
 1. Complete `TC-SEND-01` or `TC-SEND-01bis` use cases with success.
 2. Create a new `EventStream` with the `eventType` set to `TIMELINE`.
 3. Consume the `EventStream` multiple times until all the conditions are met.
-   - The conditions to be met are described in the report.
+   - The conditions to be met are described in the endpoint that reports the use cases coverage (check [How to use](#how-to-use) section for more information).
 
 ## How to run
 We provide a couple of different ways to start the `PnValidator`:
