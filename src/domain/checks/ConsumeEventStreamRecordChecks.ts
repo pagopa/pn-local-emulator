@@ -24,7 +24,7 @@ export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
   )
 );
 
-export const hasReceivedEventWithStatusAcceptedC = flow(
+export const hasNewStatusPropertySetToAcceptedC = flow(
   RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
   RA.exists(
     ({ output }) =>

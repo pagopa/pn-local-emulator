@@ -1,6 +1,8 @@
 import * as data from '../../__tests__/data';
 import { EventTypeEnum } from '../../../generated/streams/StreamCreationRequest';
 import { unauthorizedResponse } from '../../types';
+import { aDate, notificationId } from '../../__tests__/data';
+import { NewStatusEnum } from '../../../generated/streams/ProgressResponseElement';
 
 // TODO: Refactor using fast-check
 export const preLoadRecordSingletonList = [data.preLoadRecord];
@@ -41,9 +43,17 @@ export const failedRequestCreateEventStream = [
   },
 ];
 
-export const consumeEventStreamRecord = [data.consumeEventStreamRecord];
+export const consumeEventStreamRecordWithAcceptedEvent = [
+  {
+    ...data.consumeEventStreamRecord,
+    output: {
+      statusCode: 200 as const,
+      returned: [data.acceptedEvent],
+    },
+  },
+];
 
 export const consumeEventsOnCreatedStream = [
   ...createEventStreamRecordWithEventTypeTimeline,
-  ...consumeEventStreamRecord,
+  ...consumeEventStreamRecordWithAcceptedEvent,
 ];

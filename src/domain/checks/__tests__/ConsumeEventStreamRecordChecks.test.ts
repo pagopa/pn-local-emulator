@@ -10,12 +10,11 @@ describe('ConsumeEventStreamRecordChecks', () => {
     expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
   });
 
-  it('hasReceivedEventWithStatusAcceptedC', () => {
-    const check = ConsumeEventStreamRecordChecks.hasReceivedEventWithStatusAcceptedC;
+  it('hasNewStatusPropertySetToAcceptedC', () => {
+    const check = ConsumeEventStreamRecordChecks.hasNewStatusPropertySetToAcceptedC;
     expect(check([])).toStrictEqual(false);
     expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
     expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
-    // FIXME: fix the useCaseData
-    // expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
+    expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
   });
 });

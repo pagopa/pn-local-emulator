@@ -303,6 +303,13 @@ export const createEventStreamRecord: CreateEventStreamRecord = {
 
 // ConsumeEventStreamRecord ///////////////////////////////////////////////////
 
+export const acceptedEvent = {
+  eventId: '1',
+  timestamp: aDate,
+  notificationRequestId: notificationId.valid,
+  newStatus: NewStatusEnum.ACCEPTED,
+};
+
 export const consumeEventStreamResponse = {
   statusCode: 200 as const,
   returned: [
