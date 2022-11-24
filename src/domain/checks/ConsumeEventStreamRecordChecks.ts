@@ -16,10 +16,8 @@ export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
   R.map(({ createEventStreamRecordList, consumeEventStreamRecordList }) =>
     pipe(
       consumeEventStreamRecordList,
-      // Filter only consumeEventStreamRecord with a successful response
-      RA.filterMap((record) =>
-        ConsumeEventStreamRecord.hasSuccessfulResponse(record) ? O.some(record.input.streamId) : O.none
-      ),
+      RA.chainFirst((record) => ConsumeEventStreamRecord.getProgressResponseList([record])),
+      RA.map(({ input }) => input.streamId),
       RA.exists(
         CreateEventStreamRecordRepository.existsCreateEventStreamRecordWhitStreamId(createEventStreamRecordList)
       )
@@ -29,26 +27,14 @@ export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
 
 export const hasNewStatusPropertySetToAcceptedC = flow(
   RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
-  RA.exists(
-    ({ output }) =>
-      output.statusCode === 200 &&
-      pipe(
-        output.returned,
-        RA.exists(({ newStatus }) => newStatus === NewStatusEnum.ACCEPTED)
-      )
-  )
+  ConsumeEventStreamRecord.getProgressResponseList,
+  RA.exists(({ newStatus }) => newStatus === NewStatusEnum.ACCEPTED)
 );
 
 export const hasIunPopulatedC = flow(
   RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
-  RA.exists(
-    ({ output }) =>
-      output.statusCode === 200 &&
-      pipe(
-        output.returned,
-        RA.exists(({ iun }) => pipe(iun, O.fromNullable, O.isSome))
-      )
-  )
+  ConsumeEventStreamRecord.getProgressResponseList,
+  RA.exists(({ iun }) => pipe(iun, O.fromNullable, O.isSome))
 );
 
 export const hasProperlyConsumedEvents: Reader<ReadonlyArray<AllRecord>, boolean> = RA.exists(
