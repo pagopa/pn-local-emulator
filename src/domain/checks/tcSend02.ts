@@ -16,6 +16,7 @@ export const tcSend02 = Group({
     'Have you received the event that confirms the creation of the notification?': Group({
       'Have you received the event with newStatus set to ACCEPTED?':
         ConsumeEventStreamRecordChecks.hasNewStatusPropertySetToAcceptedC,
+      'Have you received an event with the iun populated?': ConsumeEventStreamRecordChecks.hasIunPopulatedC,
     }),
     // 'Have you honored the retry-after value?': mockCheck,
     'Have you properly consumed the events coming from the stream?': mockCheck,

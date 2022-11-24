@@ -35,3 +35,15 @@ export const hasNewStatusPropertySetToAcceptedC = flow(
       )
   )
 );
+
+export const hasIunPopulatedC = flow(
+  RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
+  RA.exists(
+    ({ output }) =>
+      output.statusCode === 200 &&
+      pipe(
+        output.returned,
+        RA.exists(({ iun }) => pipe(iun, O.fromNullable, O.isSome))
+      )
+  )
+);

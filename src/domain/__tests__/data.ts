@@ -308,6 +308,7 @@ export const acceptedEvent = {
   timestamp: aDate,
   notificationRequestId: notificationId.valid,
   newStatus: NewStatusEnum.ACCEPTED,
+  iun: aIun.valid,
 };
 
 export const consumeEventStreamResponse = {

@@ -1,5 +1,6 @@
 import * as ConsumeEventStreamRecordChecks from '../ConsumeEventStreamRecordChecks';
 import * as useCaseData from './data';
+import { hasIunPopulatedC } from '../ConsumeEventStreamRecordChecks';
 
 describe('ConsumeEventStreamRecordChecks', () => {
   it('requestWithStreamIdProvidedHasBeenMadeC', () => {
@@ -12,6 +13,14 @@ describe('ConsumeEventStreamRecordChecks', () => {
 
   it('hasNewStatusPropertySetToAcceptedC', () => {
     const check = ConsumeEventStreamRecordChecks.hasNewStatusPropertySetToAcceptedC;
+    expect(check([])).toStrictEqual(false);
+    expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
+    expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
+    expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
+  });
+
+  it('hasIunPopulatedC', () => {
+    const check = ConsumeEventStreamRecordChecks.hasIunPopulatedC;
     expect(check([])).toStrictEqual(false);
     expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
     expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
