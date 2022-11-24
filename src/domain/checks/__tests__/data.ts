@@ -53,7 +53,22 @@ export const consumeEventStreamRecordWithAcceptedEvent = [
   },
 ];
 
+export const consumeEventStreamRecordWithInValidationEvent = [
+  {
+    ...data.consumeEventStreamRecord,
+    output: {
+      statusCode: 200 as const,
+      returned: [data.inValidationEvent],
+    },
+  },
+];
+
 export const consumeEventsOnCreatedStream = [
   ...createEventStreamRecordWithEventTypeTimeline,
   ...consumeEventStreamRecordWithAcceptedEvent,
+];
+
+export const consumeEventsOnCreatedStreamWithOnlyInValidationEvent = [
+  ...createEventStreamRecordWithEventTypeTimeline,
+  ...consumeEventStreamRecordWithInValidationEvent,
 ];

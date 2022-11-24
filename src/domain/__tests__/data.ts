@@ -311,6 +311,13 @@ export const acceptedEvent = {
   iun: aIun.valid,
 };
 
+export const inValidationEvent = {
+  eventId: '1',
+  timestamp: aDate,
+  notificationRequestId: notificationId.valid,
+  newStatus: NewStatusEnum.IN_VALIDATION,
+};
+
 export const consumeEventStreamResponse = {
   statusCode: 200 as const,
   returned: [
