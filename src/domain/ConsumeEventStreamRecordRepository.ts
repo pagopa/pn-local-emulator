@@ -19,8 +19,6 @@ export type ConsumeEventStreamRecord = AuditRecord & {
 export const isConsumeEventStreamRecord = (record: AllRecord): O.Option<ConsumeEventStreamRecord> =>
   record.type === 'ConsumeEventStreamRecord' ? O.some(record) : O.none;
 
-export const hasSuccessfulResponse = (record: ConsumeEventStreamRecord) => record.output.statusCode === 200;
-
 const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
   record.output.statusCode === 200 ? O.some(record.output.returned) : O.none;
 
