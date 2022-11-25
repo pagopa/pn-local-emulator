@@ -5,6 +5,8 @@ import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRecord } from './NewNotificationRepository';
 import { PreLoadRecord } from './PreLoadRepository';
 import { UploadToS3Record } from './UploadToS3RecordRepository';
+import { CreateEventStreamRecord } from './CreateEventStreamRecordRepository';
+import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecordRepository';
 
 export type Repository<A> = {
   insert: (input: A) => TE.TaskEither<Error, A>;
@@ -17,7 +19,12 @@ export type AuditRecord = {
 };
 
 // TODO: Add missing records or find another solution
-export type AllRecord = PreLoadRecord | UploadToS3Record | NewNotificationRecord;
+export type AllRecord =
+  | PreLoadRecord
+  | UploadToS3Record
+  | NewNotificationRecord
+  | CreateEventStreamRecord
+  | ConsumeEventStreamRecord;
 
 export const existsApiKey = <T extends { input: { apiKey: ApiKey } }>(record: T) =>
   pipe(record.input.apiKey, O.fromNullable, O.isSome);
