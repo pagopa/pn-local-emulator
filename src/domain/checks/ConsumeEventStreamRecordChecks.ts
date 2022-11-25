@@ -16,7 +16,7 @@ export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
   R.map(({ createEventStreamRecordList, consumeEventStreamRecordList }) =>
     pipe(
       consumeEventStreamRecordList,
-      RA.chainFirst((record) => ConsumeEventStreamRecord.getProgressResponseList([record])),
+      RA.chainFirst(flow(RA.of, ConsumeEventStreamRecord.getProgressResponseList)),
       RA.map(({ input }) => input.streamId),
       RA.exists(
         CreateEventStreamRecordRepository.existsCreateEventStreamRecordWhitStreamId(createEventStreamRecordList)
