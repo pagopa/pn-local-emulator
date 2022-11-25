@@ -8,7 +8,7 @@ export const tcSend02 = Group({
       CreateEventStreamRecordChecks.hasCreatedStreamWithEventTypeTimelineC,
   }),
   'Consume events from a stream': Group({
-    'Have you make a request to get the stream with the streamId provided during the creation of the stream?':
+    'Have you requested the stream using the streamId provided when the stream was created?':
       ConsumeEventStreamRecordChecks.requestWithStreamIdProvidedHasBeenMadeC,
     'Have you received the event that confirms the creation of the notification?': Group({
       'Have you received the event with newStatus set to ACCEPTED?':
