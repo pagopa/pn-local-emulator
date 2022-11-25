@@ -1,7 +1,6 @@
 import {
   existsCreateEventStreamRecordWhitStreamId,
   hasTimelineEventTypeToTimeline,
-  isSuccessfulResponse,
 } from '../CreateEventStreamRecordRepository';
 import * as data from './data';
 import { unauthorizedResponse } from '../types';
@@ -23,21 +22,6 @@ describe('CreateEventStreamRecordRepository', () => {
 
     it('should be false that the event type is timeline', () => {
       const actual = hasTimelineEventTypeToTimeline(data.createEventStreamRecord);
-      expect(actual).toStrictEqual(false);
-    });
-  });
-
-  describe('isSuccessfulResponse', () => {
-    it('should be true that request completes successfully', () => {
-      const actual = isSuccessfulResponse(data.createEventStreamRecord);
-      expect(actual).toStrictEqual(true);
-    });
-
-    it('should be false that request completes successfully', () => {
-      const actual = isSuccessfulResponse({
-        ...data.createEventStreamRecord,
-        output: unauthorizedResponse,
-      });
       expect(actual).toStrictEqual(false);
     });
   });
