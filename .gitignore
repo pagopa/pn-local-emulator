@@ -417,3 +417,6 @@ $RECYCLE.BIN/
 
 # Ignore the generated stuff
 src/generated/*
+
+# Ignore the documentation generated bu MkDocs
+docs/public-site/site/*
