@@ -5,7 +5,7 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { ApiKey } from '../generated/definitions/ApiKey';
-import { StreamListResponse } from '../generated/definitions/StreamListResponse';
+import { StreamListResponse } from '../generated/streams/StreamListResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Repository } from './Repository';

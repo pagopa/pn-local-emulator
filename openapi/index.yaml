@@ -830,10 +830,6 @@ components:
       $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/f1845e78c4d93f164d79f841ab92cd980c2c3125/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/NotificationAttachmentDownloadMetadataResponse'
     LegalFactDownloadMetadataResponse:
       $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/420044ea49722d3fe0d99c0c25ea28c1079054ac/docs/openapi/remote-refs.yaml#/components/schemas/LegalFactDownloadMetadataResponse'
-    StreamListResponse:
-      $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery-push/ca7d38c4713d7320184e8bc6f73a8214d6853ed9/docs/openapi/api-external-b2b-webhook-v1.yaml#/components/schemas/StreamListResponse'
-    StreamListElement:
-      $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery-push/ca7d38c4713d7320184e8bc6f73a8214d6853ed9/docs/openapi/api-external-b2b-webhook-v1.yaml#/components/schemas/StreamListElement'
 
   responses:
     200UploadS3Response:
