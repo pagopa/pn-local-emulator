@@ -1,0 +1,5 @@
+site_name: PnEmulator
+theme: readthedocs
+nav:
+    - Home: index.md
+    - Use Cases: use-cases.md
