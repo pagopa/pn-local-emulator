@@ -29,6 +29,7 @@ import {
   makeLegalFactDownloadMetadataResponse,
 } from '../LegalFactDownloadMetadataRecordRepository';
 import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
+import { ListEventStreamRecord } from '../ListEventStreamRecordRepository';
 
 export const apiKey = {
   valid: 'key-value',
@@ -93,6 +94,7 @@ export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
+  createEventStreamRecords: ReadonlyArray<CreateEventStreamRecord> = [],
   logger: Logger = makeLogger()
 ): SystemEnv => {
   const baseRepository = inMemory.makeRepository(logger);
@@ -108,8 +110,9 @@ export const makeTestSystemEnv = (
     uploadToS3RecordRepository: baseRepository(uploadToS3Records),
     createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
     findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
-    createEventStreamRecordRepository: baseRepository<CreateEventStreamRecord>([]),
+    createEventStreamRecordRepository: baseRepository(createEventStreamRecords),
     consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
+    listEventStreamRecordRepository: baseRepository<ListEventStreamRecord>([]),
     getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
@@ -299,6 +302,15 @@ export const createEventStreamRecord: CreateEventStreamRecord = {
   type: 'CreateEventStreamRecord',
   input: { apiKey: apiKey.valid, body: streamCreationRequest },
   output: createEventStreamResponse,
+  loggedAt: aDate,
+};
+
+// ListEventStreamRecord ////////////////////////////////////////////////////
+
+export const listEventStreamRecord: ListEventStreamRecord = {
+  type: 'ListEventStreamRecord',
+  input: { apiKey: apiKey.valid },
+  output: { statusCode: 200, returned: [createEventStreamResponse.returned] },
   loggedAt: aDate,
 };
 
