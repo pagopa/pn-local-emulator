@@ -13,6 +13,7 @@ import { ConsumeEventStreamUseCase } from '../../useCases/ConsumeEventStreamUseC
 import { GetNotificationDocumentMetadataUseCase } from '../../useCases/GetNotificationDocumentMetadataUseCase';
 import { GetPaymentNotificationMetadataUseCase } from '../../useCases/GetPaymentNotificationMetadataUseCase';
 import { GetLegalFactDownloadMetadataUseCase } from '../../useCases/GetLegalFactDownloadMetadataUseCase';
+import { GetNotificationPriceUseCase } from '../../useCases/GetNotificationPriceUseCase';
 import { makePreLoadRouter } from './preLoad/router';
 import { makeUploadToS3Router } from './uploadToS3/router';
 import { makeSendNotificationRouter } from './sendNotification/router';
@@ -25,6 +26,7 @@ import { makeGetNotificationDocumentMetadataRouter } from './getNotificationDocu
 import { makeGetPaymentNotificationMetadataRouter } from './getPaymentNotificationMetadata/router';
 import { makeDownloadDocumentRouter } from './download/router';
 import { makeGetLegalFactDocumentRouter } from './getLegalFactDocument/router';
+import { makeGetNotificationPriceRouter } from './getNotificationPrice/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
@@ -37,7 +39,8 @@ export const makeApplication = (
   getChecklistResultUseCase: GetChecklistResultUseCase,
   getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
   getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase,
-  getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase
+  getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase,
+  getNotificationPriceUseCase: GetNotificationPriceUseCase
 ): express.Application => {
   const app = express();
   app.use(express.json());
@@ -53,6 +56,7 @@ export const makeApplication = (
   app.use(makeGetNotificationDocumentMetadataRouter(getNotificationDocumentMetadataUseCase));
   app.use(makeGetPaymentNotificationMetadataRouter(getPaymentNotificationMetadataUseCase));
   app.use(makeGetLegalFactDocumentRouter(getLegalFactDownloadMetadataUseCase));
+  app.use(makeGetNotificationPriceRouter(getNotificationPriceUseCase));
   app.use(makeDownloadDocumentRouter());
   return app;
 };
