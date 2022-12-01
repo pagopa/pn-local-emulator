@@ -17,6 +17,8 @@ import {
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
+import { ListEventStreamRecord } from '../ListEventStreamRecordRepository';
+import { GetNotificationPriceRecord } from '../GetNotificationPriceRecordRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
 import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';
@@ -29,7 +31,6 @@ import {
   makeLegalFactDownloadMetadataResponse,
 } from '../LegalFactDownloadMetadataRecordRepository';
 import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
-import { ListEventStreamRecord } from '../ListEventStreamRecordRepository';
 
 export const apiKey = {
   valid: 'key-value',
@@ -117,6 +118,7 @@ export const makeTestSystemEnv = (
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
     getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
+    getNotificationPriceRecordRepository: baseRepository<GetNotificationPriceRecord>([]),
   };
 };
 
