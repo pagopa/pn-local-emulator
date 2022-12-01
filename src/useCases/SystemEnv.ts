@@ -9,6 +9,7 @@ import { PreLoadRecordRepository } from '../domain/PreLoadRepository';
 import { UploadToS3RecordRepository } from '../domain/UploadToS3RecordRepository';
 import { CreateEventStreamRecordRepository } from '../domain/CreateEventStreamRecordRepository';
 import { LegalFactDownloadMetadataRecordRepository } from '../domain/LegalFactDownloadMetadataRecordRepository';
+import { ListEventStreamRecordRepository } from '../domain/ListEventStreamRecordRepository';
 import { GetNotificationPriceRecordRepository } from '../domain/GetNotificationPriceRecordRepository';
 
 export type SystemEnv = DomainEnv & {
@@ -19,6 +20,7 @@ export type SystemEnv = DomainEnv & {
   findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository;
   createEventStreamRecordRepository: CreateEventStreamRecordRepository;
   consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository;
+  listEventStreamRecordRepository: ListEventStreamRecordRepository;
   getNotificationDetailRecordRepository: GetNotificationDetailRecordRepository;
   getNotificationDocumentMetadataRecordRepository: GetNotificationDocumentMetadataRecordRepository;
   getPaymentNotificationMetadataRecordRepository: GetPaymentNotificationMetadataRecordRepository;
