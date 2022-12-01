@@ -572,11 +572,7 @@ paths:
         content:
           application/json:
             schema:
-              maxItems: 15
-              minItems: 1
-              type: array
-              items:
-                $ref: '#/components/schemas/PreLoadRequest'
+              $ref: '#/components/schemas/PreLoadBulkRequest'
         required: true
       responses:
         "200":
@@ -853,7 +849,8 @@ paths:
         description: Categoria dell'atto opponbile a terzi
         required: true
         schema:
-          $ref: '#/components/schemas/LegalFactCategory'
+          # $ref: '#/components/schemas/LegalFactCategory'
+          type: string
       - name: legalFactId
         in: path
         description: Identificativo dell'atto opponbile a terzi
@@ -898,7 +895,8 @@ paths:
         style: simple
         explode: false
         schema:
-          $ref: '#/components/schemas/paTaxId'
+          # $ref: '#/components/schemas/paTaxId'
+          type: string
         example: "77777777777"
       - name: noticeCode
         in: path
@@ -907,7 +905,8 @@ paths:
         style: simple
         explode: false
         schema:
-          $ref: '#/components/schemas/noticeCode'
+          # $ref: '#/components/schemas/noticeCode'
+          type: string
         example: "302000100000019421"
       responses:
         "200":
@@ -930,6 +929,12 @@ paths:
                 $ref: '#/components/schemas/Problem'
 components:
   schemas:
+    PreLoadBulkRequest:
+      maxItems: 15
+      minItems: 1
+      type: array
+      items:
+        $ref: '#/components/schemas/PreLoadRequest'
     PreLoadRequest:
       title: Richiesta di precaricamento di un File
       type: object
@@ -1049,6 +1054,7 @@ components:
             items:
               $ref: '#/components/schemas/ProblemError'
     Problem:
+      type: object
       required:
       - errors
       - status
@@ -1093,6 +1099,7 @@ components:
           items:
             $ref: '#/components/schemas/ProblemError'
     ProblemError:
+      type: object
       required:
       - code
       properties:
