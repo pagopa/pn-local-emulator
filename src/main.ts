@@ -27,6 +27,8 @@ import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotific
 import { GetLegalFactDownloadMetadataUseCase } from './useCases/GetLegalFactDownloadMetadataUseCase';
 import { LegalFactDownloadMetadataRecord } from './domain/LegalFactDownloadMetadataRecordRepository';
 import { SystemEnv } from './useCases/SystemEnv';
+import { GetNotificationPriceUseCase } from './useCases/GetNotificationPriceUseCase';
+import { GetNotificationPriceRecord } from './domain/GetNotificationPriceRecordRepository';
 
 pipe(
   parseConfig(process.env),
@@ -44,6 +46,7 @@ pipe(
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
     const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
     const getLegalFactDownloadMetadataRecordRepository = mkRepository<LegalFactDownloadMetadataRecord>([]);
+    const getNotificationPriceRecordRepository = mkRepository<GetNotificationPriceRecord>([]);
 
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
@@ -62,6 +65,7 @@ pipe(
       getNotificationDocumentMetadataRecordRepository,
       getPaymentNotificationMetadataRecordRepository,
       getLegalFactDownloadMetadataRecordRepository,
+      getNotificationPriceRecordRepository,
       uploadToS3URL: config.server.uploadToS3URL,
     };
 
@@ -77,6 +81,7 @@ pipe(
     const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
     const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(systemEnv);
     const getLegalFactDownloadMetadataUseCase = GetLegalFactDownloadMetadataUseCase(systemEnv);
+    const getNotificationPriceUseCase = GetNotificationPriceUseCase(systemEnv);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
@@ -90,7 +95,8 @@ pipe(
       getChecklistResultUseCase,
       getNotificationDocumentMetadataUseCase,
       getPaymentNotificationMetadataUseCase,
-      getLegalFactDownloadMetadataUseCase
+      getLegalFactDownloadMetadataUseCase,
+      getNotificationPriceUseCase
     );
     http.startApplication(logger, config, application);
   }),

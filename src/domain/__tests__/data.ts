@@ -29,6 +29,7 @@ import {
   makeLegalFactDownloadMetadataResponse,
 } from '../LegalFactDownloadMetadataRecordRepository';
 import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
+import { GetNotificationPriceRecord } from '../GetNotificationPriceRecordRepository';
 
 export const apiKey = {
   valid: 'key-value',
@@ -114,6 +115,7 @@ export const makeTestSystemEnv = (
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
     getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
+    getNotificationPriceRecordRepository: baseRepository<GetNotificationPriceRecord>([]),
   };
 };
 
