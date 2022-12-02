@@ -5,16 +5,16 @@ import { GetNotificationDocumentMetadataRecordRepository } from '../domain/GetNo
 import { GetPaymentNotificationMetadataRecordRepository } from '../domain/GetPaymentNotificationMetadataRecordRepository';
 import { NewNotificationRepository } from '../domain/NewNotificationRepository';
 import { DomainEnv } from '../domain/DomainEnv';
-import { PreLoadRecordRepository } from '../domain/PreLoadRepository';
 import { UploadToS3RecordRepository } from '../domain/UploadToS3RecordRepository';
 import { CreateEventStreamRecordRepository } from '../domain/CreateEventStreamRecordRepository';
 import { LegalFactDownloadMetadataRecordRepository } from '../domain/LegalFactDownloadMetadataRecordRepository';
 import { ListEventStreamRecordRepository } from '../domain/ListEventStreamRecordRepository';
 import { GetNotificationPriceRecordRepository } from '../domain/GetNotificationPriceRecordRepository';
+import { RecordRepository } from '../domain/Repository';
 
 export type SystemEnv = DomainEnv & {
   // repositories
-  preLoadRecordRepository: PreLoadRecordRepository;
+  recordRepository: RecordRepository;
   uploadToS3RecordRepository: UploadToS3RecordRepository;
   createNotificationRequestRecordRepository: NewNotificationRepository;
   findNotificationRequestRecordRepository: CheckNotificationStatusRecordRepository;

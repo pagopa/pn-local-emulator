@@ -107,7 +107,7 @@ export const makeTestSystemEnv = (
     senderPAId: aSenderPaId,
     iunGenerator: crypto.randomUUID,
     dateGenerator: () => new Date(),
-    preLoadRecordRepository: baseRepository(preloadRecords),
+    recordRepository: baseRepository([...preloadRecords]),
     uploadToS3RecordRepository: baseRepository(uploadToS3Records),
     createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
     findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),

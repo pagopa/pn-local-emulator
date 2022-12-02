@@ -11,7 +11,6 @@ import { UploadToS3UseCase } from './useCases/UploadToS3UseCase';
 import { SendNotificationUseCase } from './useCases/SendNotificationUseCase';
 import { CreateEventStreamUseCase } from './useCases/CreateEventStreamUseCase';
 import { CheckNotificationStatusUseCase } from './useCases/CheckNotificationStatusUseCase';
-import { PreLoadRecord } from './domain/PreLoadRepository';
 import { UploadToS3Record } from './domain/UploadToS3RecordRepository';
 import { NewNotificationRecord } from './domain/NewNotificationRepository';
 import { CheckNotificationStatusRecord } from './domain/CheckNotificationStatusRepository';
@@ -38,7 +37,6 @@ pipe(
     const logger = makeLogger();
     const mkRepository = inMemory.makeRepository(logger);
     /* put here the driven adapters (e.g.: Repositories ) */
-    const preLoadRecordRepository = mkRepository<PreLoadRecord>([]);
     const uploadToS3RecordRepository = mkRepository<UploadToS3Record>([]);
     const newNotificationRepository = mkRepository<NewNotificationRecord>([]);
     const createEventStreamRecordRepository = mkRepository<CreateEventStreamRecord>([]);
@@ -58,7 +56,7 @@ pipe(
       sampleStaticPdfFileName: 'sample.pdf',
       iunGenerator: crypto.randomUUID,
       dateGenerator: () => new Date(),
-      preLoadRecordRepository,
+      recordRepository: inMemory.makeRecordRepository(logger)([]),
       uploadToS3RecordRepository,
       createNotificationRequestRecordRepository: newNotificationRepository,
       findNotificationRequestRecordRepository: checkNotificationStatusRepository,

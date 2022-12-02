@@ -28,3 +28,7 @@ export type AllRecord =
 
 export const existsApiKey = <T extends { input: { apiKey: ApiKey } }>(record: T) =>
   pipe(record.input.apiKey, O.fromNullable, O.isSome);
+
+export type Record = PreLoadRecord;
+
+export type RecordRepository = Repository<Record>;

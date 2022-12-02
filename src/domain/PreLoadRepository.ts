@@ -5,22 +5,19 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { HttpMethodEnum, PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
 import { PreLoadBulkRequest } from '../generated/pnapi/PreLoadBulkRequest';
 import { Problem } from '../generated/pnapi/Problem';
-import { ApiKey } from '../generated/definitions/ApiKey';
-import { AllRecord, AuditRecord, Repository } from './Repository';
+import { AllRecord, AuditRecord } from './Repository';
 import { Response, unauthorizedResponse } from './types';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 
 export type PreLoadRecord = AuditRecord & {
   type: 'PreLoadRecord';
-  input: { apiKey: ApiKey; body: PreLoadBulkRequest };
+  input: { apiKey: string; body: PreLoadBulkRequest };
   output: Response<200, ReadonlyArray<PreLoadResponse>> | Response<403, Problem>;
 };
 
 export const isPreLoadRecord = (record: AllRecord): O.Option<PreLoadRecord> =>
   record.type === 'PreLoadRecord' ? O.some(record) : O.none;
-
-export type PreLoadRecordRepository = Repository<PreLoadRecord>;
 
 const makeURL = (baseUrl: string, key: string) => {
   const url = new URL(`${baseUrl}/${key}`);

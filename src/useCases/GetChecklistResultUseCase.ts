@@ -7,11 +7,11 @@ import { report } from '../domain/checks/report';
 import { SystemEnv } from './SystemEnv';
 
 export const GetChecklistResultUseCase =
-  ({ preLoadRecordRepository, uploadToS3RecordRepository, createNotificationRequestRecordRepository }: SystemEnv) =>
+  ({ recordRepository, uploadToS3RecordRepository, createNotificationRequestRecordRepository }: SystemEnv) =>
   (): TE.TaskEither<Error, Report> =>
     pipe(
       Apply.sequenceS(TE.ApplySeq)({
-        preLoadList: preLoadRecordRepository.list(),
+        preLoadList: recordRepository.list(),
         uploadList: uploadToS3RecordRepository.list(),
         createNotificationRequestList: createNotificationRequestRecordRepository.list(),
       }),

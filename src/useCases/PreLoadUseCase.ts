@@ -11,7 +11,7 @@ export const PreLoadUseCase =
   (body: PreLoadRequestBody): TE.TaskEither<Error, PreLoadRecord['output']> =>
     pipe(
       makePreLoadRecord({ ...env, input: { apiKey, body } }),
-      env.preLoadRecordRepository.insert,
+      env.recordRepository.insert,
       TE.map((record) => record.output)
     );
 
