@@ -5,49 +5,9 @@ info:
 paths:
   # empty because we don't use them
 components:
-  parameters:
-    pathAwsDocumentKeyParam:
-      name: key
-      in: path
-      description: The key of the document
-      required: true
-      schema:
-        $ref: '#/components/schemas/AmzDocumentKey'
-    headerAmzSdkChecksumAlgParam:
-      name: x-amz-sdk-checksum-algorithm
-      in: header
-      required: false
-      schema:
-        $ref: '#/components/schemas/AmzSdkChecksumAlg'
-    headerAmzMetaSecretParam:
-      name: x-amz-meta-secret
-      in: header
-      required: true
-      schema:
-        $ref: '#/components/schemas/AmzMetaSecret'
-    headerAmzChecksumSHA256Param:
-      name: x-amz-checksum-sha256
-      in: header
-      required: true
-      schema:
-        $ref: '#/components/schemas/AmzChecksumSHA256'
-
   schemas:
     ApiKey:
       type: string
-    AmzDocumentKey:
-      example: '8F7E/9A3B/1234/AB87'
-      type: string
-    AmzSdkChecksumAlg:
-      type: string
-      enum:
-        - SHA256
-    AmzMetaSecret:
-      type: string
-    AmzChecksumSHA256:
-      type: string
-    AmzVersionId:
-      type: integer
     NotificationRequestId:
       type: string
     PaProtocolNumber:
