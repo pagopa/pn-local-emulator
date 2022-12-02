@@ -72,18 +72,6 @@ components:
       $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/schemas-pn-notification-v1.yaml#/components/schemas/IUN"
     LegalFactId:
       type: string
-    PreLoadRequestBody:
-      type: array
-      items:
-        $ref: "#/components/schemas/PreLoadRequest"
-    PreLoadRequest:
-      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/PreLoadRequest"
-    PreLoadResponseBody:
-      type: array
-      items:
-        $ref: "#/components/schemas/PreLoadResponse"
-    PreLoadResponse:
-      $ref: "https://raw.githubusercontent.com/pagopa/pn-delivery/0599f1287a08c315bc20410fc57a666e0fa6f79d/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/PreLoadResponse"
     NewNotificationRequest:
       description: I campi utilizzati per la creazione di una nuova Notifica.
       type: object
