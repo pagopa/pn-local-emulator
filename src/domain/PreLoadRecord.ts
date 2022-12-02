@@ -29,11 +29,11 @@ const makeURL = (baseUrl: string, key: string) => {
 };
 
 export const makePreLoadRecord =
-  (dEnv: DomainEnv) =>
+  (env: DomainEnv) =>
   (input: PreLoadRecord['input']): PreLoadRecord => ({
     type: 'PreLoadRecord',
     input,
-    loggedAt: dEnv.dateGenerator(),
+    loggedAt: env.dateGenerator(),
     output: pipe(
       authorizeApiKey(input.apiKey),
       E.foldW(
@@ -44,13 +44,13 @@ export const makePreLoadRecord =
             input.body,
             RA.map((preLoadRequest) => ({
               preloadIdx: preLoadRequest.preloadIdx,
-              secret: dEnv.iunGenerator(),
+              secret: env.iunGenerator(),
               httpMethod: HttpMethodEnum.PUT,
-              key: dEnv.iunGenerator(),
+              key: env.iunGenerator(),
             })),
             RA.map((preLoadRecord) => ({
               ...preLoadRecord,
-              url: makeURL(dEnv.uploadToS3URL.href, preLoadRecord.key),
+              url: makeURL(env.uploadToS3URL.href, preLoadRecord.key),
             }))
           ),
         })
