@@ -20,6 +20,7 @@ import { GetNotificationDetailUseCase } from './useCases/GetNotificationDetailUs
 import { GetNotificationDetailRecord } from './domain/GetNotificationDetailRepository';
 import { ConsumeEventStreamRecord } from './domain/ConsumeEventStreamRecordRepository';
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
+import { ListEventStreamRecord } from './domain/ListEventStreamRecordRepository';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
@@ -27,6 +28,9 @@ import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotific
 import { GetLegalFactDownloadMetadataUseCase } from './useCases/GetLegalFactDownloadMetadataUseCase';
 import { LegalFactDownloadMetadataRecord } from './domain/LegalFactDownloadMetadataRecordRepository';
 import { SystemEnv } from './useCases/SystemEnv';
+import { ListEventStreamUseCase } from './useCases/ListEventStreamUseCase';
+import { GetNotificationPriceUseCase } from './useCases/GetNotificationPriceUseCase';
+import { GetNotificationPriceRecord } from './domain/GetNotificationPriceRecordRepository';
 
 pipe(
   parseConfig(process.env),
@@ -41,9 +45,11 @@ pipe(
     const checkNotificationStatusRepository = mkRepository<CheckNotificationStatusRecord>([]);
     const getNotificationDetailRepository = mkRepository<GetNotificationDetailRecord>([]);
     const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
+    const listEventStreamRecordRepository = mkRepository<ListEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
     const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
     const getLegalFactDownloadMetadataRecordRepository = mkRepository<LegalFactDownloadMetadataRecord>([]);
+    const getNotificationPriceRecordRepository = mkRepository<GetNotificationPriceRecord>([]);
 
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
@@ -58,10 +64,12 @@ pipe(
       findNotificationRequestRecordRepository: checkNotificationStatusRepository,
       createEventStreamRecordRepository,
       consumeEventStreamRecordRepository: consumeEventStreamRepository,
+      listEventStreamRecordRepository,
       getNotificationDetailRecordRepository: getNotificationDetailRepository,
       getNotificationDocumentMetadataRecordRepository,
       getPaymentNotificationMetadataRecordRepository,
       getLegalFactDownloadMetadataRecordRepository,
+      getNotificationPriceRecordRepository,
       uploadToS3URL: config.server.uploadToS3URL,
     };
 
@@ -72,11 +80,13 @@ pipe(
     const createEventStreamUseCase = CreateEventStreamUseCase(systemEnv);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
     const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
+    const listEventStreamUseCase = ListEventStreamUseCase(systemEnv);
     const getChecklistResultUseCase = GetChecklistResultUseCase(systemEnv);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
     const getNotificationDocumentMetadataUseCase = GetNotificationDocumentMetadataUseCase(systemEnv);
     const getPaymentNotificationMetadataUseCase = GetPaymentNotificationMetadataUseCase(systemEnv);
     const getLegalFactDownloadMetadataUseCase = GetLegalFactDownloadMetadataUseCase(systemEnv);
+    const getNotificationPriceUseCase = GetNotificationPriceUseCase(systemEnv);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(
@@ -87,10 +97,12 @@ pipe(
       checkNotificationStatusUseCase,
       getNotificationDetailUseCase,
       consumeEventStreamUseCase,
+      listEventStreamUseCase,
       getChecklistResultUseCase,
       getNotificationDocumentMetadataUseCase,
       getPaymentNotificationMetadataUseCase,
-      getLegalFactDownloadMetadataUseCase
+      getLegalFactDownloadMetadataUseCase,
+      getNotificationPriceUseCase
     );
     http.startApplication(logger, config, application);
   }),

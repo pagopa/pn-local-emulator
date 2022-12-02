@@ -17,6 +17,8 @@ import {
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
+import { ListEventStreamRecord } from '../ListEventStreamRecordRepository';
+import { GetNotificationPriceRecord } from '../GetNotificationPriceRecordRepository';
 import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
 import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';
@@ -93,6 +95,7 @@ export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
+  createEventStreamRecords: ReadonlyArray<CreateEventStreamRecord> = [],
   logger: Logger = makeLogger()
 ): SystemEnv => {
   const baseRepository = inMemory.makeRepository(logger);
@@ -108,12 +111,14 @@ export const makeTestSystemEnv = (
     uploadToS3RecordRepository: baseRepository(uploadToS3Records),
     createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
     findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
-    createEventStreamRecordRepository: baseRepository<CreateEventStreamRecord>([]),
+    createEventStreamRecordRepository: baseRepository(createEventStreamRecords),
     consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
+    listEventStreamRecordRepository: baseRepository<ListEventStreamRecord>([]),
     getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
     getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
+    getNotificationPriceRecordRepository: baseRepository<GetNotificationPriceRecord>([]),
   };
 };
 
@@ -299,6 +304,15 @@ export const createEventStreamRecord: CreateEventStreamRecord = {
   type: 'CreateEventStreamRecord',
   input: { apiKey: apiKey.valid, body: streamCreationRequest },
   output: createEventStreamResponse,
+  loggedAt: aDate,
+};
+
+// ListEventStreamRecord ////////////////////////////////////////////////////
+
+export const listEventStreamRecord: ListEventStreamRecord = {
+  type: 'ListEventStreamRecord',
+  input: { apiKey: apiKey.valid },
+  output: { statusCode: 200, returned: [createEventStreamResponse.returned] },
   loggedAt: aDate,
 };
 

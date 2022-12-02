@@ -8,11 +8,13 @@ import { SendNotificationUseCase } from '../../useCases/SendNotificationUseCase'
 import { CheckNotificationStatusUseCase } from '../../useCases/CheckNotificationStatusUseCase';
 import { GetChecklistResultUseCase } from '../../useCases/GetChecklistResultUseCase';
 import { CreateEventStreamUseCase } from '../../useCases/CreateEventStreamUseCase';
+import { ListEventStreamUseCase } from '../../useCases/ListEventStreamUseCase';
 import { GetNotificationDetailUseCase } from '../../useCases/GetNotificationDetailUseCase';
 import { ConsumeEventStreamUseCase } from '../../useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from '../../useCases/GetNotificationDocumentMetadataUseCase';
 import { GetPaymentNotificationMetadataUseCase } from '../../useCases/GetPaymentNotificationMetadataUseCase';
 import { GetLegalFactDownloadMetadataUseCase } from '../../useCases/GetLegalFactDownloadMetadataUseCase';
+import { GetNotificationPriceUseCase } from '../../useCases/GetNotificationPriceUseCase';
 import { makePreLoadRouter } from './preLoad/router';
 import { makeUploadToS3Router } from './uploadToS3/router';
 import { makeSendNotificationRouter } from './sendNotification/router';
@@ -25,6 +27,8 @@ import { makeGetNotificationDocumentMetadataRouter } from './getNotificationDocu
 import { makeGetPaymentNotificationMetadataRouter } from './getPaymentNotificationMetadata/router';
 import { makeDownloadDocumentRouter } from './download/router';
 import { makeGetLegalFactDocumentRouter } from './getLegalFactDocument/router';
+import { makeListEventStreamRouter } from './listEventStream/router';
+import { makeGetNotificationPriceRouter } from './getNotificationPrice/router';
 
 export const makeApplication = (
   preLoadUseCase: PreLoadUseCase,
@@ -34,10 +38,12 @@ export const makeApplication = (
   checkNotificationStatusUseCase: CheckNotificationStatusUseCase,
   getNotificationDetailUseCase: GetNotificationDetailUseCase,
   consumeEventStreamUseCase: ConsumeEventStreamUseCase,
+  listEventStreamUseCase: ListEventStreamUseCase,
   getChecklistResultUseCase: GetChecklistResultUseCase,
   getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
   getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase,
-  getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase
+  getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase,
+  getNotificationPriceUseCase: GetNotificationPriceUseCase
 ): express.Application => {
   const app = express();
   app.use(express.json());
@@ -48,11 +54,13 @@ export const makeApplication = (
   app.use(makeCreateEventStreamRouter(createEventStreamUseCase));
   app.use(makeNotificationStatusRouter(checkNotificationStatusUseCase));
   app.use(makeConsumeEventStreamRouter(consumeEventStreamUseCase));
+  app.use(makeListEventStreamRouter(listEventStreamUseCase));
   app.use(makeChecklistRouter(getChecklistResultUseCase));
   app.use(makeGetNotificationDetailRouter(getNotificationDetailUseCase));
   app.use(makeGetNotificationDocumentMetadataRouter(getNotificationDocumentMetadataUseCase));
   app.use(makeGetPaymentNotificationMetadataRouter(getPaymentNotificationMetadataUseCase));
   app.use(makeGetLegalFactDocumentRouter(getLegalFactDownloadMetadataUseCase));
+  app.use(makeGetNotificationPriceRouter(getNotificationPriceUseCase));
   app.use(makeDownloadDocumentRouter());
   return app;
 };
