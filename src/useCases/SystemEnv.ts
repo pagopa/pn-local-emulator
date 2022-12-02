@@ -26,6 +26,4 @@ export type SystemEnv = DomainEnv & {
   getPaymentNotificationMetadataRecordRepository: GetPaymentNotificationMetadataRecordRepository;
   getLegalFactDownloadMetadataRecordRepository: LegalFactDownloadMetadataRecordRepository;
   getNotificationPriceRecordRepository: GetNotificationPriceRecordRepository;
-  // custom env
-  uploadToS3URL: URL;
 };
