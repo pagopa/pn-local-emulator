@@ -9,7 +9,7 @@ import { CheckNotificationStatusRecord } from '../CheckNotificationStatusReposit
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
 import { makeNewNotificationRecord, NewNotificationRecord } from '../NewNotificationRepository';
-import { PreLoadRecord } from '../PreLoadRepository';
+import { PreLoadRecord } from '../PreLoadRecord';
 import { UploadToS3Record } from '../UploadToS3RecordRepository';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
 import {

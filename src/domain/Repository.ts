@@ -3,7 +3,7 @@ import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRecord } from './NewNotificationRepository';
-import { PreLoadRecord } from './PreLoadRepository';
+import { PreLoadRecord } from './PreLoadRecord';
 import { UploadToS3Record } from './UploadToS3RecordRepository';
 import { CreateEventStreamRecord } from './CreateEventStreamRecordRepository';
 import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecordRepository';

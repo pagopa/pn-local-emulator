@@ -3,7 +3,7 @@ import * as s from 'fp-ts/string';
 import * as P from 'fp-ts/Predicate';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { isPreLoadRecord, PreLoadRecord } from '../PreLoadRepository';
+import { isPreLoadRecord, PreLoadRecord } from '../PreLoadRecord';
 
 // PreLoadRecord ////////////////////////////////////////////////////////////
 

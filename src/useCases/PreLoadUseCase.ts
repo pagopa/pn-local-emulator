@@ -1,6 +1,6 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
-import { makePreLoadRecord, PreLoadRecord } from '../domain/PreLoadRepository';
+import { makePreLoadRecord, PreLoadRecord } from '../domain/PreLoadRecord';
 import { SystemEnv } from './SystemEnv';
 
 export const PreLoadUseCase =
