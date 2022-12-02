@@ -28,32 +28,32 @@ const makeURL = (baseUrl: string, key: string) => {
   return url.href;
 };
 
-type Args = DomainEnv & Pick<PreLoadRecord, 'input'>;
-
-export const makePreLoadRecord = (args: Args): PreLoadRecord => ({
-  type: 'PreLoadRecord',
-  input: args.input,
-  loggedAt: args.dateGenerator(),
-  output: pipe(
-    authorizeApiKey(args.input.apiKey),
-    E.foldW(
-      () => unauthorizedResponse,
-      () => ({
-        statusCode: 200,
-        returned: pipe(
-          args.input.body,
-          RA.map((preLoadRequest) => ({
-            preloadIdx: preLoadRequest.preloadIdx,
-            secret: args.iunGenerator(),
-            httpMethod: HttpMethodEnum.PUT,
-            key: args.iunGenerator(),
-          })),
-          RA.map((preLoadRecord) => ({
-            ...preLoadRecord,
-            url: makeURL(args.uploadToS3URL.href, preLoadRecord.key),
-          }))
-        ),
-      })
-    )
-  ),
-});
+export const makePreLoadRecord =
+  (dEnv: DomainEnv) =>
+  (input: PreLoadRecord['input']): PreLoadRecord => ({
+    type: 'PreLoadRecord',
+    input,
+    loggedAt: dEnv.dateGenerator(),
+    output: pipe(
+      authorizeApiKey(input.apiKey),
+      E.foldW(
+        () => unauthorizedResponse,
+        () => ({
+          statusCode: 200,
+          returned: pipe(
+            input.body,
+            RA.map((preLoadRequest) => ({
+              preloadIdx: preLoadRequest.preloadIdx,
+              secret: dEnv.iunGenerator(),
+              httpMethod: HttpMethodEnum.PUT,
+              key: dEnv.iunGenerator(),
+            })),
+            RA.map((preLoadRecord) => ({
+              ...preLoadRecord,
+              url: makeURL(dEnv.uploadToS3URL.href, preLoadRecord.key),
+            }))
+          ),
+        })
+      )
+    ),
+  });
