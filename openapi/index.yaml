@@ -4,20 +4,6 @@ info:
   version: 0.0.0
 paths:
   # empty because we don't use them
-  "/uploadS3/{key}":
-    parameters:
-      - $ref: "#/components/parameters/pathAwsDocumentKeyParam"
-    put:
-      summary: "Simulate the s3 upload"
-      description: >
-        This endpoint simulate the upload to s3.
-      parameters:
-        - $ref: "#/components/parameters/headerAmzSdkChecksumAlgParam"
-        - $ref: "#/components/parameters/headerAmzMetaSecretParam"
-        - $ref: "#/components/parameters/headerAmzChecksumSHA256Param"
-      responses:
-        '200':
-          $ref: "#/components/responses/200UploadS3Response"
 components:
   parameters:
     pathAwsDocumentKeyParam:
@@ -820,12 +806,3 @@ components:
       $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/420044ea49722d3fe0d99c0c25ea28c1079054ac/docs/openapi/remote-refs.yaml#/components/schemas/LegalFactDownloadMetadataResponse'
     NotificationPriceResponse:
       $ref: 'https://raw.githubusercontent.com/pagopa/pn-delivery/d9be81882bc9cd6eb326a2e77217f9e33d7cdfd5/docs/openapi/api-external-b2b-pa-v1.yaml#/components/schemas/NotificationPriceResponse'
-
-  responses:
-    200UploadS3Response:
-      description: >
-        The upload to s3 response
-      headers:
-        x-amz-version-id:
-          schema:
-          $ref: "#/components/schemas/AmzVersionId"

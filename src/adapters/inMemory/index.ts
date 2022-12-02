@@ -21,5 +21,18 @@ export const makeRepository =
 
 export const makeRecordRepository =
   (logger: Logger) =>
-  (snapshot: ReadonlyArray<Record>): RecordRepository =>
-    makeRepository(logger)(snapshot);
+  // eslint-disable-next-line sonarjs/no-identical-functions
+  (snapshot: ReadonlyArray<Record>): RecordRepository => {
+    // TODO: For now we are simulating a database using a mutable variable
+    // eslint-disable-next-line functional/no-let
+    let store = [...snapshot];
+    return {
+      // eslint-disable-next-line sonarjs/no-identical-functions
+      insert: (element) => {
+        store = [...store, element];
+        logger.debug(`Record item: ${JSON.stringify(element)}`);
+        return TE.of(element);
+      },
+      list: () => TE.of(store),
+    };
+  };

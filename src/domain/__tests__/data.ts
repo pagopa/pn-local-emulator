@@ -10,7 +10,7 @@ import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository'
 import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
 import { makeNewNotificationRecord, NewNotificationRecord } from '../NewNotificationRepository';
 import { PreLoadRecord } from '../PreLoadRecord';
-import { UploadToS3Record } from '../UploadToS3RecordRepository';
+import { UploadToS3Record } from '../UploadToS3Record';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
 import {
   GetNotificationDocumentMetadataRecord,
@@ -90,6 +90,7 @@ export const aDocument1 = {
 };
 
 export const makeTestSystemEnv = (
+  // TODO Simplify input arguments after the refactor
   preloadRecords: ReadonlyArray<PreLoadRecord> = [],
   uploadToS3Records: ReadonlyArray<UploadToS3Record> = [],
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
@@ -107,8 +108,7 @@ export const makeTestSystemEnv = (
     senderPAId: aSenderPaId,
     iunGenerator: crypto.randomUUID,
     dateGenerator: () => new Date(),
-    recordRepository: baseRepository([...preloadRecords]),
-    uploadToS3RecordRepository: baseRepository(uploadToS3Records),
+    recordRepository: inMemory.makeRecordRepository(logger)([]),
     createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
     findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
     createEventStreamRecordRepository: baseRepository(createEventStreamRecords),

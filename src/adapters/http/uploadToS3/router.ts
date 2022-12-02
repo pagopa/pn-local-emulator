@@ -5,10 +5,10 @@ import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import * as Problem from '../Problem';
-import { AmzDocumentKey } from '../../../generated/definitions/AmzDocumentKey';
-import { AmzSdkChecksumAlg } from '../../../generated/definitions/AmzSdkChecksumAlg';
-import { AmzMetaSecret } from '../../../generated/definitions/AmzMetaSecret';
-import { AmzChecksumSHA256 } from '../../../generated/definitions/AmzChecksumSHA256';
+import { AmzDocumentKey } from '../../../generated/internalapi/AmzDocumentKey';
+import { AmzSdkChecksumAlg } from '../../../generated/internalapi/AmzSdkChecksumAlg';
+import { AmzMetaSecret } from '../../../generated/internalapi/AmzMetaSecret';
+import { AmzChecksumSHA256 } from '../../../generated/internalapi/AmzChecksumSHA256';
 import { UploadToS3UseCase } from '../../../useCases/UploadToS3UseCase';
 import { Handler, toExpressHandler } from '../Handler';
 

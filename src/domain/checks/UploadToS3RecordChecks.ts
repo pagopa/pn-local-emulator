@@ -3,7 +3,7 @@ import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NotificationPaymentAttachment } from '../../generated/definitions/NotificationPaymentAttachment';
 import { isPreLoadRecord, PreLoadRecord } from '../PreLoadRecord';
-import { isUploadToS3Record, UploadToS3Record } from '../UploadToS3RecordRepository';
+import { isUploadToS3Record, UploadToS3Record } from '../UploadToS3Record';
 
 const matchAtLeastOnePreLoadRecord = (records: ReadonlyArray<PreLoadRecord>) => (uploadToS3Record: UploadToS3Record) =>
   pipe(

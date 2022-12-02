@@ -12,7 +12,7 @@ import {
   hasRegisteredLetterAsPhysicalDocumentType,
   isNewNotificationRecord,
 } from '../NewNotificationRepository';
-import { isUploadToS3Record } from '../UploadToS3RecordRepository';
+import { isUploadToS3Record } from '../UploadToS3Record';
 import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
 
 // TODO: This check is replicated on almost each record type, we can
