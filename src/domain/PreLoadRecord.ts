@@ -1,12 +1,12 @@
 import * as O from 'fp-ts/Option';
-import { pipe } from 'fp-ts/function';
+import { identity, pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { HttpMethodEnum, PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
 import { PreLoadBulkRequest } from '../generated/pnapi/PreLoadBulkRequest';
 import { Problem } from '../generated/pnapi/Problem';
 import { AllRecord, AuditRecord } from './Repository';
-import { Response, unauthorizedResponse } from './types';
+import { Response } from './types';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 
@@ -36,24 +36,21 @@ export const makePreLoadRecord =
     loggedAt: env.dateGenerator(),
     output: pipe(
       authorizeApiKey(input.apiKey),
-      E.foldW(
-        () => unauthorizedResponse,
-        () => ({
-          statusCode: 200,
-          returned: pipe(
-            input.body,
-            RA.map((preLoadRequest) => ({
-              preloadIdx: preLoadRequest.preloadIdx,
-              secret: env.iunGenerator(),
-              httpMethod: HttpMethodEnum.PUT,
-              key: env.iunGenerator(),
-            })),
-            RA.map((preLoadRecord) => ({
-              ...preLoadRecord,
-              url: makeURL(env.uploadToS3URL.href, preLoadRecord.key),
-            }))
-          ),
-        })
-      )
+      E.foldW(identity, () => ({
+        statusCode: 200,
+        returned: pipe(
+          input.body,
+          RA.map((preLoadRequest) => ({
+            preloadIdx: preLoadRequest.preloadIdx,
+            secret: env.iunGenerator(),
+            httpMethod: HttpMethodEnum.PUT,
+            key: env.iunGenerator(),
+          })),
+          RA.map((preLoadRecord) => ({
+            ...preLoadRecord,
+            url: makeURL(env.uploadToS3URL.href, preLoadRecord.key),
+          }))
+        ),
+      }))
     ),
   });
