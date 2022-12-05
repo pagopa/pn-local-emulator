@@ -9,6 +9,7 @@ import { GetNotificationDetailRecord } from '../domain/GetNotificationDetailRepo
 import { authorizeApiKey } from '../domain/authorize';
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
+import { isCheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRecord';
 import { SystemEnv } from './SystemEnv';
 
 // TODO: Apply the Reader monad to the environment.
@@ -22,7 +23,7 @@ export const GetNotificationDetailUseCase =
         pipe(
           TE.of(computeSnapshot(env)),
           TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
-          TE.ap(env.findNotificationRequestRecordRepository.list()),
+          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isCheckNotificationStatusRecord)))),
           TE.ap(env.consumeEventStreamRecordRepository.list()),
           TE.map(RA.filterMap(O.fromEither)),
           TE.map(RA.findFirstMap((notification) => (notification.iun === iun ? O.some(notification) : O.none))),

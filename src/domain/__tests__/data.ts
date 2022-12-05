@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
-import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRepository';
+import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
 import { NewNotificationRecord } from '../NewNotificationRecord';
@@ -26,6 +26,7 @@ import {
   makeLegalFactDownloadMetadataResponse,
 } from '../LegalFactDownloadMetadataRecordRepository';
 import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
+import { IUN } from '../../generated/pnapi/IUN';
 
 export const apiKey = {
   valid: 'key-value',
@@ -44,7 +45,7 @@ export const idempotenceToken = {
 };
 
 export const aIun = {
-  valid: 'aIunValue',
+  valid: unsafeCoerce<string, IUN>('aIunValue'),
 };
 
 export const streamId = {
@@ -103,8 +104,7 @@ export const makeTestSystemEnv = (
     senderPAId: aSenderPaId,
     iunGenerator: crypto.randomUUID,
     dateGenerator: () => new Date(),
-    recordRepository: inMemory.makeRecordRepository(logger)([...createNotificationRequestRecords]),
-    findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
+    recordRepository: inMemory.makeRecordRepository(logger)([...createNotificationRequestRecords, ...findNotificationRequestRecords]),
     createEventStreamRecordRepository: baseRepository(createEventStreamRecords),
     consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
     listEventStreamRecordRepository: baseRepository<ListEventStreamRecord>([]),
@@ -250,7 +250,7 @@ const checkNotificationStatusRecordReturned = {
 
 export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
   type: 'CheckNotificationStatusRecord',
-  input: { notificationRequestId: notificationId.valid },
+  input: { apiKey: apiKey.valid, body: { notificationRequestId: notificationId.valid } },
   output: {
     statusCode: 200,
     returned: checkNotificationStatusRecordReturned,
@@ -260,7 +260,7 @@ export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
 
 export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecord = {
   type: 'CheckNotificationStatusRecord',
-  input: { notificationRequestId: notificationId.valid },
+  input: { apiKey: apiKey.valid, body: { notificationRequestId: notificationId.valid } },
   output: {
     statusCode: 200,
     returned: {
@@ -274,7 +274,7 @@ export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecor
 
 export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificationStatusRecord = {
   type: 'CheckNotificationStatusRecord',
-  input: { notificationRequestId: notificationId.valid },
+  input: { apiKey: apiKey.valid, body: { notificationRequestId: notificationId.valid } },
   output: {
     statusCode: 200,
     returned: {

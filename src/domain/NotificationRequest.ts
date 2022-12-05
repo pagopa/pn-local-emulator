@@ -3,7 +3,7 @@ import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRequest } from '../generated/definitions/NewNotificationRequest';
 import { NewNotificationResponse } from '../generated/definitions/NewNotificationResponse';
-import { CheckNotificationStatusRecord } from './CheckNotificationStatusRepository';
+import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { NewNotificationRecord } from './NewNotificationRecord';
 
 /**

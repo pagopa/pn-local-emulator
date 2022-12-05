@@ -5,7 +5,7 @@ import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { Iun } from '../generated/definitions/Iun';
 import { FullSentNotification } from '../generated/definitions/FullSentNotification';
-import { CheckNotificationStatusRecord } from './CheckNotificationStatusRepository';
+import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecordRepository';
 import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
 import { makeFullSentNotification } from './GetNotificationDetailRepository';

@@ -7,6 +7,7 @@ import { ConsumeEventStreamRecord, makeProgressResponse } from '../domain/Consum
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
+import { isCheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRecord';
 import { SystemEnv } from './SystemEnv';
 
 // TODO: Apply the Reader monad to the environment.
@@ -21,7 +22,7 @@ export const ConsumeEventStreamUseCase =
         pipe(
           TE.of(computeSnapshot(env)),
           TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
-          TE.ap(env.findNotificationRequestRecordRepository.list()),
+          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isCheckNotificationStatusRecord)))),
           TE.ap(env.consumeEventStreamRecordRepository.list()),
           TE.map(
             flow(

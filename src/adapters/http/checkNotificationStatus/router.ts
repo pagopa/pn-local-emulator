@@ -10,7 +10,6 @@ import { NotificationRequestId } from '../../../generated/definitions/Notificati
 import { PaProtocolNumber } from '../../../generated/definitions/PaProtocolNumber';
 import { IdempotenceToken } from '../../../generated/definitions/IdempotenceToken';
 import { CheckNotificationStatusUseCase } from '../../../useCases/CheckNotificationStatusUseCase';
-import { ApiKey } from '../../../generated/definitions/ApiKey';
 
 const checkNotificationStatusInputType = t.union([
   t.strict({
@@ -27,7 +26,7 @@ const checkNotificationStatusHandler =
   (req, res) =>
     pipe(
       E.of(checkNotificationStatusUseCase),
-      E.ap(ApiKey.decode(req.headers['x-api-key'])),
+      E.ap(t.string.decode(req.headers['x-api-key'])),
       E.ap(
         checkNotificationStatusInputType.decode({
           notificationRequestId: req.query.notificationRequestId,

@@ -7,6 +7,7 @@ import { PreLoadRecord } from './PreLoadRecord';
 import { UploadToS3Record } from './UploadToS3Record';
 import { CreateEventStreamRecord } from './CreateEventStreamRecordRepository';
 import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecordRepository';
+import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 
 export type Repository<A> = {
   insert: (input: A) => TE.TaskEither<Error, A>;
@@ -20,6 +21,7 @@ export type AuditRecord = {
 
 // TODO: Add missing records or find another solution
 export type AllRecord =
+  | Record
   | PreLoadRecord
   | UploadToS3Record
   | NewNotificationRecord
@@ -29,7 +31,7 @@ export type AllRecord =
 export const existsApiKey = <T extends { input: { apiKey: ApiKey } }>(record: T) =>
   pipe(record.input.apiKey, O.fromNullable, O.isSome);
 
-export type Record = PreLoadRecord | UploadToS3Record | NewNotificationRecord;
+export type Record = PreLoadRecord | UploadToS3Record | NewNotificationRecord | CheckNotificationStatusRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;
