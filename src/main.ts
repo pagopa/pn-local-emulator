@@ -11,7 +11,6 @@ import { UploadToS3UseCase } from './useCases/UploadToS3UseCase';
 import { SendNotificationUseCase } from './useCases/SendNotificationUseCase';
 import { CreateEventStreamUseCase } from './useCases/CreateEventStreamUseCase';
 import { CheckNotificationStatusUseCase } from './useCases/CheckNotificationStatusUseCase';
-import { NewNotificationRecord } from './domain/NewNotificationRepository';
 import { CheckNotificationStatusRecord } from './domain/CheckNotificationStatusRepository';
 import { CreateEventStreamRecord } from './domain/CreateEventStreamRecordRepository';
 import { GetNotificationDetailUseCase } from './useCases/GetNotificationDetailUseCase';
@@ -36,7 +35,6 @@ pipe(
     const logger = makeLogger();
     const mkRepository = inMemory.makeRepository(logger);
     /* put here the driven adapters (e.g.: Repositories ) */
-    const newNotificationRepository = mkRepository<NewNotificationRecord>([]);
     const createEventStreamRecordRepository = mkRepository<CreateEventStreamRecord>([]);
     const checkNotificationStatusRepository = mkRepository<CheckNotificationStatusRecord>([]);
     const getNotificationDetailRepository = mkRepository<GetNotificationDetailRecord>([]);
@@ -55,7 +53,6 @@ pipe(
       iunGenerator: crypto.randomUUID,
       dateGenerator: () => new Date(),
       recordRepository: inMemory.makeRecordRepository(logger)([]),
-      createNotificationRequestRecordRepository: newNotificationRepository,
       findNotificationRequestRecordRepository: checkNotificationStatusRepository,
       createEventStreamRecordRepository,
       consumeEventStreamRecordRepository: consumeEventStreamRepository,

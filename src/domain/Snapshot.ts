@@ -3,7 +3,7 @@ import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRepository';
 import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecordRepository';
-import { NewNotificationRecord } from './NewNotificationRepository';
+import { NewNotificationRecord } from './NewNotificationRecord';
 import { makeNotificationRequestFromCreate, NotificationRequest } from './NotificationRequest';
 import { makeNotification, Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';

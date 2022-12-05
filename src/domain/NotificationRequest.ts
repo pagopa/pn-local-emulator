@@ -4,7 +4,7 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRequest } from '../generated/definitions/NewNotificationRequest';
 import { NewNotificationResponse } from '../generated/definitions/NewNotificationResponse';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRepository';
-import { NewNotificationRecord } from './NewNotificationRepository';
+import { NewNotificationRecord } from './NewNotificationRecord';
 
 /**
  * Represent the resource created before the Notification itself, a NotificationRequest

@@ -11,6 +11,7 @@ import {
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { Iun } from '../generated/definitions/Iun';
 import { computeSnapshot } from '../domain/Snapshot';
+import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { SystemEnv } from './SystemEnv';
 
 // TODO: Apply the Reader monad to the environment.
@@ -24,7 +25,7 @@ export const GetNotificationDocumentMetadataUseCase =
       E.map(() =>
         pipe(
           TE.of(computeSnapshot(env)),
-          TE.ap(env.createNotificationRequestRecordRepository.list()),
+          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
           TE.ap(env.findNotificationRequestRecordRepository.list()),
           TE.ap(env.consumeEventStreamRecordRepository.list()),
           TE.map(

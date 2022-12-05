@@ -2,7 +2,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { ApiKey } from '../generated/definitions/ApiKey';
-import { NewNotificationRecord } from './NewNotificationRepository';
+import { NewNotificationRecord } from './NewNotificationRecord';
 import { PreLoadRecord } from './PreLoadRecord';
 import { UploadToS3Record } from './UploadToS3Record';
 import { CreateEventStreamRecord } from './CreateEventStreamRecordRepository';
@@ -29,7 +29,7 @@ export type AllRecord =
 export const existsApiKey = <T extends { input: { apiKey: ApiKey } }>(record: T) =>
   pipe(record.input.apiKey, O.fromNullable, O.isSome);
 
-export type Record = PreLoadRecord | UploadToS3Record;
+export type Record = PreLoadRecord | UploadToS3Record | NewNotificationRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;

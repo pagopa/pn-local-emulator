@@ -1,14 +1,11 @@
 import crypto from 'crypto';
-import {
-  NewNotificationRequest,
-  NotificationFeePolicyEnum,
-  PhysicalCommunicationTypeEnum,
-} from '../../generated/definitions/NewNotificationRequest';
+import { unsafeCoerce } from 'fp-ts/function';
+import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRepository';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
-import { makeNewNotificationRecord, NewNotificationRecord } from '../NewNotificationRepository';
+import { NewNotificationRecord } from '../NewNotificationRecord';
 import { PreLoadRecord } from '../PreLoadRecord';
 import { UploadToS3Record } from '../UploadToS3Record';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
@@ -19,12 +16,10 @@ import {
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
 import { ListEventStreamRecord } from '../ListEventStreamRecordRepository';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecordRepository';
-import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
 import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
-import { unsafeCoerce } from 'fp-ts/function';
 import { config } from '../../__tests__/data';
 import {
   LegalFactDownloadMetadataRecord,
@@ -71,7 +66,7 @@ export const anAttachmentRef = {
 
 export const aSha256 = 'jezIVxlG1M1woCSUngM6KipUN3/p8cG5RMIPnuEanlE=';
 
-export const aDocument0: FullSentNotification['documents'][0] = {
+export const aDocument0: NewNotificationRecord['input']['body']['documents'][0] = {
   docIdx: '0',
   digests: {
     sha256: aSha256,
@@ -108,8 +103,7 @@ export const makeTestSystemEnv = (
     senderPAId: aSenderPaId,
     iunGenerator: crypto.randomUUID,
     dateGenerator: () => new Date(),
-    recordRepository: inMemory.makeRecordRepository(logger)([]),
-    createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
+    recordRepository: inMemory.makeRecordRepository(logger)([...createNotificationRequestRecords]),
     findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
     createEventStreamRecordRepository: baseRepository(createEventStreamRecords),
     consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
@@ -122,10 +116,10 @@ export const makeTestSystemEnv = (
   };
 };
 
-export const aRecipient: FullSentNotification['recipients'][0] = {
+export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0] = {
   recipientType: RecipientTypeEnum.PF,
-  denomination: 'denomination',
-  taxId: 'aTaxId',
+  denomination: unsafeCoerce('denomination'),
+  taxId: unsafeCoerce('aTaxId'),
   digitalDomicile: {
     type: TypeEnum.PEC,
     address: 'hello@thisismypec.pec',
@@ -197,37 +191,40 @@ export const uploadToS3RecordDangling: UploadToS3Record = {
 
 // NewNotificationRecord //////////////////////////////////////////////////////
 
-const newNotificationRequest: NewNotificationRequest = {
+const newNotificationRequest: NewNotificationRecord['input']['body'] = {
   paProtocolNumber: paProtocolNumber.valid,
   subject: 'subject',
   recipients: [aRecipient],
   documents: [{ ...aDocument0, docIdx: undefined }, aDocument1],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
   physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890,
+  senderDenomination: unsafeCoerce('senderDenomination'),
+  senderTaxId: unsafeCoerce('senderTaxId'),
 };
 
 export const mkNewNotificationRecord = (
-  documents: NewNotificationRequest['documents'],
-  recipients: NewNotificationRequest['recipients']
-) =>
-  makeNewNotificationRecord({
-    input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, documents, recipients } },
-    output: {
-      statusCode: 202,
-      returned: {
-        paProtocolNumber: paProtocolNumber.valid,
-        notificationRequestId: notificationId.valid,
-      },
+  documents: NewNotificationRecord['input']['body']['documents'],
+  recipients: NewNotificationRecord['input']['body']['recipients']
+): NewNotificationRecord => ({
+  type: 'NewNotificationRecord',
+  input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, documents, recipients } },
+  output: {
+    statusCode: 202,
+    returned: {
+      paProtocolNumber: paProtocolNumber.valid,
+      notificationRequestId: notificationId.valid,
     },
-    loggedAt: aDate,
-  });
+  },
+  loggedAt: aDate,
+});
 
 export const newNotificationRecord = mkNewNotificationRecord(
   [{ ...aDocument0, docIdx: undefined }, aDocument1],
   [aRecipient]
 );
 
-export const newNotificationRecordWithIdempotenceToken = makeNewNotificationRecord({
+export const newNotificationRecordWithIdempotenceToken: NewNotificationRecord = {
+  type: 'NewNotificationRecord',
   input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, idempotenceToken: idempotenceToken.valid } },
   output: {
     statusCode: 202,
@@ -238,7 +235,7 @@ export const newNotificationRecordWithIdempotenceToken = makeNewNotificationReco
     },
   },
   loggedAt: aDate,
-});
+};
 
 // CheckNotificationStatusRecord //////////////////////////////////////////////
 

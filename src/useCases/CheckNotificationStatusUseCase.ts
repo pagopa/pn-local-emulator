@@ -9,6 +9,7 @@ import { CheckNotificationStatusRecord } from '../domain/CheckNotificationStatus
 import { ApiKey } from '../generated/definitions/ApiKey';
 import { Snapshot, computeSnapshot } from '../domain/Snapshot';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
+import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { SystemEnv } from './SystemEnv';
 
 const findFromSnapshot = (input: CheckNotificationStatusRecord['input']) => (db: Snapshot) =>
@@ -34,7 +35,7 @@ export const CheckNotificationStatusUseCase =
       E.map(() =>
         pipe(
           TE.of(computeSnapshot(env)),
-          TE.ap(env.createNotificationRequestRecordRepository.list()),
+          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
           TE.ap(env.findNotificationRequestRecordRepository.list()),
           TE.ap(env.consumeEventStreamRecordRepository.list()),
           TE.map(

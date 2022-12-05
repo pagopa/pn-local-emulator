@@ -13,6 +13,7 @@ import { LegalFactCategory } from '../generated/definitions/LegalFactCategory';
 import { LegalFactId } from '../generated/definitions/LegalFactId';
 import { authorizeApiKey } from '../domain/authorize';
 import { computeSnapshot } from '../domain/Snapshot';
+import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { SystemEnv } from './SystemEnv';
 
 export const GetLegalFactDownloadMetadataUseCase =
@@ -26,7 +27,7 @@ export const GetLegalFactDownloadMetadataUseCase =
       E.map(() =>
         pipe(
           TE.of(computeSnapshot(env)),
-          TE.ap(env.createNotificationRequestRecordRepository.list()),
+          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
           TE.ap(env.findNotificationRequestRecordRepository.list()),
           TE.ap(env.consumeEventStreamRecordRepository.list()),
           TE.map(

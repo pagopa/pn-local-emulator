@@ -3,7 +3,7 @@ import * as P from 'fp-ts/Predicate';
 import * as O from 'fp-ts/Option';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { isNewNotificationRecord } from '../NewNotificationRepository';
+import { isNewNotificationRecord } from '../NewNotificationRecord';
 import { isUploadToS3Record } from '../UploadToS3Record';
 import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
