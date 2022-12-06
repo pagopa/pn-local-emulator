@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/lib/function';
 import { identity } from 'fp-ts/function';
 import { StreamCreationRequest } from '../generated/streams/StreamCreationRequest';
 import { StreamMetadataResponse } from '../generated/streams/StreamMetadataResponse';
-import { AllRecord, AuditRecord } from './Repository';
+import { Record, AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { authorizeApiKey } from './authorize';
@@ -15,7 +15,7 @@ export type CreateEventStreamRecord = AuditRecord & {
   output: Response<200, StreamMetadataResponse> | Response<403, UnauthorizedMessageBody>;
 };
 
-export const isCreateEventStreamRecord = (record: AllRecord): O.Option<CreateEventStreamRecord> =>
+export const isCreateEventStreamRecord = (record: Record): O.Option<CreateEventStreamRecord> =>
   record.type === 'CreateEventStreamRecord' ? O.some(record) : O.none;
 
 export const makeCreateEventStreamRecord =

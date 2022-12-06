@@ -7,7 +7,7 @@ import { ProgressResponse } from '../generated/streams/ProgressResponse';
 import { NewStatusEnum, ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
-import { AllRecord, AuditRecord } from './Repository';
+import { Record, AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { Snapshot } from './Snapshot';
@@ -19,7 +19,7 @@ export type ConsumeEventStreamRecord = AuditRecord & {
   output: Response<200, ProgressResponse> | Response<403, UnauthorizedMessageBody> | Response<419>;
 };
 
-export const isConsumeEventStreamRecord = (record: AllRecord): O.Option<ConsumeEventStreamRecord> =>
+export const isConsumeEventStreamRecord = (record: Record): O.Option<ConsumeEventStreamRecord> =>
   record.type === 'ConsumeEventStreamRecord' ? O.some(record) : O.none;
 
 const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>

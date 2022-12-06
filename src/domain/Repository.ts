@@ -1,7 +1,4 @@
 import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/function';
-import * as O from 'fp-ts/Option';
-import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRecord } from './NewNotificationRecord';
 import { PreLoadRecord } from './PreLoadRecord';
 import { UploadToS3Record } from './UploadToS3Record';
@@ -15,27 +12,9 @@ import { GetNotificationPriceRecord } from './GetNotificationPriceRecord';
 import { GetPaymentNotificationMetadataRecord } from './GetPaymentNotificationMetadataRecord';
 import { LegalFactDownloadMetadataRecord } from './LegalFactDownloadMetadataRecord';
 
-export type Repository<A> = {
-  insert: (input: A) => TE.TaskEither<Error, A>;
-
-  list: () => TE.TaskEither<Error, ReadonlyArray<A>>;
-};
-
 export type AuditRecord = {
   loggedAt: Date;
 };
-
-// TODO: Add missing records or find another solution
-export type AllRecord =
-  | Record
-  | PreLoadRecord
-  | UploadToS3Record
-  | NewNotificationRecord
-  | CreateEventStreamRecord
-  | ConsumeEventStreamRecord;
-
-export const existsApiKey = <T extends { input: { apiKey: ApiKey } }>(record: T) =>
-  pipe(record.input.apiKey, O.fromNullable, O.isSome);
 
 export type Record =
   | PreLoadRecord

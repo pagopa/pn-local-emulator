@@ -1,9 +1,9 @@
 import express from 'express';
 import { pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
-import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { Handler, toExpressHandler } from '../Handler';
 import { GetNotificationDetailUseCase } from '../../../useCases/GetNotificationDetailUseCase';
 import { Iun } from '../../../generated/definitions/Iun';
@@ -14,7 +14,7 @@ const handler =
   (req, res) =>
     pipe(
       E.of(getNotificationDetailUseCase),
-      E.ap(ApiKey.decode(req.headers['x-api-key'])),
+      E.ap(t.string.decode(req.headers['x-api-key'])),
       E.ap(Iun.decode(req.params.iun)),
       E.map(
         TE.fold(

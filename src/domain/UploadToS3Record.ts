@@ -5,7 +5,7 @@ import { AmzSdkChecksumAlg } from '../generated/internalapi/AmzSdkChecksumAlg';
 import { AmzDocumentKey } from '../generated/internalapi/AmzDocumentKey';
 import { AmzVersionId } from '../generated/internalapi/AmzVersionId';
 import { Response } from './types';
-import { AllRecord, AuditRecord } from './Repository';
+import { Record, AuditRecord } from './Repository';
 import { DomainEnv } from './DomainEnv';
 
 export type UploadToS3Record = AuditRecord & {
@@ -21,7 +21,7 @@ export type UploadToS3Record = AuditRecord & {
   output: Response<200, AmzVersionId>;
 };
 
-export const isUploadToS3Record = (record: AllRecord): O.Option<UploadToS3Record> =>
+export const isUploadToS3Record = (record: Record): O.Option<UploadToS3Record> =>
   record.type === 'UploadToS3Record' ? O.some(record) : O.none;
 
 export const makeUploadToS3Record =

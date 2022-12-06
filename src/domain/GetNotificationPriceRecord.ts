@@ -2,7 +2,6 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { ApiKey } from '../generated/definitions/ApiKey';
 import { NotificationPriceResponse } from '../generated/definitions/NotificationPriceResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
@@ -12,7 +11,7 @@ import { Snapshot } from './Snapshot';
 
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';
-  input: { apiKey: ApiKey; paTaxId: string; noticeCode: string };
+  input: { apiKey: string; paTaxId: string; noticeCode: string };
   output: Response<200, NotificationPriceResponse> | Response<403, UnauthorizedMessageBody>;
 };
 

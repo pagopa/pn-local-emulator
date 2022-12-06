@@ -11,7 +11,6 @@ import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { isCheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRecord';
 import { SystemEnv } from './SystemEnv';
 
-// TODO: Apply the Reader monad to the environment.
 export const ConsumeEventStreamUseCase =
   (env: SystemEnv) =>
   (apiKey: ConsumeEventStreamRecord['input']['apiKey']) =>

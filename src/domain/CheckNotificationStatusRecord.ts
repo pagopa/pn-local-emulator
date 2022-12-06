@@ -6,7 +6,7 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
-import { AuditRecord, AllRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { Snapshot } from './Snapshot';
 
@@ -19,7 +19,7 @@ export type CheckNotificationStatusRecord = AuditRecord & {
   output: Response<200, NewNotificationRequestStatusResponse> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 
-export const isCheckNotificationStatusRecord = (record: AllRecord): O.Option<CheckNotificationStatusRecord> =>
+export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckNotificationStatusRecord> =>
   record.type === 'CheckNotificationStatusRecord' ? O.some(record) : O.none;
 
 export const makeCheckNotificationStatusRecord =

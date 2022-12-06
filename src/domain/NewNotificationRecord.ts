@@ -5,7 +5,7 @@ import { NewNotificationRequest } from '../generated/pnapi/NewNotificationReques
 import { NewNotificationResponse } from '../generated/pnapi/NewNotificationResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
-import { AllRecord, AuditRecord } from './Repository';
+import { Record, AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 
 export type NewNotificationRecord = AuditRecord & {
@@ -14,7 +14,7 @@ export type NewNotificationRecord = AuditRecord & {
   output: Response<202, NewNotificationResponse> | Response<403, UnauthorizedMessageBody>;
 };
 
-export const isNewNotificationRecord = (record: AllRecord): O.Option<NewNotificationRecord> =>
+export const isNewNotificationRecord = (record: Record): O.Option<NewNotificationRecord> =>
   record.type === 'NewNotificationRecord' ? O.some(record) : O.none;
 
 export const makeNewNotificationRecord =

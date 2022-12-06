@@ -84,16 +84,12 @@ export const aDocument1 = {
 };
 
 export const makeTestSystemEnv = (
-  // TODO Simplify input arguments after the refactor
-  preloadRecords: ReadonlyArray<PreLoadRecord> = [],
-  uploadToS3Records: ReadonlyArray<UploadToS3Record> = [],
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
   createEventStreamRecords: ReadonlyArray<CreateEventStreamRecord> = [],
   logger: Logger = makeLogger()
 ): SystemEnv => {
-  const baseRepository = inMemory.makeRepository(logger);
   return {
     uploadToS3URL: config.server.uploadToS3URL,
     downloadDocumentURL: new URL('http://localhost/downloaddocument'),
