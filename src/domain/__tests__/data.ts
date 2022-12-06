@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
@@ -8,7 +7,7 @@ import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
 import { NewNotificationRecord } from '../NewNotificationRecord';
 import { PreLoadRecord } from '../PreLoadRecord';
 import { UploadToS3Record } from '../UploadToS3Record';
-import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
+import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRecord';
 import {
   GetNotificationDocumentMetadataRecord,
   makeNotificationAttachmentDownloadMetadataResponse,
@@ -110,7 +109,6 @@ export const makeTestSystemEnv = (
       ...consumeEventStreamRecords,
       ...createEventStreamRecords,
     ]),
-    getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
     getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),

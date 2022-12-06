@@ -8,7 +8,7 @@ import { FullSentNotification } from '../generated/definitions/FullSentNotificat
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
-import { makeFullSentNotification } from './GetNotificationDetailRepository';
+import { makeFullSentNotification } from './GetNotificationDetailRecord';
 
 export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 

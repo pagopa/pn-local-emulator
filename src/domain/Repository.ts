@@ -9,6 +9,7 @@ import { CreateEventStreamRecord } from './CreateEventStreamRecord';
 import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecord';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ListEventStreamRecord } from './ListEventStreamRecord';
+import { GetNotificationDetailRecord } from './GetNotificationDetailRecord';
 
 export type Repository<A> = {
   insert: (input: A) => TE.TaskEither<Error, A>;
@@ -39,7 +40,8 @@ export type Record =
   | CheckNotificationStatusRecord
   | ConsumeEventStreamRecord
   | CreateEventStreamRecord
-  | ListEventStreamRecord;
+  | ListEventStreamRecord
+  | GetNotificationDetailRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;
