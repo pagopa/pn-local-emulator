@@ -1,15 +1,10 @@
-import { flow, pipe } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import * as RA from 'fp-ts/ReadonlyArray';
-import * as E from 'fp-ts/Either';
-import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
-import { authorizeApiKey } from '../domain/authorize';
 import {
   GetNotificationDocumentMetadataRecord,
-  makeNotificationAttachmentDownloadMetadataResponse,
-} from '../domain/GetNotificationDocumentMetadataRepository';
-import { ApiKey } from '../generated/definitions/ApiKey';
-import { Iun } from '../generated/definitions/Iun';
+  makeGetNotificationDocumentMetadataRecord,
+} from '../domain/GetNotificationDocumentMetadataRecord';
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { isCheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRecord';
@@ -19,40 +14,18 @@ import { SystemEnv } from './SystemEnv';
 // TODO: Apply the Reader monad to the environment.
 export const GetNotificationDocumentMetadataUseCase =
   (env: SystemEnv) =>
-  (apiKey: ApiKey) =>
-  (iun: Iun) =>
-  (docIdx: number): TE.TaskEither<Error, GetNotificationDocumentMetadataRecord['output']> =>
+  (apiKey: GetNotificationDocumentMetadataRecord['input']['apiKey']) =>
+  (iun: GetNotificationDocumentMetadataRecord['input']['iun']) =>
+  (
+    docIdx: GetNotificationDocumentMetadataRecord['input']['docIdx']
+  ): TE.TaskEither<Error, GetNotificationDocumentMetadataRecord['output']> =>
     pipe(
-      authorizeApiKey(apiKey),
-      E.map(() =>
-        pipe(
-          TE.of(computeSnapshot(env)),
-          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
-          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isCheckNotificationStatusRecord)))),
-          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isConsumeEventStreamRecord)))),
-          TE.map(
-            flow(
-              RA.filterMap(O.fromEither),
-              RA.chain((notification) => (notification.iun === iun ? notification.documents : RA.empty)),
-              // the types of docIdx don't fit (one is a string the other is a number)
-              // for the moment just convert the most convenient
-              RA.filterWithIndex((i, document) => (document.docIdx || i.toString()) === docIdx.toString()),
-              RA.last,
-              O.map(makeNotificationAttachmentDownloadMetadataResponse(env)),
-              O.map((document) => ({ statusCode: 200 as const, returned: document })),
-              O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
-            )
-          )
-        )
-      ),
-      flow(E.sequence(TE.ApplicativePar), TE.map(E.toUnion)),
-      TE.map((output) => ({
-        type: 'GetNotificationDocumentMetadataRecord' as const,
-        input: { iun, apiKey, docIdx },
-        output,
-        loggedAt: env.dateGenerator(),
-      })),
-      TE.chain(env.getNotificationDocumentMetadataRecordRepository.insert),
+      TE.of(computeSnapshot(env)),
+      TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
+      TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isCheckNotificationStatusRecord)))),
+      TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isConsumeEventStreamRecord)))),
+      TE.map(makeGetNotificationDocumentMetadataRecord(env)({ apiKey, iun, docIdx })),
+      TE.chain(env.recordRepository.insert),
       TE.map((record) => record.output)
     );
 

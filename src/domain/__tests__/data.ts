@@ -11,7 +11,7 @@ import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNot
 import {
   GetNotificationDocumentMetadataRecord,
   makeNotificationAttachmentDownloadMetadataResponse,
-} from '../GetNotificationDocumentMetadataRepository';
+} from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecordRepository';
@@ -109,7 +109,6 @@ export const makeTestSystemEnv = (
       ...consumeEventStreamRecords,
       ...createEventStreamRecords,
     ]),
-    getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
     getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
     getNotificationPriceRecordRepository: baseRepository<GetNotificationPriceRecord>([]),

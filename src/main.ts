@@ -14,7 +14,6 @@ import { CheckNotificationStatusUseCase } from './useCases/CheckNotificationStat
 import { GetNotificationDetailUseCase } from './useCases/GetNotificationDetailUseCase';
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
-import { GetNotificationDocumentMetadataRecord } from './domain/GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
 import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRecordRepository';
 import { GetLegalFactDownloadMetadataUseCase } from './useCases/GetLegalFactDownloadMetadataUseCase';
@@ -30,7 +29,6 @@ pipe(
     const logger = makeLogger();
     const mkRepository = inMemory.makeRepository(logger);
     /* put here the driven adapters (e.g.: Repositories ) */
-    const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
     const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
     const getLegalFactDownloadMetadataRecordRepository = mkRepository<LegalFactDownloadMetadataRecord>([]);
     const getNotificationPriceRecordRepository = mkRepository<GetNotificationPriceRecord>([]);
@@ -43,7 +41,6 @@ pipe(
       iunGenerator: crypto.randomUUID,
       dateGenerator: () => new Date(),
       recordRepository: inMemory.makeRecordRepository(logger)([]),
-      getNotificationDocumentMetadataRecordRepository,
       getPaymentNotificationMetadataRecordRepository,
       getLegalFactDownloadMetadataRecordRepository,
       getNotificationPriceRecordRepository,
