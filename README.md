@@ -137,3 +137,6 @@ docker run -p 3000:3000 pnemulator
 ```
 
 > Hint: The [Dockerfile](./Dockerfile) exposes the port `3000` of the container, so you can use the `-p` option to map it to a port of your choice.
+
+### ADDITIONAL NOTES
+When you upload a document, the max allowed size of that document is 100MB. 
