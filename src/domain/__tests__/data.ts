@@ -14,7 +14,7 @@ import {
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
-import { ListEventStreamRecord } from '../ListEventStreamRecordRepository';
+import { ListEventStreamRecord } from '../ListEventStreamRecord';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecordRepository';
 import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';

@@ -1,7 +1,7 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { ListEventStreamRecord, makeListEventStreamRecord } from '../domain/ListEventStreamRecordRepository';
+import { ListEventStreamRecord, makeListEventStreamRecord } from '../domain/ListEventStreamRecord';
 import { isCreateEventStreamRecord } from '../domain/CreateEventStreamRecord';
 import { SystemEnv } from './SystemEnv';
 
