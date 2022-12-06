@@ -3,7 +3,7 @@ import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
-import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository';
+import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
 import { NewNotificationRecord } from '../NewNotificationRecord';
 import { PreLoadRecord } from '../PreLoadRecord';

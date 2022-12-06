@@ -8,7 +8,7 @@ import {
 } from '../domain/CheckNotificationStatusRecord';
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
-import { isConsumeEventStreamRecord } from '../domain/ConsumeEventStreamRecordRepository';
+import { isConsumeEventStreamRecord } from '../domain/ConsumeEventStreamRecord';
 import { SystemEnv } from './SystemEnv';
 
 export const CheckNotificationStatusUseCase =

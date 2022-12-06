@@ -6,7 +6,7 @@ import { NewNotificationRecord } from './NewNotificationRecord';
 import { PreLoadRecord } from './PreLoadRecord';
 import { UploadToS3Record } from './UploadToS3Record';
 import { CreateEventStreamRecord } from './CreateEventStreamRecordRepository';
-import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecordRepository';
+import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecord';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 
 export type Repository<A> = {

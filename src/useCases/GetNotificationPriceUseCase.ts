@@ -9,7 +9,7 @@ import {
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { isCheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRecord';
-import { isConsumeEventStreamRecord } from '../domain/ConsumeEventStreamRecordRepository';
+import { isConsumeEventStreamRecord } from '../domain/ConsumeEventStreamRecord';
 import { SystemEnv } from './SystemEnv';
 
 // TODO: Apply the Reader monad to the environment.

@@ -4,7 +4,7 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as data from '../../domain/__tests__/data';
-import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecordRepository';
+import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecord';
 
 describe('ConsumeEventStreamUseCase', () => {
   describe('200 response', () => {

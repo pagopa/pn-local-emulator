@@ -5,7 +5,7 @@ import {
   ConsumeEventStreamRecord,
   isConsumeEventStreamRecord,
   makeConsumeEventStreamRecord,
-} from '../domain/ConsumeEventStreamRecordRepository';
+} from '../domain/ConsumeEventStreamRecord';
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { isCheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRecord';

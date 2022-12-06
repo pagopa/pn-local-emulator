@@ -2,7 +2,7 @@ import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
-import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecordRepository';
+import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecord';
 import { NewNotificationRecord } from './NewNotificationRecord';
 import { makeNotificationRequestFromCreate, NotificationRequest } from './NotificationRequest';
 import { makeNotification, Notification } from './Notification';
