@@ -6,7 +6,7 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
-import { AuditRecord, Repository, AllRecord } from './Repository';
+import { AuditRecord, AllRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { Snapshot } from './Snapshot';
 
@@ -21,8 +21,6 @@ export type CheckNotificationStatusRecord = AuditRecord & {
 
 export const isCheckNotificationStatusRecord = (record: AllRecord): O.Option<CheckNotificationStatusRecord> =>
   record.type === 'CheckNotificationStatusRecord' ? O.some(record) : O.none;
-
-export type CheckNotificationStatusRecordRepository = Repository<CheckNotificationStatusRecord>;
 
 export const makeCheckNotificationStatusRecord =
   (env: DomainEnv) =>
