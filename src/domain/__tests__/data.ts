@@ -104,7 +104,10 @@ export const makeTestSystemEnv = (
     senderPAId: aSenderPaId,
     iunGenerator: crypto.randomUUID,
     dateGenerator: () => new Date(),
-    recordRepository: inMemory.makeRecordRepository(logger)([...createNotificationRequestRecords, ...findNotificationRequestRecords]),
+    recordRepository: inMemory.makeRecordRepository(logger)([
+      ...createNotificationRequestRecords,
+      ...findNotificationRequestRecords,
+    ]),
     createEventStreamRecordRepository: baseRepository(createEventStreamRecords),
     consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
     listEventStreamRecordRepository: baseRepository<ListEventStreamRecord>([]),
