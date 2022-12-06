@@ -8,6 +8,7 @@ import { UploadToS3Record } from './UploadToS3Record';
 import { CreateEventStreamRecord } from './CreateEventStreamRecord';
 import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecord';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
+import { ListEventStreamRecord } from './ListEventStreamRecordRepository';
 
 export type Repository<A> = {
   insert: (input: A) => TE.TaskEither<Error, A>;
@@ -37,7 +38,8 @@ export type Record =
   | NewNotificationRecord
   | CheckNotificationStatusRecord
   | ConsumeEventStreamRecord
-  | CreateEventStreamRecord;
+  | CreateEventStreamRecord
+  | ListEventStreamRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;

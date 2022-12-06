@@ -110,7 +110,6 @@ export const makeTestSystemEnv = (
       ...consumeEventStreamRecords,
       ...createEventStreamRecords,
     ]),
-    listEventStreamRecordRepository: baseRepository<ListEventStreamRecord>([]),
     getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
