@@ -11,6 +11,7 @@ import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ListEventStreamRecord } from './ListEventStreamRecord';
 import { GetNotificationDetailRecord } from './GetNotificationDetailRecord';
 import { GetNotificationDocumentMetadataRecord } from './GetNotificationDocumentMetadataRecord';
+import { GetNotificationPriceRecord } from './GetNotificationPriceRecord';
 
 export type Repository<A> = {
   insert: (input: A) => TE.TaskEither<Error, A>;
@@ -43,7 +44,8 @@ export type Record =
   | CreateEventStreamRecord
   | ListEventStreamRecord
   | GetNotificationDetailRecord
-  | GetNotificationDocumentMetadataRecord;
+  | GetNotificationDocumentMetadataRecord
+  | GetNotificationPriceRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;

@@ -14,7 +14,7 @@ import {
 } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
-import { GetNotificationPriceRecord } from '../GetNotificationPriceRecordRepository';
+import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
@@ -111,7 +111,6 @@ export const makeTestSystemEnv = (
     ]),
     getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
     getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
-    getNotificationPriceRecordRepository: baseRepository<GetNotificationPriceRecord>([]),
   };
 };
 

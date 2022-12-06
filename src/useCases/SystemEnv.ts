@@ -1,7 +1,6 @@
 import { GetPaymentNotificationMetadataRecordRepository } from '../domain/GetPaymentNotificationMetadataRecordRepository';
 import { DomainEnv } from '../domain/DomainEnv';
 import { LegalFactDownloadMetadataRecordRepository } from '../domain/LegalFactDownloadMetadataRecordRepository';
-import { GetNotificationPriceRecordRepository } from '../domain/GetNotificationPriceRecordRepository';
 import { RecordRepository } from '../domain/Repository';
 
 export type SystemEnv = DomainEnv & {
@@ -9,5 +8,4 @@ export type SystemEnv = DomainEnv & {
   recordRepository: RecordRepository;
   getPaymentNotificationMetadataRecordRepository: GetPaymentNotificationMetadataRecordRepository;
   getLegalFactDownloadMetadataRecordRepository: LegalFactDownloadMetadataRecordRepository;
-  getNotificationPriceRecordRepository: GetNotificationPriceRecordRepository;
 };

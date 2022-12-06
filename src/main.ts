@@ -21,7 +21,6 @@ import { LegalFactDownloadMetadataRecord } from './domain/LegalFactDownloadMetad
 import { SystemEnv } from './useCases/SystemEnv';
 import { ListEventStreamUseCase } from './useCases/ListEventStreamUseCase';
 import { GetNotificationPriceUseCase } from './useCases/GetNotificationPriceUseCase';
-import { GetNotificationPriceRecord } from './domain/GetNotificationPriceRecordRepository';
 
 pipe(
   parseConfig(process.env),
@@ -31,7 +30,6 @@ pipe(
     /* put here the driven adapters (e.g.: Repositories ) */
     const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
     const getLegalFactDownloadMetadataRecordRepository = mkRepository<LegalFactDownloadMetadataRecord>([]);
-    const getNotificationPriceRecordRepository = mkRepository<GetNotificationPriceRecord>([]);
 
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
@@ -43,7 +41,6 @@ pipe(
       recordRepository: inMemory.makeRecordRepository(logger)([]),
       getPaymentNotificationMetadataRecordRepository,
       getLegalFactDownloadMetadataRecordRepository,
-      getNotificationPriceRecordRepository,
       uploadToS3URL: config.server.uploadToS3URL,
     };
 
