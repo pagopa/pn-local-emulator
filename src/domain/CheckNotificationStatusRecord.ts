@@ -3,7 +3,7 @@ import * as t from 'io-ts';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NewNotificationRequestStatusResponse } from '../generated/definitions/NewNotificationRequestStatusResponse';
+import { NewNotificationRequestStatusResponse } from '../generated/pnapi/NewNotificationRequestStatusResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';

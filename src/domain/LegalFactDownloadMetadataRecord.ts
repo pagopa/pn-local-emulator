@@ -2,7 +2,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { Iun } from '../generated/definitions/Iun';
+import { IUN } from '../generated/pnapi/IUN';
 import { LegalFactCategory } from '../generated/pnapi/LegalFactCategory';
 import { LegalFactDownloadMetadataResponse } from '../generated/pnapi/LegalFactDownloadMetadataResponse';
 import { authorizeApiKey } from './authorize';
@@ -13,7 +13,7 @@ import { Response, UnauthorizedMessageBody } from './types';
 
 export type LegalFactDownloadMetadataRecord = AuditRecord & {
   type: 'LegalFactDownloadMetadataRecord';
-  input: { apiKey: string; legalFactType: LegalFactCategory; legalFactId: string; iun: Iun };
+  input: { apiKey: string; legalFactType: LegalFactCategory; legalFactId: string; iun: IUN };
   output: Response<200, LegalFactDownloadMetadataResponse> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 

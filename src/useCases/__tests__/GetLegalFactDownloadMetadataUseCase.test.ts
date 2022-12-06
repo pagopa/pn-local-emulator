@@ -7,7 +7,7 @@ describe('GetLegalFactDownloadMetadataUseCase', () => {
     const useCase = GetLegalFactDownloadMetadataUseCase(data.makeTestSystemEnv());
 
     const expected = E.right({ statusCode: 404, returned: undefined });
-    const actual = await useCase(data.apiKey.valid)(`${data.aIun.valid}-invalid`)(data.aLegalFactType)(
+    const actual = await useCase(data.apiKey.valid)(data.aIun.invalid)(data.aLegalFactType)(
       data.aLegalFactId
     )();
 

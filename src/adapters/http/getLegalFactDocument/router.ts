@@ -6,8 +6,8 @@ import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import { GetLegalFactDownloadMetadataUseCase } from '../../../useCases/GetLegalFactDownloadMetadataUseCase';
 import { Handler, toExpressHandler } from '../Handler';
-import { Iun } from '../../../generated/definitions/Iun';
 import * as Problem from '../Problem';
+import { IUN } from '../../../generated/pnapi/IUN';
 import { LegalFactCategory } from '../../../generated/pnapi/LegalFactCategory';
 
 const handler =
@@ -16,7 +16,7 @@ const handler =
     pipe(
       E.of(getLegalFactDownloadMetadataUseCase),
       E.ap(t.string.decode(req.headers['x-api-key'])),
-      E.ap(Iun.decode(req.params.iun)),
+      E.ap(IUN.decode(req.params.iun)),
       E.ap(LegalFactCategory.decode(req.params.legalFactType)),
       E.ap(t.string.decode(req.params.legalFactId)),
       E.map(

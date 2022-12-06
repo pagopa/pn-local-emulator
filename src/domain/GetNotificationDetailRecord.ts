@@ -2,12 +2,12 @@ import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { Iun } from '../generated/definitions/Iun';
-import { FullSentNotification } from '../generated/definitions/FullSentNotification';
-import { NotificationStatusEnum } from '../generated/definitions/NotificationStatus';
-import { NotificationStatusHistoryElement } from '../generated/definitions/NotificationStatusHistoryElement';
-import { TimelineElementCategoryEnum } from '../generated/definitions/TimelineElementCategory';
-import { TimelineElement } from '../generated/definitions/TimelineElement';
+import { IUN } from '../generated/pnapi/IUN';
+import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
+import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
+import { NotificationStatusHistoryElement } from '../generated/pnapi/NotificationStatusHistoryElement';
+import { TimelineElement } from '../generated/pnapi/TimelineElement';
+import { TimelineElementCategoryEnum } from '../generated/pnapi/TimelineElementCategory';
 import { AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';
@@ -17,14 +17,14 @@ import { DomainEnv } from './DomainEnv';
 
 export type GetNotificationDetailRecord = AuditRecord & {
   type: 'GetNotificationDetailRecord';
-  input: { apiKey: string; iun: Iun };
+  input: { apiKey: string; iun: IUN };
   output: Response<200, FullSentNotification> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 
-const makeTimelineElementId = (iun: string) => `${iun}_request_accepted`;
+const makeTimelineElementId = (iun: IUN) => `${iun}_request_accepted`;
 
 const makeNotificationStatusHistoryElement = (
-  iun: Iun,
+  iun: IUN,
   status: NotificationStatusEnum,
   activeFrom: Date
 ): NotificationStatusHistoryElement => ({
@@ -43,7 +43,7 @@ export const makeFullSentNotification =
   (senderPaId: string) =>
   (sentAt: Date) =>
   (notificationRequest: NotificationRequest) =>
-  (iun: string): FullSentNotification => ({
+  (iun: IUN): FullSentNotification => ({
     ...notificationRequest,
     iun,
     sentAt,

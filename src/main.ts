@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as http from './adapters/http/application';
@@ -19,6 +18,7 @@ import { GetLegalFactDownloadMetadataUseCase } from './useCases/GetLegalFactDown
 import { SystemEnv } from './useCases/SystemEnv';
 import { ListEventStreamUseCase } from './useCases/ListEventStreamUseCase';
 import { GetNotificationPriceUseCase } from './useCases/GetNotificationPriceUseCase';
+import { IUNGenerator } from './adapters/randexp/IUNGenerator';
 
 pipe(
   parseConfig(process.env),
@@ -30,7 +30,7 @@ pipe(
       senderPAId: 'aSenderPaId', // TODO: senderPaId move this value into configuration
       downloadDocumentURL: config.server.downloadDocumentURL,
       sampleStaticPdfFileName: 'sample.pdf',
-      iunGenerator: crypto.randomUUID,
+      iunGenerator: IUNGenerator,
       dateGenerator: () => new Date(),
       recordRepository: inMemory.makeRecordRepository(logger)([]),
       uploadToS3URL: config.server.uploadToS3URL,

@@ -2,7 +2,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NotificationPriceResponse } from '../generated/definitions/NotificationPriceResponse';
+import { NotificationPriceResponse } from '../generated/pnapi/NotificationPriceResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord } from './Repository';

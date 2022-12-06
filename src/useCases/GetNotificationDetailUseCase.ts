@@ -11,7 +11,7 @@ import { SystemEnv } from './SystemEnv';
 export const GetNotificationDetailUseCase =
   (env: SystemEnv) =>
   (apiKey: GetNotificationDetailRecord['input']['apiKey']) =>
-  (iun: GetNotificationDetailRecord['input']['apiKey']): TE.TaskEither<Error, GetNotificationDetailRecord['output']> =>
+  (iun: GetNotificationDetailRecord['input']['iun']): TE.TaskEither<Error, GetNotificationDetailRecord['output']> =>
     pipe(
       TE.of(computeSnapshot(env)),
       TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),

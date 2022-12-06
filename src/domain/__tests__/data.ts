@@ -14,7 +14,7 @@ import {
 } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
-import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
+import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
@@ -23,8 +23,9 @@ import {
   LegalFactDownloadMetadataRecord,
   makeLegalFactDownloadMetadataResponse,
 } from '../LegalFactDownloadMetadataRecord';
-import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
+import { LegalFactCategoryEnum } from '../../generated/pnapi/LegalFactCategory';
 import { IUN } from '../../generated/pnapi/IUN';
+import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
 
 export const apiKey = {
   valid: 'key-value',
@@ -43,7 +44,8 @@ export const idempotenceToken = {
 };
 
 export const aIun = {
-  valid: unsafeCoerce<string, IUN>('bf63ee6f-ed21-453a-97b6-673c84085531'),
+  valid: unsafeCoerce<string, IUN>('ILNK-HRTZ-CRNL-163785-I-2'),
+  invalid: unsafeCoerce<string, IUN>('ILNK-HRTZ-CRNL-186985-I-2'),
 };
 
 export const streamId = {

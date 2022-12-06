@@ -2,7 +2,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { Iun } from '../generated/definitions/Iun';
+import { IUN } from '../generated/pnapi/IUN';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/pnapi/NotificationAttachmentDownloadMetadataResponse';
 import { AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
@@ -13,7 +13,7 @@ import { authorizeApiKey } from './authorize';
 
 export type GetNotificationDocumentMetadataRecord = AuditRecord & {
   type: 'GetNotificationDocumentMetadataRecord';
-  input: { apiKey: string; iun: Iun; docIdx: number };
+  input: { apiKey: string; iun: IUN; docIdx: number };
   output:
     | Response<200, NotificationAttachmentDownloadMetadataResponse>
     | Response<403, UnauthorizedMessageBody>

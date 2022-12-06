@@ -2,7 +2,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { Iun } from '../generated/definitions/Iun';
+import { IUN } from '../generated/pnapi/IUN';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/pnapi/NotificationAttachmentDownloadMetadataResponse';
 import { NotificationPaymentAttachment } from '../generated/pnapi/NotificationPaymentAttachment';
 import { NotificationPaymentInfo } from '../generated/pnapi/NotificationPaymentInfo';
@@ -14,7 +14,7 @@ import { Response, UnauthorizedMessageBody } from './types';
 
 export type GetPaymentNotificationMetadataRecord = AuditRecord & {
   type: 'GetPaymentNotificationMetadataRecord';
-  input: { apiKey: string; iun: Iun; recipientId: number; attachmentName: string };
+  input: { apiKey: string; iun: IUN; recipientId: number; attachmentName: string };
   output:
     | Response<200, NotificationAttachmentDownloadMetadataResponse>
     | Response<403, UnauthorizedMessageBody>

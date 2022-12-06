@@ -1,8 +1,8 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NewNotificationRequest } from '../generated/definitions/NewNotificationRequest';
-import { NewNotificationResponse } from '../generated/definitions/NewNotificationResponse';
+import { NewNotificationRequest } from '../generated/pnapi/NewNotificationRequest';
+import { NewNotificationResponse } from '../generated/pnapi/NewNotificationResponse';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { NewNotificationRecord } from './NewNotificationRecord';
 
