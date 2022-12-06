@@ -8,6 +8,7 @@ import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecord';
 import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecordRepository';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { AllRecord } from '../Repository';
+import { existsCreateEventStreamRecordWhitStreamId } from './CreateEventStreamRecordChecks';
 
 export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
   R.Do,
@@ -18,9 +19,7 @@ export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
       consumeEventStreamRecordList,
       RA.chainFirst(flow(RA.of, ConsumeEventStreamRecord.getProgressResponseList)),
       RA.map(({ input }) => input.streamId),
-      RA.exists(
-        CreateEventStreamRecordRepository.existsCreateEventStreamRecordWhitStreamId(createEventStreamRecordList)
-      )
+      RA.exists(existsCreateEventStreamRecordWhitStreamId(createEventStreamRecordList))
     )
   )
 );

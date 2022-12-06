@@ -45,11 +45,11 @@ export const idempotenceToken = {
 };
 
 export const aIun = {
-  valid: unsafeCoerce<string, IUN>('aIunValue'),
+  valid: unsafeCoerce<string, IUN>('bf63ee6f-ed21-453a-97b6-673c84085531'),
 };
 
 export const streamId = {
-  valid: 'streamId',
+  valid: aIun.valid,
 };
 
 export const aLegalFactId = 'aLegalFactId';
@@ -102,14 +102,14 @@ export const makeTestSystemEnv = (
     sampleStaticPdfFileName: 'sample.pdf',
     occurrencesAfterComplete: 2,
     senderPAId: aSenderPaId,
-    iunGenerator: crypto.randomUUID,
-    dateGenerator: () => new Date(),
+    iunGenerator: () => aIun.valid,
+    dateGenerator: () => new Date(0),
     recordRepository: inMemory.makeRecordRepository(logger)([
       ...createNotificationRequestRecords,
       ...findNotificationRequestRecords,
       ...consumeEventStreamRecords,
+      ...createEventStreamRecords,
     ]),
-    createEventStreamRecordRepository: baseRepository(createEventStreamRecords),
     listEventStreamRecordRepository: baseRepository<ListEventStreamRecord>([]),
     getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),

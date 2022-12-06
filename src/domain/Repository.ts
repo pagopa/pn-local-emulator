@@ -36,7 +36,8 @@ export type Record =
   | UploadToS3Record
   | NewNotificationRecord
   | CheckNotificationStatusRecord
-  | ConsumeEventStreamRecord;
+  | ConsumeEventStreamRecord
+  | CreateEventStreamRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;
