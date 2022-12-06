@@ -5,7 +5,7 @@ import { ApiKey } from '../generated/definitions/ApiKey';
 import { NewNotificationRecord } from './NewNotificationRecord';
 import { PreLoadRecord } from './PreLoadRecord';
 import { UploadToS3Record } from './UploadToS3Record';
-import { CreateEventStreamRecord } from './CreateEventStreamRecordRepository';
+import { CreateEventStreamRecord } from './CreateEventStreamRecord';
 import { ConsumeEventStreamRecord } from './ConsumeEventStreamRecord';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 

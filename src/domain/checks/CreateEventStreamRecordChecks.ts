@@ -1,7 +1,7 @@
 import { flow, pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { CreateEventStreamRecord, isCreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
+import { CreateEventStreamRecord, isCreateEventStreamRecord } from '../CreateEventStreamRecord';
 import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
 const hasCreatedStreamWithEventTypeTimelinePredicate = (record: CreateEventStreamRecord) =>
   record.input.body.eventType === EventTypeEnum.TIMELINE && record.output.statusCode === 200;

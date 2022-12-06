@@ -4,7 +4,7 @@ import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
-import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
+import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
 import { NewNotificationRecord } from '../NewNotificationRecord';
 import { PreLoadRecord } from '../PreLoadRecord';
 import { UploadToS3Record } from '../UploadToS3Record';

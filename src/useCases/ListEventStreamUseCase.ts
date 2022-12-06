@@ -3,7 +3,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { ListEventStreamRecord, makeListEventStreamRecord } from '../domain/ListEventStreamRecordRepository';
 import { ApiKey } from '../generated/definitions/ApiKey';
-import { isCreateEventStreamRecord } from '../domain/CreateEventStreamRecordRepository';
+import { isCreateEventStreamRecord } from '../domain/CreateEventStreamRecord';
 import { SystemEnv } from './SystemEnv';
 
 export const ListEventStreamUseCase =

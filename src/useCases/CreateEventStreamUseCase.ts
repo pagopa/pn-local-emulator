@@ -1,6 +1,6 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/TaskEither';
-import { CreateEventStreamRecord, makeCreateEventStreamRecord } from '../domain/CreateEventStreamRecordRepository';
+import { CreateEventStreamRecord, makeCreateEventStreamRecord } from '../domain/CreateEventStreamRecord';
 import { SystemEnv } from './SystemEnv';
 
 export const CreateEventStreamUseCase =

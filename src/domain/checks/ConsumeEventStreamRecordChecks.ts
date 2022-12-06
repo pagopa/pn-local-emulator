@@ -5,7 +5,7 @@ import * as R from 'fp-ts/Reader';
 import * as P from 'fp-ts/Predicate';
 import { Reader } from 'fp-ts/Reader';
 import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecord';
-import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecordRepository';
+import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecord';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { AllRecord } from '../Repository';
 import { existsCreateEventStreamRecordWhitStreamId } from './CreateEventStreamRecordChecks';

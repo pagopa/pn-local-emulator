@@ -10,7 +10,7 @@ import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { CreateEventStreamRecord } from './CreateEventStreamRecordRepository';
+import { CreateEventStreamRecord } from './CreateEventStreamRecord';
 
 export type ListEventStreamRecord = AuditRecord & {
   type: 'ListEventStreamRecord';
