@@ -1,4 +1,3 @@
-import { ConsumeEventStreamRecordRepository } from '../domain/ConsumeEventStreamRecordRepository';
 import { GetNotificationDetailRecordRepository } from '../domain/GetNotificationDetailRepository';
 import { GetNotificationDocumentMetadataRecordRepository } from '../domain/GetNotificationDocumentMetadataRepository';
 import { GetPaymentNotificationMetadataRecordRepository } from '../domain/GetPaymentNotificationMetadataRecordRepository';
@@ -13,7 +12,6 @@ export type SystemEnv = DomainEnv & {
   // repositories
   recordRepository: RecordRepository;
   createEventStreamRecordRepository: CreateEventStreamRecordRepository;
-  consumeEventStreamRecordRepository: ConsumeEventStreamRecordRepository;
   listEventStreamRecordRepository: ListEventStreamRecordRepository;
   getNotificationDetailRecordRepository: GetNotificationDetailRecordRepository;
   getNotificationDocumentMetadataRecordRepository: GetNotificationDocumentMetadataRecordRepository;

@@ -14,7 +14,6 @@ import { CheckNotificationStatusUseCase } from './useCases/CheckNotificationStat
 import { CreateEventStreamRecord } from './domain/CreateEventStreamRecordRepository';
 import { GetNotificationDetailUseCase } from './useCases/GetNotificationDetailUseCase';
 import { GetNotificationDetailRecord } from './domain/GetNotificationDetailRepository';
-import { ConsumeEventStreamRecord } from './domain/ConsumeEventStreamRecordRepository';
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { ListEventStreamRecord } from './domain/ListEventStreamRecordRepository';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
@@ -36,7 +35,6 @@ pipe(
     /* put here the driven adapters (e.g.: Repositories ) */
     const createEventStreamRecordRepository = mkRepository<CreateEventStreamRecord>([]);
     const getNotificationDetailRepository = mkRepository<GetNotificationDetailRecord>([]);
-    const consumeEventStreamRepository = mkRepository<ConsumeEventStreamRecord>([]);
     const listEventStreamRecordRepository = mkRepository<ListEventStreamRecord>([]);
     const getNotificationDocumentMetadataRecordRepository = mkRepository<GetNotificationDocumentMetadataRecord>([]);
     const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
@@ -52,7 +50,6 @@ pipe(
       dateGenerator: () => new Date(),
       recordRepository: inMemory.makeRecordRepository(logger)([]),
       createEventStreamRecordRepository,
-      consumeEventStreamRecordRepository: consumeEventStreamRepository,
       listEventStreamRecordRepository,
       getNotificationDetailRecordRepository: getNotificationDetailRepository,
       getNotificationDocumentMetadataRecordRepository,

@@ -8,6 +8,7 @@ import {
 } from '../domain/CheckNotificationStatusRecord';
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
+import { isConsumeEventStreamRecord } from '../domain/ConsumeEventStreamRecordRepository';
 import { SystemEnv } from './SystemEnv';
 
 export const CheckNotificationStatusUseCase =
@@ -20,7 +21,7 @@ export const CheckNotificationStatusUseCase =
       TE.of(computeSnapshot(env)),
       TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
       TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isCheckNotificationStatusRecord)))),
-      TE.ap(env.consumeEventStreamRecordRepository.list()),
+      TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isConsumeEventStreamRecord)))),
       TE.map(makeCheckNotificationStatusRecord(env)({ apiKey, body: input })),
       TE.chain(env.recordRepository.insert),
       TE.map((record) => record.output)

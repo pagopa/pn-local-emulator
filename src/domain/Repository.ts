@@ -31,7 +31,12 @@ export type AllRecord =
 export const existsApiKey = <T extends { input: { apiKey: ApiKey } }>(record: T) =>
   pipe(record.input.apiKey, O.fromNullable, O.isSome);
 
-export type Record = PreLoadRecord | UploadToS3Record | NewNotificationRecord | CheckNotificationStatusRecord;
+export type Record =
+  | PreLoadRecord
+  | UploadToS3Record
+  | NewNotificationRecord
+  | CheckNotificationStatusRecord
+  | ConsumeEventStreamRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;

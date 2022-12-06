@@ -15,6 +15,7 @@ import { authorizeApiKey } from '../domain/authorize';
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { isCheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRecord';
+import { isConsumeEventStreamRecord } from '../domain/ConsumeEventStreamRecordRepository';
 import { SystemEnv } from './SystemEnv';
 
 export const GetLegalFactDownloadMetadataUseCase =
@@ -30,7 +31,7 @@ export const GetLegalFactDownloadMetadataUseCase =
           TE.of(computeSnapshot(env)),
           TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
           TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isCheckNotificationStatusRecord)))),
-          TE.ap(env.consumeEventStreamRecordRepository.list()),
+          TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isConsumeEventStreamRecord)))),
           TE.map(
             flow(
               RA.filterMap(O.fromEither),

@@ -107,9 +107,9 @@ export const makeTestSystemEnv = (
     recordRepository: inMemory.makeRecordRepository(logger)([
       ...createNotificationRequestRecords,
       ...findNotificationRequestRecords,
+      ...consumeEventStreamRecords,
     ]),
     createEventStreamRecordRepository: baseRepository(createEventStreamRecords),
-    consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
     listEventStreamRecordRepository: baseRepository<ListEventStreamRecord>([]),
     getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
     getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
