@@ -16,7 +16,6 @@ import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase'
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
 import { GetLegalFactDownloadMetadataUseCase } from './useCases/GetLegalFactDownloadMetadataUseCase';
-import { LegalFactDownloadMetadataRecord } from './domain/LegalFactDownloadMetadataRecordRepository';
 import { SystemEnv } from './useCases/SystemEnv';
 import { ListEventStreamUseCase } from './useCases/ListEventStreamUseCase';
 import { GetNotificationPriceUseCase } from './useCases/GetNotificationPriceUseCase';
@@ -25,9 +24,6 @@ pipe(
   parseConfig(process.env),
   E.map((config) => {
     const logger = makeLogger();
-    const mkRepository = inMemory.makeRepository(logger);
-    /* put here the driven adapters (e.g.: Repositories ) */
-    const getLegalFactDownloadMetadataRecordRepository = mkRepository<LegalFactDownloadMetadataRecord>([]);
 
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
@@ -37,7 +33,6 @@ pipe(
       iunGenerator: crypto.randomUUID,
       dateGenerator: () => new Date(),
       recordRepository: inMemory.makeRecordRepository(logger)([]),
-      getLegalFactDownloadMetadataRecordRepository,
       uploadToS3URL: config.server.uploadToS3URL,
     };
 

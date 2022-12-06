@@ -14,7 +14,6 @@ import {
 } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
-import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
@@ -23,7 +22,7 @@ import { config } from '../../__tests__/data';
 import {
   LegalFactDownloadMetadataRecord,
   makeLegalFactDownloadMetadataResponse,
-} from '../LegalFactDownloadMetadataRecordRepository';
+} from '../LegalFactDownloadMetadataRecord';
 import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
 import { IUN } from '../../generated/pnapi/IUN';
 
@@ -109,7 +108,6 @@ export const makeTestSystemEnv = (
       ...consumeEventStreamRecords,
       ...createEventStreamRecords,
     ]),
-    getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
   };
 };
 
@@ -415,4 +413,5 @@ export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord
     statusCode: 200,
     returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),
   },
+  loggedAt: aDate,
 };

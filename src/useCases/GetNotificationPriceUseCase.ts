@@ -1,10 +1,7 @@
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
-import {
-  GetNotificationPriceRecord,
-  makeGetNotificationPriceRecord,
-} from '../domain/GetNotificationPriceRecord';
+import { GetNotificationPriceRecord, makeGetNotificationPriceRecord } from '../domain/GetNotificationPriceRecord';
 import { computeSnapshot } from '../domain/Snapshot';
 import { isNewNotificationRecord } from '../domain/NewNotificationRecord';
 import { isCheckNotificationStatusRecord } from '../domain/CheckNotificationStatusRecord';
