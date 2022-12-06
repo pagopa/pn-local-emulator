@@ -8,8 +8,8 @@ describe('IUNGenerator', () => {
   it('should generate valid IUN', () => {
     const actual = pipe(
       RA.makeBy(1000, () => IUNGenerator()),
-      RA.map(IUN.decode),
+      RA.map(IUN.decode)
     );
     expect(pipe(actual, RA.every(E.isRight))).toBeTruthy();
-  })
-})
+  });
+});
