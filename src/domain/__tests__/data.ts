@@ -12,7 +12,7 @@ import {
   GetNotificationDocumentMetadataRecord,
   makeNotificationAttachmentDownloadMetadataResponse,
 } from '../GetNotificationDocumentMetadataRecord';
-import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
+import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
@@ -109,7 +109,6 @@ export const makeTestSystemEnv = (
       ...consumeEventStreamRecords,
       ...createEventStreamRecords,
     ]),
-    getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
     getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
   };
 };

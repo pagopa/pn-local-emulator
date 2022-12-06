@@ -15,7 +15,6 @@ import { GetNotificationDetailUseCase } from './useCases/GetNotificationDetailUs
 import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
-import { GetPaymentNotificationMetadataRecord } from './domain/GetPaymentNotificationMetadataRecordRepository';
 import { GetLegalFactDownloadMetadataUseCase } from './useCases/GetLegalFactDownloadMetadataUseCase';
 import { LegalFactDownloadMetadataRecord } from './domain/LegalFactDownloadMetadataRecordRepository';
 import { SystemEnv } from './useCases/SystemEnv';
@@ -28,7 +27,6 @@ pipe(
     const logger = makeLogger();
     const mkRepository = inMemory.makeRepository(logger);
     /* put here the driven adapters (e.g.: Repositories ) */
-    const getPaymentNotificationMetadataRecordRepository = mkRepository<GetPaymentNotificationMetadataRecord>([]);
     const getLegalFactDownloadMetadataRecordRepository = mkRepository<LegalFactDownloadMetadataRecord>([]);
 
     const systemEnv: SystemEnv = {
@@ -39,7 +37,6 @@ pipe(
       iunGenerator: crypto.randomUUID,
       dateGenerator: () => new Date(),
       recordRepository: inMemory.makeRecordRepository(logger)([]),
-      getPaymentNotificationMetadataRecordRepository,
       getLegalFactDownloadMetadataRecordRepository,
       uploadToS3URL: config.server.uploadToS3URL,
     };
