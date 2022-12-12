@@ -13,7 +13,7 @@ import { SystemEnv } from './SystemEnv';
 
 export const CheckNotificationStatusUseCase =
   (env: SystemEnv) =>
-  (apiKey: string) =>
+  (apiKey: CheckNotificationStatusRecord['input']['apiKey']) =>
   (
     input: CheckNotificationStatusRecord['input']['body']
   ): TE.TaskEither<Error, CheckNotificationStatusRecord['output']> =>

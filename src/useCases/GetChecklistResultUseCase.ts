@@ -4,9 +4,7 @@ import { evaluateReport, Report } from '../domain/reportengine/reportengine';
 import { report } from '../domain/checks/report';
 import { SystemEnv } from './SystemEnv';
 
-export const GetChecklistResultUseCase =
-  ({ recordRepository }: SystemEnv) =>
-  (): TE.TaskEither<Error, Report> =>
-    pipe(recordRepository.list(), TE.map(evaluateReport(report)));
+export const GetChecklistResultUseCase = (env: SystemEnv) => (): TE.TaskEither<Error, Report> =>
+  pipe(env.recordRepository.list(), TE.map(evaluateReport(report)));
 
 export type GetChecklistResultUseCase = ReturnType<typeof GetChecklistResultUseCase>;

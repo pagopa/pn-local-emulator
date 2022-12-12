@@ -8,7 +8,7 @@ const computeSha256 = (bytes: Buffer) => crypto.createHash('sha256').update(byte
 
 export const UploadToS3UseCase =
   (env: SystemEnv) =>
-  (url: string) =>
+  (url: UploadToS3Record['input']['url']) =>
   (key: UploadToS3Record['input']['key']) =>
   (checksumAlg?: UploadToS3Record['input']['checksumAlg']) =>
   (secret: UploadToS3Record['input']['secret']) =>
