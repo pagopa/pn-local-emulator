@@ -1,8 +1,7 @@
-import { flow, pipe } from 'fp-ts/lib/function';
+import { flow, pipe, identity } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { identity } from 'fp-ts/function';
 import { ProgressResponse } from '../generated/streams/ProgressResponse';
 import { NewStatusEnum, ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
 import { NotificationRequest } from './NotificationRequest';
