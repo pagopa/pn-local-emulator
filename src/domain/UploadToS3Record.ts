@@ -1,9 +1,9 @@
 import * as O from 'fp-ts/Option';
-import { AmzChecksumSHA256 } from '../generated/internalapi/AmzChecksumSHA256';
-import { AmzMetaSecret } from '../generated/internalapi/AmzMetaSecret';
-import { AmzSdkChecksumAlg } from '../generated/internalapi/AmzSdkChecksumAlg';
-import { AmzDocumentKey } from '../generated/internalapi/AmzDocumentKey';
-import { AmzVersionId } from '../generated/internalapi/AmzVersionId';
+import { AmzChecksumSHA256 } from '../generated/api/AmzChecksumSHA256';
+import { AmzMetaSecret } from '../generated/api/AmzMetaSecret';
+import { AmzSdkChecksumAlg } from '../generated/api/AmzSdkChecksumAlg';
+import { AmzDocumentKey } from '../generated/api/AmzDocumentKey';
+import { AmzVersionId } from '../generated/api/AmzVersionId';
 import { Response } from './types';
 import { Record, AuditRecord } from './Repository';
 import { DomainEnv } from './DomainEnv';
