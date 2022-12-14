@@ -1,26 +1,15 @@
 import { flow, pipe } from 'fp-ts/lib/function';
-import * as s from 'fp-ts/string';
 import * as P from 'fp-ts/Predicate';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { isPreLoadRecord, PreLoadRecord } from '../PreLoadRecord';
+import {
+  hasApplicationPdfAsContentType,
+  hasUniquePreloadIdx,
+  isPreLoadRecord,
+  PreLoadRecord,
+} from '../PreLoadRepository';
 
 // PreLoadRecord ////////////////////////////////////////////////////////////
-
-const hasUniquePreloadIdx = (record: PreLoadRecord) =>
-  pipe(
-    record.input.body,
-    RA.filterMap(({ preloadIdx }) => O.fromNullable(preloadIdx)),
-    RA.uniq(s.Eq),
-    RA.size,
-    (totalUniquePreloadIdx) => totalUniquePreloadIdx === record.input.body.length
-  );
-
-export const hasApplicationPdfAsContentType = (record: PreLoadRecord) =>
-  pipe(
-    record.input.body,
-    RA.every(({ contentType }) => contentType === 'application/pdf')
-  );
 
 const atLeastN = (n: number) => (fn: (r: PreLoadRecord) => boolean) =>
   flow(

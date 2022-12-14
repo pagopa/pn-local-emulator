@@ -1,19 +1,24 @@
+import * as Apply from 'fp-ts/Apply';
 import { pipe } from 'fp-ts/lib/function';
+import * as R from 'fp-ts/Reader';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NotificationPriceResponse } from '../generated/pnapi/NotificationPriceResponse';
+import { ApiKey } from '../generated/definitions/ApiKey';
+import { NotificationPriceResponse } from '../generated/definitions/NotificationPriceResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody, unauthorizedResponse } from './types';
 import { Snapshot } from './Snapshot';
 
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';
-  input: { apiKey: string; paTaxId: string; noticeCode: string };
+  input: { apiKey: ApiKey; paTaxId: string; noticeCode: string };
   output: Response<200, NotificationPriceResponse> | Response<403, UnauthorizedMessageBody>;
 };
+
+export type GetNotificationPriceRecordRepository = Repository<GetNotificationPriceRecord>;
 
 const findNotification = (request: GetNotificationPriceRecord['input'], snapshot: Snapshot) =>
   pipe(
@@ -29,15 +34,19 @@ const findNotification = (request: GetNotificationPriceRecord['input'], snapshot
     )
   );
 
-export const makeGetNotificationPriceRecord =
-  (env: DomainEnv) =>
-  (input: GetNotificationPriceRecord['input']) =>
-  (snapshot: Snapshot): GetNotificationPriceRecord => ({
-    type: 'GetNotificationPriceRecord',
-    input,
-    output: pipe(
-      authorizeApiKey(input.apiKey),
-      E.map(() => findNotification(input, snapshot)),
+export const makeGetNotificationPriceRecord: R.Reader<
+  DomainEnv & {
+    request: GetNotificationPriceRecord['input'];
+    snapshot: Snapshot;
+  },
+  GetNotificationPriceRecord
+> = Apply.sequenceS(R.Apply)({
+  type: R.of('GetNotificationPriceRecord' as const),
+  input: (input) => input.request,
+  output: (input) =>
+    pipe(
+      authorizeApiKey(input.request.apiKey),
+      E.map(() => findNotification(input.request, input.snapshot)),
       E.map(
         O.foldW(
           () => unauthorizedResponse,
@@ -46,12 +55,12 @@ export const makeGetNotificationPriceRecord =
             returned: {
               iun,
               amount: '1',
-              effectiveDate: env.dateGenerator(),
+              effectiveDate: input.dateGenerator(),
             },
           })
         )
       ),
       E.toUnion
     ),
-    loggedAt: env.dateGenerator(),
-  });
+  loggedAt: (input) => input.dateGenerator(),
+});

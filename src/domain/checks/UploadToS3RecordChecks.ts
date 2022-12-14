@@ -1,9 +1,9 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NotificationPaymentAttachment } from '../../generated/pnapi/NotificationPaymentAttachment';
-import { isPreLoadRecord, PreLoadRecord } from '../PreLoadRecord';
-import { isUploadToS3Record, UploadToS3Record } from '../UploadToS3Record';
+import { NotificationPaymentAttachment } from '../../generated/definitions/NotificationPaymentAttachment';
+import { isPreLoadRecord, PreLoadRecord } from '../PreLoadRepository';
+import { isUploadToS3Record, UploadToS3Record } from '../UploadToS3RecordRepository';
 
 const matchAtLeastOnePreLoadRecord = (records: ReadonlyArray<PreLoadRecord>) => (uploadToS3Record: UploadToS3Record) =>
   pipe(

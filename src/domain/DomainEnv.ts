@@ -1,5 +1,5 @@
 import { IO } from 'fp-ts/IO';
-import { IUN } from '../generated/pnapi/IUN';
+import { Iun } from '../generated/definitions/Iun';
 
 export type DomainEnv = {
   // envs
@@ -7,8 +7,7 @@ export type DomainEnv = {
   senderPAId: string;
   downloadDocumentURL: URL;
   sampleStaticPdfFileName: string;
-  uploadToS3URL: URL;
   // generators
-  iunGenerator: IO<IUN>;
+  iunGenerator: IO<Iun>;
   dateGenerator: IO<Date>;
 };

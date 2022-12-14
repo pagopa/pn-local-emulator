@@ -1,24 +1,22 @@
-import { flow, pipe, identity } from 'fp-ts/lib/function';
+import { flow } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { ApiKey } from '../generated/definitions/ApiKey';
 import { ProgressResponse } from '../generated/streams/ProgressResponse';
 import { NewStatusEnum, ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
-import { Record, AuditRecord } from './Repository';
+import { AllRecord, AuditRecord, Repository } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { DomainEnv } from './DomainEnv';
-import { Snapshot } from './Snapshot';
-import { authorizeApiKey } from './authorize';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';
-  input: { apiKey: string; streamId: string; lastEventId?: string };
+  input: { apiKey: ApiKey; streamId: string; lastEventId?: string };
   output: Response<200, ProgressResponse> | Response<403, UnauthorizedMessageBody> | Response<419>;
 };
 
-export const isConsumeEventStreamRecord = (record: Record): O.Option<ConsumeEventStreamRecord> =>
+export const isConsumeEventStreamRecord = (record: AllRecord): O.Option<ConsumeEventStreamRecord> =>
   record.type === 'ConsumeEventStreamRecord' ? O.some(record) : O.none;
 
 const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
@@ -26,7 +24,7 @@ const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<Progres
 
 export const getProgressResponseList = flow(RA.filterMap(getProgressResponse), RA.flatten);
 
-const makeProgressResponse = (timestamp: Date) =>
+export const makeProgressResponse = (timestamp: Date) =>
   RA.map(
     E.fold(
       makeProgressResponseElementFromNotificationRequest(timestamp),
@@ -50,25 +48,4 @@ const makeProgressResponseElementFromNotificationRequest =
     notificationRequestId: notificationRequest.notificationRequestId,
   });
 
-export const makeConsumeEventStreamRecord =
-  (env: DomainEnv) =>
-  (input: ConsumeEventStreamRecord['input']) =>
-  (snapshot: Snapshot): ConsumeEventStreamRecord => ({
-    type: 'ConsumeEventStreamRecord',
-    input,
-    output: pipe(
-      authorizeApiKey(input.apiKey),
-      E.foldW(identity, () =>
-        pipe(
-          snapshot,
-          // create ProgressResponse
-          makeProgressResponse(env.dateGenerator()),
-          // override the eventId to create a simple cursor based pagination
-          RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
-          RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
-          (output) => ({ statusCode: 200 as const, returned: output })
-        )
-      )
-    ),
-    loggedAt: env.dateGenerator(),
-  });
+export type ConsumeEventStreamRecordRepository = Repository<ConsumeEventStreamRecord>;

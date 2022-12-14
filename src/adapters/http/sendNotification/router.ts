@@ -1,11 +1,11 @@
 import express from 'express';
-import * as t from 'io-ts';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import * as Problem from '../Problem';
-import { NewNotificationRequest } from '../../../generated/pnapi/NewNotificationRequest';
+import { ApiKey } from '../../../generated/definitions/ApiKey';
+import { NewNotificationRequest } from '../../../generated/definitions/NewNotificationRequest';
 import { SendNotificationUseCase } from '../../../useCases/SendNotificationUseCase';
 import { Handler, toExpressHandler, removeNullValues } from '../Handler';
 
@@ -14,7 +14,7 @@ const handler =
   (req, res) =>
     pipe(
       E.of(sendNotificationUseCase),
-      E.ap(t.string.decode(req.headers['x-api-key'])),
+      E.ap(ApiKey.decode(req.headers['x-api-key'])),
       E.ap(NewNotificationRequest.decode(removeNullValues(req.body))),
       // Create response
       E.map(

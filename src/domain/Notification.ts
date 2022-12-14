@@ -3,16 +3,16 @@ import * as n from 'fp-ts/number';
 import * as M from 'fp-ts/Monoid';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { IUN } from '../generated/pnapi/IUN';
-import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
-import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
-import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecord';
+import { Iun } from '../generated/definitions/Iun';
+import { FullSentNotification } from '../generated/definitions/FullSentNotification';
+import { CheckNotificationStatusRecord } from './CheckNotificationStatusRepository';
+import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecordRepository';
 import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
-import { makeFullSentNotification } from './GetNotificationDetailRecord';
+import { makeFullSentNotification } from './GetNotificationDetailRepository';
 
 export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 
-const mkNotification = (notificationRequest: NotificationRequest, sentAt: Date, senderPaId: string, iun: IUN) => ({
+const mkNotification = (notificationRequest: NotificationRequest, sentAt: Date, senderPaId: string, iun: Iun) => ({
   ...notificationRequest,
   ...makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)(iun),
 });
@@ -32,7 +32,7 @@ const getIunFromConsume =
     pipe(
       getProgressResponseList([consumeEventStreamRecord]),
       RA.findLast((e) => e.notificationRequestId === notificationRequest.notificationRequestId),
-      O.filterMap(({ iun }) => pipe(IUN.decode(iun), O.fromEither))
+      O.filterMap((e) => O.fromNullable(e.iun))
     );
 
 const countFromFind = (notificationRequestId: string) =>
@@ -53,7 +53,7 @@ const countFromConsume = (notificationRequestId: string) =>
  * Compose a NotificationRequest starting from a list of records
  */
 export const makeNotification =
-  (occurrencesAfterComplete: number, senderPaId: string, iun: IUN, sentAt: Date) =>
+  (occurrencesAfterComplete: number, senderPaId: string, iun: string, sentAt: Date) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
   (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>) =>
   (notificationRequest: NotificationRequest): O.Option<Notification> =>

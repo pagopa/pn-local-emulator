@@ -7,7 +7,9 @@ describe('GetLegalFactDownloadMetadataUseCase', () => {
     const useCase = GetLegalFactDownloadMetadataUseCase(data.makeTestSystemEnv());
 
     const expected = E.right({ statusCode: 404, returned: undefined });
-    const actual = await useCase(data.apiKey.valid)(data.aIun.invalid)(data.aLegalFactType)(data.aLegalFactId)();
+    const actual = await useCase(data.apiKey.valid)(`${data.aIun.valid}-invalid`)(data.aLegalFactType)(
+      data.aLegalFactId
+    )();
 
     expect(actual).toStrictEqual(expected);
   });
@@ -15,6 +17,8 @@ describe('GetLegalFactDownloadMetadataUseCase', () => {
   it('should return 200 given the iun, the recipient id and the attachment name', async () => {
     const useCase = GetLegalFactDownloadMetadataUseCase(
       data.makeTestSystemEnv(
+        [],
+        [],
         [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken],
         [data.checkNotificationStatusRecord, data.checkNotificationStatusRecordAccepted]
       )

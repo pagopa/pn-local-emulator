@@ -6,6 +6,7 @@ import * as T from 'fp-ts/Task';
 import * as TE from 'fp-ts/TaskEither';
 import * as Problem from '../Problem';
 import { Handler, toExpressHandler } from '../Handler';
+import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { GetNotificationPriceUseCase } from '../../../useCases/GetNotificationPriceUseCase';
 
 const handler =
@@ -13,7 +14,7 @@ const handler =
   (req, res) =>
     pipe(
       E.of(getNotificationPriceUseCase),
-      E.ap(t.string.decode(req.headers['x-api-key'])),
+      E.ap(ApiKey.decode(req.headers['x-api-key'])),
       E.ap(t.string.decode(req.params.paTaxId)),
       E.ap(t.string.decode(req.params.noticeCode)),
       // Create response

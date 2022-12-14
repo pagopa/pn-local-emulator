@@ -15,6 +15,8 @@ describe('GetPaymentNotificationMetadataUseCase', () => {
   it('should return 200 given the iun, the recipient id and the attachment name', async () => {
     const useCase = GetPaymentNotificationMetadataUseCase(
       data.makeTestSystemEnv(
+        [],
+        [],
         [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken],
         [data.checkNotificationStatusRecord, data.checkNotificationStatusRecordAccepted]
       )

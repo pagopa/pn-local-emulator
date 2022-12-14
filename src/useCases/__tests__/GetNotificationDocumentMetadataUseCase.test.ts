@@ -15,6 +15,8 @@ describe('GetNotificationDocumentMetadataUseCase', () => {
   it('should return 200 given the iun and the docIdx', async () => {
     const useCase = GetNotificationDocumentMetadataUseCase(
       data.makeTestSystemEnv(
+        [],
+        [],
         [data.newNotificationRecord, data.newNotificationRecordWithIdempotenceToken],
         [data.checkNotificationStatusRecord, data.checkNotificationStatusRecordAccepted]
       )

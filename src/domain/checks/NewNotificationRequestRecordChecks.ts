@@ -3,9 +3,16 @@ import * as P from 'fp-ts/Predicate';
 import * as O from 'fp-ts/Option';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { isNewNotificationRecord } from '../NewNotificationRecord';
-import { isUploadToS3Record } from '../UploadToS3Record';
-import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
+import {
+  hasPhysicalAddress,
+  hasRecipientDigitalDomicile,
+  hasRecipientPaymentCreditorTaxId,
+  hasRecipientPaymentNoticeCode,
+  hasRecipientTaxId,
+  hasRegisteredLetterAsPhysicalDocumentType,
+  isNewNotificationRecord,
+} from '../NewNotificationRepository';
+import { isUploadToS3Record } from '../UploadToS3RecordRepository';
 import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
 
 // TODO: This check is replicated on almost each record type, we can
@@ -13,72 +20,23 @@ import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
 export const atLeastOneRecordC = RA.exists(flow(isNewNotificationRecord, O.isSome));
 
 export const atLeastOneRegisteredLetter890C = RA.exists(
-  flow(
-    isNewNotificationRecord,
-    O.exists(
-      (record) => record.input.body.physicalCommunicationType === PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890
-    )
-  )
+  flow(isNewNotificationRecord, O.exists(hasRegisteredLetterAsPhysicalDocumentType))
 );
 
-export const atLeastOneValidTaxIdC = RA.exists(
-  flow(
-    isNewNotificationRecord,
-    O.exists((record) =>
-      pipe(
-        record.input.body.recipients,
-        RA.every((recipient) => pipe(recipient.taxId, O.fromNullable, O.isSome))
-      )
-    )
-  )
-);
+export const atLeastOneValidTaxIdC = RA.exists(flow(isNewNotificationRecord, O.exists(hasRecipientTaxId)));
 
 export const atLeastOneValidDigitalDomicileC = RA.exists(
-  flow(
-    isNewNotificationRecord,
-    O.exists((record) =>
-      pipe(
-        record.input.body.recipients,
-        RA.every((recipient) => pipe(recipient.digitalDomicile, O.fromNullable, O.isSome))
-      )
-    )
-  )
+  flow(isNewNotificationRecord, O.exists(hasRecipientDigitalDomicile))
 );
 
-export const atLeastOneValidPhysicalAddressC = RA.exists(
-  flow(
-    isNewNotificationRecord,
-    O.exists((record) =>
-      pipe(
-        record.input.body.recipients,
-        RA.every((recipient) => pipe(recipient.physicalAddress, O.fromNullable, O.isSome))
-      )
-    )
-  )
-);
+export const atLeastOneValidPhysicalAddressC = RA.exists(flow(isNewNotificationRecord, O.exists(hasPhysicalAddress)));
 
 export const atLeastOneValidCreditorTaxIdC = RA.exists(
-  flow(
-    isNewNotificationRecord,
-    O.exists((record) =>
-      pipe(
-        record.input.body.recipients,
-        RA.every(({ payment }) => pipe(payment?.creditorTaxId, O.fromNullable, O.isSome))
-      )
-    )
-  )
+  flow(isNewNotificationRecord, O.exists(hasRecipientPaymentCreditorTaxId))
 );
 
 export const atLeastOneValidNoticeCodeC = RA.exists(
-  flow(
-    isNewNotificationRecord,
-    O.exists((record) =>
-      pipe(
-        record.input.body.recipients,
-        RA.every(({ payment }) => pipe(payment?.noticeCode, O.fromNullable, O.isSome))
-      )
-    )
-  )
+  flow(isNewNotificationRecord, O.exists(hasRecipientPaymentNoticeCode))
 );
 
 export const atLeastOneValidPagoPaFormC = pipe(

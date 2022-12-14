@@ -5,7 +5,7 @@ import { unauthorizedResponse } from '../../domain/types';
 
 describe('ListEventStreamUseCase', () => {
   it('should return 200', async () => {
-    const useCase = ListEventStreamUseCase(data.makeTestSystemEnv([], [], [], [data.createEventStreamRecord]));
+    const useCase = ListEventStreamUseCase(data.makeTestSystemEnv([], [], [], [], [], [data.createEventStreamRecord]));
 
     const actual = await useCase(data.apiKey.valid)();
 

@@ -1,31 +1,36 @@
-import { unsafeCoerce } from 'fp-ts/function';
-import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
+import crypto from 'crypto';
+import {
+  NewNotificationRequest,
+  NotificationFeePolicyEnum,
+  PhysicalCommunicationTypeEnum,
+} from '../../generated/definitions/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
-import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
-import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
-import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
-import { NewNotificationRecord } from '../NewNotificationRecord';
-import { PreLoadRecord } from '../PreLoadRecord';
-import { UploadToS3Record } from '../UploadToS3Record';
-import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRecord';
+import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRepository';
+import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecordRepository';
+import { CreateEventStreamRecord } from '../CreateEventStreamRecordRepository';
+import { makeNewNotificationRecord, NewNotificationRecord } from '../NewNotificationRepository';
+import { PreLoadRecord } from '../PreLoadRepository';
+import { UploadToS3Record } from '../UploadToS3RecordRepository';
+import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRepository';
 import {
   GetNotificationDocumentMetadataRecord,
   makeNotificationAttachmentDownloadMetadataResponse,
-} from '../GetNotificationDocumentMetadataRecord';
-import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
-import { ListEventStreamRecord } from '../ListEventStreamRecord';
-import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipient';
+} from '../GetNotificationDocumentMetadataRepository';
+import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecordRepository';
+import { ListEventStreamRecord } from '../ListEventStreamRecordRepository';
+import { GetNotificationPriceRecord } from '../GetNotificationPriceRecordRepository';
+import { FullSentNotification } from '../../generated/definitions/FullSentNotification';
+import { RecipientTypeEnum, TypeEnum } from '../../generated/definitions/NotificationRecipient';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
+import { unsafeCoerce } from 'fp-ts/function';
 import { config } from '../../__tests__/data';
 import {
   LegalFactDownloadMetadataRecord,
   makeLegalFactDownloadMetadataResponse,
-} from '../LegalFactDownloadMetadataRecord';
-import { LegalFactCategoryEnum } from '../../generated/pnapi/LegalFactCategory';
-import { IUN } from '../../generated/pnapi/IUN';
-import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
+} from '../LegalFactDownloadMetadataRecordRepository';
+import { LegalFactCategoryEnum } from '../../generated/definitions/LegalFactCategory';
 
 export const apiKey = {
   valid: 'key-value',
@@ -44,12 +49,11 @@ export const idempotenceToken = {
 };
 
 export const aIun = {
-  valid: unsafeCoerce<string, IUN>('ILNK-HRTZ-CRNL-163785-I-2'),
-  invalid: unsafeCoerce<string, IUN>('ILNK-HRTZ-CRNL-186985-I-2'),
+  valid: 'aIunValue',
 };
 
 export const streamId = {
-  valid: aIun.valid,
+  valid: 'streamId',
 };
 
 export const aLegalFactId = 'aLegalFactId';
@@ -67,7 +71,7 @@ export const anAttachmentRef = {
 
 export const aSha256 = 'jezIVxlG1M1woCSUngM6KipUN3/p8cG5RMIPnuEanlE=';
 
-export const aDocument0: NewNotificationRecord['input']['body']['documents'][0] = {
+export const aDocument0: FullSentNotification['documents'][0] = {
   docIdx: '0',
   digests: {
     sha256: aSha256,
@@ -86,33 +90,42 @@ export const aDocument1 = {
 };
 
 export const makeTestSystemEnv = (
+  preloadRecords: ReadonlyArray<PreLoadRecord> = [],
+  uploadToS3Records: ReadonlyArray<UploadToS3Record> = [],
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
   consumeEventStreamRecords: ReadonlyArray<ConsumeEventStreamRecord> = [],
   createEventStreamRecords: ReadonlyArray<CreateEventStreamRecord> = [],
   logger: Logger = makeLogger()
 ): SystemEnv => {
+  const baseRepository = inMemory.makeRepository(logger);
   return {
     uploadToS3URL: config.server.uploadToS3URL,
     downloadDocumentURL: new URL('http://localhost/downloaddocument'),
     sampleStaticPdfFileName: 'sample.pdf',
     occurrencesAfterComplete: 2,
     senderPAId: aSenderPaId,
-    iunGenerator: () => aIun.valid,
-    dateGenerator: () => new Date(0),
-    recordRepository: inMemory.makeRecordRepository(logger)([
-      ...createNotificationRequestRecords,
-      ...findNotificationRequestRecords,
-      ...consumeEventStreamRecords,
-      ...createEventStreamRecords,
-    ]),
+    iunGenerator: crypto.randomUUID,
+    dateGenerator: () => new Date(),
+    preLoadRecordRepository: baseRepository(preloadRecords),
+    uploadToS3RecordRepository: baseRepository(uploadToS3Records),
+    createNotificationRequestRecordRepository: baseRepository(createNotificationRequestRecords),
+    findNotificationRequestRecordRepository: baseRepository(findNotificationRequestRecords),
+    createEventStreamRecordRepository: baseRepository(createEventStreamRecords),
+    consumeEventStreamRecordRepository: baseRepository(consumeEventStreamRecords),
+    listEventStreamRecordRepository: baseRepository<ListEventStreamRecord>([]),
+    getNotificationDetailRecordRepository: baseRepository<GetNotificationDetailRecord>([]),
+    getNotificationDocumentMetadataRecordRepository: baseRepository<GetNotificationDocumentMetadataRecord>([]),
+    getPaymentNotificationMetadataRecordRepository: baseRepository<GetPaymentNotificationMetadataRecord>([]),
+    getLegalFactDownloadMetadataRecordRepository: baseRepository<LegalFactDownloadMetadataRecord>([]),
+    getNotificationPriceRecordRepository: baseRepository<GetNotificationPriceRecord>([]),
   };
 };
 
-export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0] = {
+export const aRecipient: FullSentNotification['recipients'][0] = {
   recipientType: RecipientTypeEnum.PF,
-  denomination: unsafeCoerce('denomination'),
-  taxId: unsafeCoerce('aTaxId'),
+  denomination: 'denomination',
+  taxId: 'aTaxId',
   digitalDomicile: {
     type: TypeEnum.PEC,
     address: 'hello@thisismypec.pec',
@@ -184,40 +197,37 @@ export const uploadToS3RecordDangling: UploadToS3Record = {
 
 // NewNotificationRecord //////////////////////////////////////////////////////
 
-const newNotificationRequest: NewNotificationRecord['input']['body'] = {
+const newNotificationRequest: NewNotificationRequest = {
   paProtocolNumber: paProtocolNumber.valid,
   subject: 'subject',
   recipients: [aRecipient],
   documents: [{ ...aDocument0, docIdx: undefined }, aDocument1],
   notificationFeePolicy: NotificationFeePolicyEnum.FLAT_RATE,
   physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890,
-  senderDenomination: unsafeCoerce('senderDenomination'),
-  senderTaxId: unsafeCoerce('senderTaxId'),
 };
 
 export const mkNewNotificationRecord = (
-  documents: NewNotificationRecord['input']['body']['documents'],
-  recipients: NewNotificationRecord['input']['body']['recipients']
-): NewNotificationRecord => ({
-  type: 'NewNotificationRecord',
-  input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, documents, recipients } },
-  output: {
-    statusCode: 202,
-    returned: {
-      paProtocolNumber: paProtocolNumber.valid,
-      notificationRequestId: notificationId.valid,
+  documents: NewNotificationRequest['documents'],
+  recipients: NewNotificationRequest['recipients']
+) =>
+  makeNewNotificationRecord({
+    input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, documents, recipients } },
+    output: {
+      statusCode: 202,
+      returned: {
+        paProtocolNumber: paProtocolNumber.valid,
+        notificationRequestId: notificationId.valid,
+      },
     },
-  },
-  loggedAt: aDate,
-});
+    loggedAt: aDate,
+  });
 
 export const newNotificationRecord = mkNewNotificationRecord(
   [{ ...aDocument0, docIdx: undefined }, aDocument1],
   [aRecipient]
 );
 
-export const newNotificationRecordWithIdempotenceToken: NewNotificationRecord = {
-  type: 'NewNotificationRecord',
+export const newNotificationRecordWithIdempotenceToken = makeNewNotificationRecord({
   input: { apiKey: apiKey.valid, body: { ...newNotificationRequest, idempotenceToken: idempotenceToken.valid } },
   output: {
     statusCode: 202,
@@ -228,7 +238,7 @@ export const newNotificationRecordWithIdempotenceToken: NewNotificationRecord = 
     },
   },
   loggedAt: aDate,
-};
+});
 
 // CheckNotificationStatusRecord //////////////////////////////////////////////
 
@@ -243,7 +253,7 @@ const checkNotificationStatusRecordReturned = {
 
 export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
   type: 'CheckNotificationStatusRecord',
-  input: { apiKey: apiKey.valid, body: { notificationRequestId: notificationId.valid } },
+  input: { notificationRequestId: notificationId.valid },
   output: {
     statusCode: 200,
     returned: checkNotificationStatusRecordReturned,
@@ -253,7 +263,7 @@ export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
 
 export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecord = {
   type: 'CheckNotificationStatusRecord',
-  input: { apiKey: apiKey.valid, body: { notificationRequestId: notificationId.valid } },
+  input: { notificationRequestId: notificationId.valid },
   output: {
     statusCode: 200,
     returned: {
@@ -267,7 +277,7 @@ export const checkNotificationStatusRecordAccepted: CheckNotificationStatusRecor
 
 export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificationStatusRecord = {
   type: 'CheckNotificationStatusRecord',
-  input: { apiKey: apiKey.valid, body: { notificationRequestId: notificationId.valid } },
+  input: { notificationRequestId: notificationId.valid },
   output: {
     statusCode: 200,
     returned: {
@@ -411,5 +421,4 @@ export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord
     statusCode: 200,
     returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),
   },
-  loggedAt: aDate,
 };

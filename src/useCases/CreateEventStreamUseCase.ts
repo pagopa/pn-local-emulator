@@ -1,15 +1,33 @@
+import crypto from 'crypto';
 import { pipe } from 'fp-ts/lib/function';
+import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import { CreateEventStreamRecord, makeCreateEventStreamRecord } from '../domain/CreateEventStreamRecord';
+import { authorizeApiKey } from '../domain/authorize';
+import { CreateEventStreamRecord } from '../domain/CreateEventStreamRecordRepository';
+import { ApiKey } from '../generated/definitions/ApiKey';
+import { StreamCreationRequest } from '../generated/streams/StreamCreationRequest';
 import { SystemEnv } from './SystemEnv';
 
 export const CreateEventStreamUseCase =
-  (env: SystemEnv) =>
-  (apiKey: CreateEventStreamRecord['input']['apiKey']) =>
-  (body: CreateEventStreamRecord['input']['body']): TE.TaskEither<Error, CreateEventStreamRecord['output']> =>
+  (
+    { createEventStreamRecordRepository, dateGenerator }: SystemEnv,
+    streamIdGenerator: () => string = () => crypto.randomUUID(),
+    nowDate: () => Date = () => new Date()
+  ) =>
+  (apiKey: ApiKey) =>
+  (input: StreamCreationRequest): TE.TaskEither<Error, CreateEventStreamRecord['output']> =>
     pipe(
-      makeCreateEventStreamRecord(env)({ apiKey, body }),
-      env.recordRepository.insert,
+      authorizeApiKey(apiKey),
+      E.map((_) => ({ ...input, streamId: streamIdGenerator(), activationDate: nowDate() })),
+      E.map((streamMetadataResponse) => ({ statusCode: 200 as const, returned: streamMetadataResponse })),
+      E.toUnion,
+      (output) => ({
+        type: 'CreateEventStreamRecord' as const,
+        input: { apiKey, body: input },
+        output,
+        loggedAt: dateGenerator(),
+      }),
+      createEventStreamRecordRepository.insert,
       TE.map(({ output }) => output)
     );
 
