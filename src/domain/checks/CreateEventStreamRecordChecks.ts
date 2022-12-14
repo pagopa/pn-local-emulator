@@ -16,7 +16,6 @@ export const existsCreateEventStreamRecordWhitStreamId =
   (records: ReadonlyArray<CreateEventStreamRecord>) => (streamId: string) =>
     pipe(
       records,
-      // TODO: Find a way to use the isSuccessfulResponse above. At the moment, if we use it, it doesn't compile if we try to get the streamId from the returned
       RA.filterMap((record) => (record.output.statusCode === 200 ? O.some(record.output) : O.none)),
       RA.exists(({ returned }) => returned.streamId === streamId)
     );
