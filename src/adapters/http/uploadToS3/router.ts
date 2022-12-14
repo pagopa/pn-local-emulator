@@ -35,7 +35,11 @@ const handler =
 export const makeUploadToS3Router = (uploadToS3UseCase: UploadToS3UseCase): express.Router => {
   const router = express.Router();
 
-  router.put('/uploadS3/:key', express.raw({ type: 'application/pdf' }), toExpressHandler(handler(uploadToS3UseCase)));
+  router.put(
+    '/uploadS3/:key',
+    express.raw({ type: 'application/pdf', limit: '100mb' }),
+    toExpressHandler(handler(uploadToS3UseCase))
+  );
 
   return router;
 };
