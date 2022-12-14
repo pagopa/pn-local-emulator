@@ -4,10 +4,11 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import * as R from 'fp-ts/Reader';
 import * as P from 'fp-ts/Predicate';
 import { Reader } from 'fp-ts/Reader';
-import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecordRepository';
-import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecordRepository';
+import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecord';
+import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecord';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
-import { AllRecord } from '../Repository';
+import { Record } from '../Repository';
+import { existsCreateEventStreamRecordWhitStreamId } from './CreateEventStreamRecordChecks';
 
 export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
   R.Do,
@@ -18,9 +19,7 @@ export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
       consumeEventStreamRecordList,
       RA.chainFirst(flow(RA.of, ConsumeEventStreamRecord.getProgressResponseList)),
       RA.map(({ input }) => input.streamId),
-      RA.exists(
-        CreateEventStreamRecordRepository.existsCreateEventStreamRecordWhitStreamId(createEventStreamRecordList)
-      )
+      RA.exists(existsCreateEventStreamRecordWhitStreamId(createEventStreamRecordList))
     )
   )
 );
@@ -37,6 +36,6 @@ export const hasIunPopulatedC = flow(
   RA.exists(({ iun }) => pipe(iun, O.fromNullable, O.isSome))
 );
 
-export const hasProperlyConsumedEvents: Reader<ReadonlyArray<AllRecord>, boolean> = RA.exists(
+export const hasProperlyConsumedEvents: Reader<ReadonlyArray<Record>, boolean> = RA.exists(
   flow(RA.of, pipe(hasNewStatusPropertySetToAcceptedC, P.and(hasIunPopulatedC)))
 );

@@ -6,19 +6,15 @@ import * as T from 'fp-ts/Task';
 import * as TE from 'fp-ts/TaskEither';
 import * as Problem from '../Problem';
 import { Handler, toExpressHandler } from '../Handler';
-import { NotificationRequestId } from '../../../generated/definitions/NotificationRequestId';
-import { PaProtocolNumber } from '../../../generated/definitions/PaProtocolNumber';
-import { IdempotenceToken } from '../../../generated/definitions/IdempotenceToken';
 import { CheckNotificationStatusUseCase } from '../../../useCases/CheckNotificationStatusUseCase';
-import { ApiKey } from '../../../generated/definitions/ApiKey';
 
 const checkNotificationStatusInputType = t.union([
   t.strict({
-    notificationRequestId: NotificationRequestId,
+    notificationRequestId: t.string,
   }),
   t.strict({
-    paProtocolNumber: PaProtocolNumber,
-    idempotenceToken: t.union([t.undefined, IdempotenceToken]),
+    paProtocolNumber: t.string,
+    idempotenceToken: t.union([t.undefined, t.string]),
   }),
 ]);
 
@@ -27,7 +23,7 @@ const checkNotificationStatusHandler =
   (req, res) =>
     pipe(
       E.of(checkNotificationStatusUseCase),
-      E.ap(ApiKey.decode(req.headers['x-api-key'])),
+      E.ap(t.string.decode(req.headers['x-api-key'])),
       E.ap(
         checkNotificationStatusInputType.decode({
           notificationRequestId: req.query.notificationRequestId,

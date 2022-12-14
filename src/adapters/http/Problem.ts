@@ -1,6 +1,6 @@
 import * as ts from 'io-ts';
 import * as PR from 'io-ts/PathReporter';
-import { Problem } from '../../generated/definitions/Problem';
+import { Problem } from '../../generated/pnapi/Problem';
 
 export const fromErrors = (errors: ts.Errors): Problem => ({
   ...fromNumber(400),
