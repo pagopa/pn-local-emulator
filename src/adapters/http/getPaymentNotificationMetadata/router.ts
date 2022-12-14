@@ -7,8 +7,7 @@ import * as t from 'io-ts';
 import * as TE from 'fp-ts/TaskEither';
 import { Handler, toExpressHandler } from '../Handler';
 import { GetPaymentNotificationMetadataUseCase } from '../../../useCases/GetPaymentNotificationMetadataUseCase';
-import { ApiKey } from '../../../generated/definitions/ApiKey';
-import { Iun } from '../../../generated/definitions/Iun';
+import { IUN } from '../../../generated/pnapi/IUN';
 import * as Problem from '../Problem';
 
 const handler =
@@ -16,8 +15,8 @@ const handler =
   (req, res) =>
     pipe(
       E.of(getPaymentNotificationMetadataUseCase),
-      E.ap(ApiKey.decode(req.headers['x-api-key'])),
-      E.ap(Iun.decode(req.params.iun)),
+      E.ap(t.string.decode(req.headers['x-api-key'])),
+      E.ap(IUN.decode(req.params.iun)),
       E.ap(tt.NumberFromString.decode(req.params.recipientIdx)),
       E.ap(t.string.decode(req.params.attachmentName)),
       E.map(
