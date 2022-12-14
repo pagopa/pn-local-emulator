@@ -15,14 +15,14 @@ export const CheckNotificationStatusUseCase =
   (env: SystemEnv) =>
   (apiKey: CheckNotificationStatusRecord['input']['apiKey']) =>
   (
-    input: CheckNotificationStatusRecord['input']['body']
+    body: CheckNotificationStatusRecord['input']['body']
   ): TE.TaskEither<Error, CheckNotificationStatusRecord['output']> =>
     pipe(
       TE.of(computeSnapshot(env)),
       TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isNewNotificationRecord)))),
       TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isCheckNotificationStatusRecord)))),
       TE.ap(pipe(env.recordRepository.list(), TE.map(RA.filterMap(isConsumeEventStreamRecord)))),
-      TE.map(makeCheckNotificationStatusRecord(env)({ apiKey, body: input })),
+      TE.map(makeCheckNotificationStatusRecord(env)({ apiKey, body })),
       TE.chain(env.recordRepository.insert),
       TE.map((record) => record.output)
     );
