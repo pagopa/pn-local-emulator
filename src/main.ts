@@ -65,7 +65,7 @@ pipe(
       getNotificationDocumentMetadataUseCase,
       getPaymentNotificationMetadataUseCase,
       getLegalFactDownloadMetadataUseCase,
-      getNotificationPriceUseCase,
+      getNotificationPriceUseCase
     );
     http.startApplication(logger, config, application);
   }),

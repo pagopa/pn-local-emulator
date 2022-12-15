@@ -46,7 +46,7 @@ export const makeApplication =
     getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
     getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase,
     getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase,
-    getNotificationPriceUseCase: GetNotificationPriceUseCase,
+    getNotificationPriceUseCase: GetNotificationPriceUseCase
   ): express.Application => {
     const app = express();
     app.use(express.json());
