@@ -13,7 +13,7 @@ describe('ConsumeEventStreamUseCase', () => {
 
       const actual = await useCase(data.apiKey.valid)(data.streamId.valid)(undefined)();
 
-      expect(actual).toStrictEqual(E.right({ statusCode: 200 as const, returned: [] }));
+      expect(actual).toStrictEqual(E.right({ ...data.consumeEventStreamResponse, returned: [] }));
     });
     it('should return waiting status', async () => {
       const useCase = ConsumeEventStreamUseCase({

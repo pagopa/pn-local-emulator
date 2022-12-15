@@ -20,7 +20,7 @@ export const consumeEventStreamHandler =
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(_.statusCode).send(_.returned))
+          (_) => T.of(res.header(_.headers).status(_.statusCode).send(_.returned))
         )
       )
     );
