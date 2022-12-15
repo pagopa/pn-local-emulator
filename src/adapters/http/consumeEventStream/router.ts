@@ -9,7 +9,7 @@ import { Handler, toExpressHandler } from '../Handler';
 import * as Problem from '../Problem';
 import { makeConsumeEventStreamRecord } from '../../../domain/ConsumeEventStreamRecord';
 import { SystemEnv } from '../../../useCases/SystemEnv';
-import { computeSnapshotSlim } from '../../../domain/Snapshot';
+import { withSnapshot } from '../../../useCases/UseCase';
 
 export const consumeEventStreamHandler =
   (env: SystemEnv): Handler =>
@@ -20,13 +20,7 @@ export const consumeEventStreamHandler =
         streamId: t.string.decode(req.params.streamId),
         lastEventId: t.union([t.string, t.undefined]).decode(req.query.lastEventId),
       }),
-      E.map((input) =>
-        pipe(
-          env.recordRepository.list(),
-          TE.map((records) => makeConsumeEventStreamRecord(env)(computeSnapshotSlim(env)(records))(input)),
-          TE.chain(env.recordRepository.insert)
-        )
-      ),
+      E.map((input) => withSnapshot(env)(input)(makeConsumeEventStreamRecord)),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
