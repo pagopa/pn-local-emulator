@@ -329,7 +329,7 @@ export const inValidationEvent = {
 
 export const consumeEventStreamResponse = {
   statusCode: 200 as const,
-  headers: {'retry-after': aRetryAfterMs},
+  headers: { 'retry-after': aRetryAfterMs },
   returned: [
     {
       eventId: '0',
