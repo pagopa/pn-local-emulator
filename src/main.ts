@@ -11,7 +11,6 @@ import { SendNotificationUseCase } from './useCases/SendNotificationUseCase';
 import { CreateEventStreamUseCase } from './useCases/CreateEventStreamUseCase';
 import { CheckNotificationStatusUseCase } from './useCases/CheckNotificationStatusUseCase';
 import { GetNotificationDetailUseCase } from './useCases/GetNotificationDetailUseCase';
-import { ConsumeEventStreamUseCase } from './useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from './useCases/GetNotificationDocumentMetadataUseCase';
 import { GetPaymentNotificationMetadataUseCase } from './useCases/GetPaymentNotificationMetadataUseCase';
 import { GetLegalFactDownloadMetadataUseCase } from './useCases/GetLegalFactDownloadMetadataUseCase';
@@ -42,7 +41,6 @@ pipe(
     const sendNotificationUseCase = SendNotificationUseCase(systemEnv);
     const createEventStreamUseCase = CreateEventStreamUseCase(systemEnv);
     const checkNotificationStatusUseCase = CheckNotificationStatusUseCase(systemEnv);
-    const consumeEventStreamUseCase = ConsumeEventStreamUseCase(systemEnv);
     const listEventStreamUseCase = ListEventStreamUseCase(systemEnv);
     const getChecklistResultUseCase = GetChecklistResultUseCase(systemEnv);
     const getNotificationDetailUseCase = GetNotificationDetailUseCase(systemEnv);
@@ -59,7 +57,6 @@ pipe(
       createEventStreamUseCase,
       checkNotificationStatusUseCase,
       getNotificationDetailUseCase,
-      consumeEventStreamUseCase,
       listEventStreamUseCase,
       getChecklistResultUseCase,
       getNotificationDocumentMetadataUseCase,

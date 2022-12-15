@@ -10,7 +10,6 @@ import { GetChecklistResultUseCase } from '../../useCases/GetChecklistResultUseC
 import { CreateEventStreamUseCase } from '../../useCases/CreateEventStreamUseCase';
 import { ListEventStreamUseCase } from '../../useCases/ListEventStreamUseCase';
 import { GetNotificationDetailUseCase } from '../../useCases/GetNotificationDetailUseCase';
-import { ConsumeEventStreamUseCase } from '../../useCases/ConsumeEventStreamUseCase';
 import { GetNotificationDocumentMetadataUseCase } from '../../useCases/GetNotificationDocumentMetadataUseCase';
 import { GetPaymentNotificationMetadataUseCase } from '../../useCases/GetPaymentNotificationMetadataUseCase';
 import { GetLegalFactDownloadMetadataUseCase } from '../../useCases/GetLegalFactDownloadMetadataUseCase';
@@ -40,7 +39,6 @@ export const makeApplication =
     createEventStreamUseCase: CreateEventStreamUseCase,
     checkNotificationStatusUseCase: CheckNotificationStatusUseCase,
     getNotificationDetailUseCase: GetNotificationDetailUseCase,
-    consumeEventStreamUseCase: ConsumeEventStreamUseCase,
     listEventStreamUseCase: ListEventStreamUseCase,
     getChecklistResultUseCase: GetChecklistResultUseCase,
     getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
