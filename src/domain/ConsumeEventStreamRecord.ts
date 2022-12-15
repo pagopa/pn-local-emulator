@@ -52,8 +52,8 @@ const makeProgressResponseElementFromNotificationRequest =
 
 export const makeConsumeEventStreamRecord =
   (env: DomainEnv) =>
-  (input: ConsumeEventStreamRecord['input']) =>
-  (snapshot: Snapshot): ConsumeEventStreamRecord => ({
+  (snapshot: Snapshot) =>
+  (input: ConsumeEventStreamRecord['input']): ConsumeEventStreamRecord => ({
     type: 'ConsumeEventStreamRecord',
     input,
     output: pipe(

@@ -52,7 +52,7 @@ pipe(
     const getNotificationPriceUseCase = GetNotificationPriceUseCase(systemEnv);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
-    const application = http.makeApplication(
+    const application = http.makeApplication(systemEnv)(
       preLoadUseCase,
       uploadToS3UseCase,
       sendNotificationUseCase,
@@ -65,7 +65,7 @@ pipe(
       getNotificationDocumentMetadataUseCase,
       getPaymentNotificationMetadataUseCase,
       getLegalFactDownloadMetadataUseCase,
-      getNotificationPriceUseCase
+      getNotificationPriceUseCase,
     );
     http.startApplication(logger, config, application);
   }),
