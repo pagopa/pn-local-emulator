@@ -85,6 +85,8 @@ export const aDocument1 = {
   },
 };
 
+export const aRetryAfterMs = 1000;
+
 export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
@@ -98,6 +100,7 @@ export const makeTestSystemEnv = (
     sampleStaticPdfFileName: 'sample.pdf',
     occurrencesAfterComplete: 2,
     senderPAId: aSenderPaId,
+    retryAfterMs: aRetryAfterMs,
     iunGenerator: () => aIun.valid,
     dateGenerator: () => new Date(0),
     recordRepository: inMemory.makeRecordRepository(logger)([
@@ -239,6 +242,7 @@ const checkNotificationStatusRecordReturned = {
   paProtocolNumber: paProtocolNumber.valid,
   notificationRequestId: notificationId.valid,
   notificationRequestStatus: 'WAITING',
+  retryAfter: aRetryAfterMs / 1000,
 };
 
 export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
@@ -325,6 +329,7 @@ export const inValidationEvent = {
 
 export const consumeEventStreamResponse = {
   statusCode: 200 as const,
+  headers: {'retry-after': aRetryAfterMs},
   returned: [
     {
       eventId: '0',

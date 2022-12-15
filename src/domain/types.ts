@@ -10,6 +10,7 @@ export type UnauthorizedMessageBody = {
 
 export type Response<A extends StatusCode, B = void> = {
   statusCode: A;
+  headers?: Record<'retry-after', string | number>;
   returned: B;
 };
 
