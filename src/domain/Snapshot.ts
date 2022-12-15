@@ -36,31 +36,13 @@ export const computeSnapshot =
       )
     );
 
-export const computeSnapshotSlim = ({ occurrencesAfterComplete, senderPAId, iunGenerator, dateGenerator }: DomainEnv) =>
+export const computeSnapshotSlim = (env: DomainEnv) =>
   pipe(
     R.Do,
     R.apS('newNotificationRecords', RA.filterMap(isNewNotificationRecord)),
     R.apS('checkNotificationStatusRecords', RA.filterMap(isCheckNotificationStatusRecord)),
     R.apS('consumeEventStreamRecords', RA.filterMap(isConsumeEventStreamRecord)),
     R.map(({ newNotificationRecords, checkNotificationStatusRecords, consumeEventStreamRecords }) =>
-      pipe(
-        // create all the NotificationRequest
-        newNotificationRecords,
-        // createNotificationRequestRecord,
-        RA.filterMap(makeNotificationRequestFromCreate),
-        // for each one try to create a Notification
-        RA.map((notificationRequest) =>
-          pipe(
-            notificationRequest,
-            makeNotification(
-              occurrencesAfterComplete,
-              senderPAId,
-              iunGenerator(),
-              dateGenerator()
-            )(checkNotificationStatusRecords)(consumeEventStreamRecords),
-            E.fromOption(() => notificationRequest)
-          )
-        )
-      )
+      computeSnapshot(env)(newNotificationRecords)(checkNotificationStatusRecords)(consumeEventStreamRecords)
     )
   );
