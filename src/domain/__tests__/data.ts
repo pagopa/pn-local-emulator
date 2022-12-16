@@ -29,6 +29,7 @@ import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
 
 export const apiKey = {
   valid: 'key-value',
+  invalid: 'invalid-key-value',
 };
 
 export const notificationId = {
