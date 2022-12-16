@@ -1,5 +1,5 @@
 import express from 'express';
-import { pipe } from 'fp-ts/lib/function';
+import { constant, flow, pipe } from 'fp-ts/lib/function';
 import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
@@ -20,7 +20,7 @@ const preloadHandler =
         apiKey: t.string.decode(req.headers['x-api-key']),
         body: PreLoadBulkRequest.decode(req.body),
       }),
-      E.map((input) => persistRecord(env)(() => makePreLoadRecord(env)(input))),
+      E.map(flow(makePreLoadRecord(env), constant, persistRecord(env))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
