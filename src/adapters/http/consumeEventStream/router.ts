@@ -12,7 +12,7 @@ import { makeConsumeEventStreamRecord } from '../../../domain/ConsumeEventStream
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { persistRecord } from '../../../useCases/UseCase';
 
-export const consumeEventStreamHandler =
+export const handler =
   (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
@@ -33,7 +33,7 @@ export const consumeEventStreamHandler =
 export const makeConsumeEventStreamRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery-progresses/streams/:streamId/events', toExpressHandler(consumeEventStreamHandler(env)));
+  router.get('/delivery-progresses/streams/:streamId/events', toExpressHandler(handler(env)));
 
   return router;
 };

@@ -1,36 +1,38 @@
 import express from 'express';
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
 import * as TE from 'fp-ts/TaskEither';
+import * as Apply from 'fp-ts/Apply';
 import * as Problem from '../Problem';
 import { Handler, toExpressHandler } from '../Handler';
-import { GetNotificationPriceUseCase } from '../../../useCases/GetNotificationPriceUseCase';
+import { persistRecord } from '../../../useCases/UseCase';
+import { makeGetNotificationPriceRecord } from '../../../domain/GetNotificationPriceRecord';
+import { SystemEnv } from '../../../useCases/SystemEnv';
 
 const handler =
-  (getNotificationPriceUseCase: GetNotificationPriceUseCase): Handler =>
+  (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
-      E.of(getNotificationPriceUseCase),
-      E.ap(t.string.decode(req.headers['x-api-key'])),
-      E.ap(t.string.decode(req.params.paTaxId)),
-      E.ap(t.string.decode(req.params.noticeCode)),
-      // Create response
+      Apply.sequenceS(E.Apply)({
+        apiKey: t.string.decode(req.headers['x-api-key']),
+        paTaxId: t.string.decode(req.params.paTaxId),
+        noticeCode: t.string.decode(req.params.noticeCode),
+      }),
+      E.map(flow(makeGetNotificationPriceRecord(env), persistRecord(env))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(_.statusCode).send(_.returned))
+          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
         )
       )
     );
 
-export const makeGetNotificationPriceRouter = (
-  getNotificationPriceUseCase: GetNotificationPriceUseCase
-): express.Router => {
+export const makeGetNotificationPriceRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery/price/:paTaxId/:noticeCode', toExpressHandler(handler(getNotificationPriceUseCase)));
+  router.get('/delivery/price/:paTaxId/:noticeCode', toExpressHandler(handler(env)));
 
   return router;
 };

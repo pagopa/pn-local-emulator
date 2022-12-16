@@ -8,7 +8,7 @@ import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { Snapshot } from './Snapshot';
+import { computeSnapshotSlim } from './Snapshot';
 
 export type CheckNotificationStatusRecord = AuditRecord & {
   type: 'CheckNotificationStatusRecord';
@@ -25,7 +25,7 @@ export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckN
 export const makeCheckNotificationStatusRecord =
   (env: DomainEnv) =>
   (input: CheckNotificationStatusRecord['input']) =>
-  (snapshot: Snapshot): CheckNotificationStatusRecord => ({
+  (records: ReadonlyArray<Record>): CheckNotificationStatusRecord => ({
     type: 'CheckNotificationStatusRecord',
     input,
     loggedAt: env.dateGenerator(),
@@ -33,7 +33,7 @@ export const makeCheckNotificationStatusRecord =
       authorizeApiKey(input.apiKey),
       E.foldW(identity, () =>
         pipe(
-          snapshot,
+          computeSnapshotSlim(env)(records),
           RA.findFirst(
             flow(E.toUnion, (notificationRequest) =>
               'notificationRequestId' in input.body

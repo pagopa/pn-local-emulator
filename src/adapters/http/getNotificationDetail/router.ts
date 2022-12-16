@@ -4,32 +4,36 @@ import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
+import * as Apply from 'fp-ts/Apply';
+import { flow } from 'fp-ts/lib/function';
 import { Handler, toExpressHandler } from '../Handler';
-import { GetNotificationDetailUseCase } from '../../../useCases/GetNotificationDetailUseCase';
 import { IUN } from '../../../generated/pnapi/IUN';
 import * as Problem from '../Problem';
+import { makeGetNotificationDetailRecord } from '../../../domain/GetNotificationDetailRecord';
+import { SystemEnv } from '../../../useCases/SystemEnv';
+import { persistRecord } from '../../../useCases/UseCase';
 
 const handler =
-  (getNotificationDetailUseCase: GetNotificationDetailUseCase): Handler =>
+  (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
-      E.of(getNotificationDetailUseCase),
-      E.ap(t.string.decode(req.headers['x-api-key'])),
-      E.ap(IUN.decode(req.params.iun)),
+      Apply.sequenceS(E.Apply)({
+        apiKey: t.string.decode(req.headers['x-api-key']),
+        iun: IUN.decode(req.params.iun),
+      }),
+      E.map(flow(makeGetNotificationDetailRecord(env), persistRecord(env))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(_.statusCode).send(_.returned))
+          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
         )
       )
     );
 
-export const makeGetNotificationDetailRouter = (
-  getNotificationDetailUseCase: GetNotificationDetailUseCase
-): express.Router => {
+export const makeGetNotificationDetailRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery/notifications/sent/:iun', toExpressHandler(handler(getNotificationDetailUseCase)));
+  router.get('/delivery/notifications/sent/:iun', toExpressHandler(handler(env)));
 
   return router;
 };

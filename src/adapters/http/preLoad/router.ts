@@ -12,7 +12,7 @@ import { SystemEnv } from '../../../useCases/SystemEnv';
 import { persistRecord } from '../../../useCases/UseCase';
 import { makePreLoadRecord } from '../../../domain/PreLoadRecord';
 
-const preloadHandler =
+const handler =
   (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
@@ -32,7 +32,7 @@ const preloadHandler =
 export const makePreLoadRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.post('/delivery/attachments/preload', toExpressHandler(preloadHandler(env)));
+  router.post('/delivery/attachments/preload', toExpressHandler(handler(env)));
 
   return router;
 };

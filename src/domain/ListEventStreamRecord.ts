@@ -5,9 +5,9 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { StreamListResponse } from '../generated/streams/StreamListResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { CreateEventStreamRecord } from './CreateEventStreamRecord';
+import { isCreateEventStreamRecord } from './CreateEventStreamRecord';
 
 export type ListEventStreamRecord = AuditRecord & {
   type: 'ListEventStreamRecord';
@@ -18,7 +18,7 @@ export type ListEventStreamRecord = AuditRecord & {
 export const makeListEventStreamRecord =
   (env: DomainEnv) =>
   (input: ListEventStreamRecord['input']) =>
-  (createEventStreamRecordList: ReadonlyArray<CreateEventStreamRecord>): ListEventStreamRecord => ({
+  (records: ReadonlyArray<Record>): ListEventStreamRecord => ({
     type: 'ListEventStreamRecord',
     input,
     output: pipe(
@@ -26,7 +26,8 @@ export const makeListEventStreamRecord =
       E.map(() => ({
         statusCode: 200 as const,
         returned: pipe(
-          createEventStreamRecordList,
+          records,
+          RA.filterMap(isCreateEventStreamRecord),
           RA.filterMap((record) => (record.output.statusCode === 200 ? O.some(record.output.returned) : O.none))
         ),
       })),

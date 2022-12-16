@@ -4,11 +4,11 @@ import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/pnapi/NotificationAttachmentDownloadMetadataResponse';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
-import { Snapshot } from './Snapshot';
+import { computeSnapshotSlim } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 
 export type GetNotificationDocumentMetadataRecord = AuditRecord & {
@@ -33,7 +33,7 @@ export const makeNotificationAttachmentDownloadMetadataResponse =
 export const makeGetNotificationDocumentMetadataRecord =
   (env: DomainEnv) =>
   (input: GetNotificationDocumentMetadataRecord['input']) =>
-  (snapshot: Snapshot): GetNotificationDocumentMetadataRecord => ({
+  (records: ReadonlyArray<Record>): GetNotificationDocumentMetadataRecord => ({
     type: 'GetNotificationDocumentMetadataRecord',
     input,
     loggedAt: env.dateGenerator(),
@@ -41,7 +41,7 @@ export const makeGetNotificationDocumentMetadataRecord =
       authorizeApiKey(input.apiKey),
       E.map(() =>
         pipe(
-          snapshot,
+          computeSnapshotSlim(env)(records),
           RA.filterMap(O.fromEither),
           RA.chain((notification) => (notification.iun === input.iun ? notification.documents : RA.empty)),
           // the types of docIdx don't fit (one is a string the other is a number)
