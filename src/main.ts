@@ -48,7 +48,8 @@ pipe(
     const getNotificationPriceUseCase = GetNotificationPriceUseCase(systemEnv);
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
-    const application = http.makeApplication(systemEnv)(
+    const application = http.makeApplication(
+      systemEnv,
       uploadToS3UseCase,
       sendNotificationUseCase,
       createEventStreamUseCase,

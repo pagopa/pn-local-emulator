@@ -29,40 +29,39 @@ import { makeGetLegalFactDocumentRouter } from './getLegalFactDocument/router';
 import { makeListEventStreamRouter } from './listEventStream/router';
 import { makeGetNotificationPriceRouter } from './getNotificationPrice/router';
 
-export const makeApplication =
-  (env: SystemEnv) =>
-  (
-    uploadToS3UseCase: UploadToS3UseCase,
-    sendNotificationUseCase: SendNotificationUseCase,
-    createEventStreamUseCase: CreateEventStreamUseCase,
-    checkNotificationStatusUseCase: CheckNotificationStatusUseCase,
-    getNotificationDetailUseCase: GetNotificationDetailUseCase,
-    listEventStreamUseCase: ListEventStreamUseCase,
-    getChecklistResultUseCase: GetChecklistResultUseCase,
-    getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
-    getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase,
-    getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase,
-    getNotificationPriceUseCase: GetNotificationPriceUseCase
-  ): express.Application => {
-    const app = express();
-    app.use(express.json());
-    // create all routers and return the application
-    app.use(makePreLoadRouter(env));
-    app.use(makeUploadToS3Router(uploadToS3UseCase));
-    app.use(makeSendNotificationRouter(sendNotificationUseCase));
-    app.use(makeCreateEventStreamRouter(createEventStreamUseCase));
-    app.use(makeNotificationStatusRouter(checkNotificationStatusUseCase));
-    app.use(makeConsumeEventStreamRouter(env));
-    app.use(makeListEventStreamRouter(listEventStreamUseCase));
-    app.use(makeChecklistRouter(getChecklistResultUseCase));
-    app.use(makeGetNotificationDetailRouter(getNotificationDetailUseCase));
-    app.use(makeGetNotificationDocumentMetadataRouter(getNotificationDocumentMetadataUseCase));
-    app.use(makeGetPaymentNotificationMetadataRouter(getPaymentNotificationMetadataUseCase));
-    app.use(makeGetLegalFactDocumentRouter(getLegalFactDownloadMetadataUseCase));
-    app.use(makeGetNotificationPriceRouter(getNotificationPriceUseCase));
-    app.use(makeDownloadDocumentRouter());
-    return app;
-  };
+export const makeApplication = (
+  env: SystemEnv,
+  uploadToS3UseCase: UploadToS3UseCase,
+  sendNotificationUseCase: SendNotificationUseCase,
+  createEventStreamUseCase: CreateEventStreamUseCase,
+  checkNotificationStatusUseCase: CheckNotificationStatusUseCase,
+  getNotificationDetailUseCase: GetNotificationDetailUseCase,
+  listEventStreamUseCase: ListEventStreamUseCase,
+  getChecklistResultUseCase: GetChecklistResultUseCase,
+  getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
+  getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase,
+  getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase,
+  getNotificationPriceUseCase: GetNotificationPriceUseCase
+): express.Application => {
+  const app = express();
+  app.use(express.json());
+  // create all routers and return the application
+  app.use(makePreLoadRouter(env));
+  app.use(makeUploadToS3Router(uploadToS3UseCase));
+  app.use(makeSendNotificationRouter(sendNotificationUseCase));
+  app.use(makeCreateEventStreamRouter(createEventStreamUseCase));
+  app.use(makeNotificationStatusRouter(checkNotificationStatusUseCase));
+  app.use(makeConsumeEventStreamRouter(env));
+  app.use(makeListEventStreamRouter(listEventStreamUseCase));
+  app.use(makeChecklistRouter(getChecklistResultUseCase));
+  app.use(makeGetNotificationDetailRouter(getNotificationDetailUseCase));
+  app.use(makeGetNotificationDocumentMetadataRouter(getNotificationDocumentMetadataUseCase));
+  app.use(makeGetPaymentNotificationMetadataRouter(getPaymentNotificationMetadataUseCase));
+  app.use(makeGetLegalFactDocumentRouter(getLegalFactDownloadMetadataUseCase));
+  app.use(makeGetNotificationPriceRouter(getNotificationPriceUseCase));
+  app.use(makeDownloadDocumentRouter());
+  return app;
+};
 
 export const startApplication = (logger: Logger, config: Config, application: express.Application) => {
   const server = http.createServer(application);
