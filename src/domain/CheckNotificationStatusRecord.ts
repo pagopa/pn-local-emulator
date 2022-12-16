@@ -8,7 +8,7 @@ import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { computeSnapshotSlim } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 
 export type CheckNotificationStatusRecord = AuditRecord & {
   type: 'CheckNotificationStatusRecord';
@@ -33,7 +33,7 @@ export const makeCheckNotificationStatusRecord =
       authorizeApiKey(input.apiKey),
       E.foldW(identity, () =>
         pipe(
-          computeSnapshotSlim(env)(records),
+          computeSnapshot(env)(records),
           RA.findFirst(
             flow(E.toUnion, (notificationRequest) =>
               'notificationRequestId' in input.body

@@ -9,7 +9,7 @@ import { NotificationPaymentInfo } from '../generated/pnapi/NotificationPaymentI
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
-import { computeSnapshotSlim } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { Response, UnauthorizedMessageBody } from './types';
 
 export type GetPaymentNotificationMetadataRecord = AuditRecord & {
@@ -58,7 +58,7 @@ export const makeGetPaymentNotificationMetadataRecord =
       authorizeApiKey(input.apiKey),
       E.map(() =>
         pipe(
-          computeSnapshotSlim(env)(records),
+          computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           RA.chain((notification) => (notification.iun === input.iun ? notification.recipients : RA.empty)),
           RA.filterMap((recipient) => O.fromNullable(recipient.payment)),

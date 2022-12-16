@@ -8,7 +8,7 @@ import { LegalFactDownloadMetadataResponse } from '../generated/pnapi/LegalFactD
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
-import { computeSnapshotSlim } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { Response, UnauthorizedMessageBody } from './types';
 
 export type LegalFactDownloadMetadataRecord = AuditRecord & {
@@ -34,7 +34,7 @@ export const makeLegalFactDownloadMetadataRecord =
       authorizeApiKey(input.apiKey),
       E.map(() =>
         pipe(
-          computeSnapshotSlim(env)(records),
+          computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           RA.findLast((notification) => notification.iun === input.iun),
           O.map((_) => ({ statusCode: 200 as const, returned: makeLegalFactDownloadMetadataResponse(env) })),

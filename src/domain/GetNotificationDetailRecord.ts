@@ -12,7 +12,7 @@ import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';
 import { authorizeApiKey } from './authorize';
-import { computeSnapshotSlim } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { DomainEnv } from './DomainEnv';
 
 export type GetNotificationDetailRecord = AuditRecord & {
@@ -65,7 +65,7 @@ export const makeGetNotificationDetailRecord =
       authorizeApiKey(input.apiKey),
       E.map(() =>
         pipe(
-          computeSnapshotSlim(env)(records),
+          computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           RA.findFirstMap((notification) => (notification.iun === input.iun ? O.some(notification) : O.none)),
           O.map((returned) => ({ statusCode: 200 as const, returned })),

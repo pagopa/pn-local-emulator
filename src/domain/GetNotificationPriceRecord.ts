@@ -7,7 +7,7 @@ import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody, unauthorizedResponse } from './types';
-import { computeSnapshotSlim, Snapshot } from './Snapshot';
+import { computeSnapshot, Snapshot } from './Snapshot';
 
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';
@@ -37,7 +37,7 @@ export const makeGetNotificationPriceRecord =
     input,
     output: pipe(
       authorizeApiKey(input.apiKey),
-      E.map(() => findNotification(input, computeSnapshotSlim(env)(records))),
+      E.map(() => findNotification(input, computeSnapshot(env)(records))),
       E.map(
         O.foldW(
           () => unauthorizedResponse,

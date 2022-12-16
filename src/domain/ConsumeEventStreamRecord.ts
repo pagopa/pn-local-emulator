@@ -9,7 +9,7 @@ import { Notification } from './Notification';
 import { Record, AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
-import { computeSnapshotSlim } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
@@ -61,7 +61,7 @@ export const makeConsumeEventStreamRecord =
       E.foldW(identity, () =>
         pipe(
           records,
-          computeSnapshotSlim(env),
+          computeSnapshot(env),
           // create ProgressResponse
           makeProgressResponse(env.dateGenerator()),
           // override the eventId to create a simple cursor based pagination

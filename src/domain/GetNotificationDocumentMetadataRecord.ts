@@ -8,7 +8,7 @@ import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
-import { computeSnapshotSlim } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 
 export type GetNotificationDocumentMetadataRecord = AuditRecord & {
@@ -41,7 +41,7 @@ export const makeGetNotificationDocumentMetadataRecord =
       authorizeApiKey(input.apiKey),
       E.map(() =>
         pipe(
-          computeSnapshotSlim(env)(records),
+          computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           RA.chain((notification) => (notification.iun === input.iun ? notification.documents : RA.empty)),
           // the types of docIdx don't fit (one is a string the other is a number)
