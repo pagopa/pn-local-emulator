@@ -5,7 +5,6 @@ import * as inMemory from './adapters/inMemory';
 import { parseConfig } from './config';
 import { makeLogger } from './logger';
 import { GetChecklistResultUseCase } from './useCases/GetChecklistResultUseCase';
-import { PreLoadUseCase } from './useCases/PreLoadUseCase';
 import { UploadToS3UseCase } from './useCases/UploadToS3UseCase';
 import { SendNotificationUseCase } from './useCases/SendNotificationUseCase';
 import { CreateEventStreamUseCase } from './useCases/CreateEventStreamUseCase';
@@ -36,7 +35,6 @@ pipe(
     };
 
     /* init the use cases */
-    const preLoadUseCase = PreLoadUseCase(systemEnv);
     const uploadToS3UseCase = UploadToS3UseCase(systemEnv);
     const sendNotificationUseCase = SendNotificationUseCase(systemEnv);
     const createEventStreamUseCase = CreateEventStreamUseCase(systemEnv);
@@ -51,7 +49,6 @@ pipe(
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */
     const application = http.makeApplication(systemEnv)(
-      preLoadUseCase,
       uploadToS3UseCase,
       sendNotificationUseCase,
       createEventStreamUseCase,

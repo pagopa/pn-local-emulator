@@ -2,7 +2,6 @@ import * as http from 'http';
 import express from 'express';
 import { Config } from '../../config';
 import { Logger } from '../../logger';
-import { PreLoadUseCase } from '../../useCases/PreLoadUseCase';
 import { UploadToS3UseCase } from '../../useCases/UploadToS3UseCase';
 import { SendNotificationUseCase } from '../../useCases/SendNotificationUseCase';
 import { CheckNotificationStatusUseCase } from '../../useCases/CheckNotificationStatusUseCase';
@@ -33,7 +32,6 @@ import { makeGetNotificationPriceRouter } from './getNotificationPrice/router';
 export const makeApplication =
   (env: SystemEnv) =>
   (
-    preLoadUseCase: PreLoadUseCase,
     uploadToS3UseCase: UploadToS3UseCase,
     sendNotificationUseCase: SendNotificationUseCase,
     createEventStreamUseCase: CreateEventStreamUseCase,
@@ -49,7 +47,7 @@ export const makeApplication =
     const app = express();
     app.use(express.json());
     // create all routers and return the application
-    app.use(makePreLoadRouter(preLoadUseCase));
+    app.use(makePreLoadRouter(env));
     app.use(makeUploadToS3Router(uploadToS3UseCase));
     app.use(makeSendNotificationRouter(sendNotificationUseCase));
     app.use(makeCreateEventStreamRouter(createEventStreamUseCase));

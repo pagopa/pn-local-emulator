@@ -5,11 +5,12 @@ import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
 import * as TE from 'fp-ts/TaskEither';
 import * as Apply from 'fp-ts/Apply';
+import { flow } from 'fp-ts/lib/function';
 import { Handler, toExpressHandler } from '../Handler';
 import * as Problem from '../Problem';
 import { makeConsumeEventStreamRecord } from '../../../domain/ConsumeEventStreamRecord';
 import { SystemEnv } from '../../../useCases/SystemEnv';
-import { withSnapshot } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/UseCase';
 
 export const consumeEventStreamHandler =
   (env: SystemEnv): Handler =>
@@ -20,7 +21,7 @@ export const consumeEventStreamHandler =
         streamId: t.string.decode(req.params.streamId),
         lastEventId: t.union([t.string, t.undefined]).decode(req.query.lastEventId),
       }),
-      E.map((input) => withSnapshot(env)(input)(makeConsumeEventStreamRecord)),
+      E.map(flow(makeConsumeEventStreamRecord(env), persistRecord(env))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),

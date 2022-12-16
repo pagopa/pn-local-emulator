@@ -6,7 +6,7 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import * as data from '../../domain/__tests__/data';
 import { ConsumeEventStreamRecord } from '../../domain/ConsumeEventStreamRecord';
 
-describe('ConsumeEventStreamUseCase', () => {
+describe.skip('ConsumeEventStreamUseCase', () => {
   describe('200 response', () => {
     it('should return empty array', async () => {
       const useCase = ConsumeEventStreamUseCase(data.makeTestSystemEnv());
