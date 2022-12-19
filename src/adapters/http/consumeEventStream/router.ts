@@ -12,7 +12,7 @@ import { makeConsumeEventStreamRecord } from '../../../domain/ConsumeEventStream
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { persistRecord } from '../../../useCases/PersistRecord';
 
-export const handler =
+const handler =
   (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
