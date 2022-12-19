@@ -11,7 +11,6 @@ import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { computeSnapshot } from './Snapshot';
 import { Response, UnauthorizedMessageBody } from './types';
-import { GetNotificationDocumentMetadataRecord } from './GetNotificationDocumentMetadataRecord';
 
 export type GetPaymentNotificationMetadataRecord = AuditRecord & {
   type: 'GetPaymentNotificationMetadataRecord';
