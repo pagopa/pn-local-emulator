@@ -1,6 +1,9 @@
 import * as ConsumeEventStreamRecordChecks from '../ConsumeEventStreamRecordChecks';
 import * as useCaseData from './data';
 import { hasIunPopulatedC } from '../ConsumeEventStreamRecordChecks';
+import * as data from '../../__tests__/data';
+import { consumeEventStreamRecordWithAcceptedEvent } from './data';
+import { checkNotificationStatusRecordAccepted, consumeEventStreamRecordDelivered } from '../../__tests__/data';
 
 describe('ConsumeEventStreamRecordChecks', () => {
   it('requestWithStreamIdProvidedHasBeenMadeC', () => {
@@ -34,5 +37,13 @@ describe('ConsumeEventStreamRecordChecks', () => {
     expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
     expect(check(useCaseData.consumeEventsOnCreatedStreamWithOnlyInValidationEvent)).toStrictEqual(false);
     expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
+  });
+
+  it('matchesAtLeastOneIun', () => {
+    const check = ConsumeEventStreamRecordChecks.matchesAtLeastOneIunC;
+    expect(check([])(data.aIun.valid)).toStrictEqual(false);
+    expect(check([data.consumeEventStreamRecord])(data.aIun.valid)).toStrictEqual(false);
+    expect(check([data.consumeEventStreamRecordDelivered])(data.aIun.invalid)).toStrictEqual(false);
+    expect(check([data.consumeEventStreamRecordDelivered])(data.aIun.valid)).toStrictEqual(true);
   });
 });
