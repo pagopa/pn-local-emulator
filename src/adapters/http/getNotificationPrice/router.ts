@@ -7,7 +7,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as Apply from 'fp-ts/Apply';
 import * as Problem from '../Problem';
 import { Handler, toExpressHandler } from '../Handler';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 import { makeGetNotificationPriceRecord } from '../../../domain/GetNotificationPriceRecord';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 

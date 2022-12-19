@@ -12,7 +12,7 @@ import { Handler, toExpressHandler } from '../Handler';
 import * as Problem from '../Problem';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeGetNotificationDocumentMetadataRecord } from '../../../domain/GetNotificationDocumentMetadataRecord';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 
 const handler =
   (env: SystemEnv): Handler =>

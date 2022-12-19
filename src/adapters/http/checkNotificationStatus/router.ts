@@ -10,7 +10,7 @@ import * as Problem from '../Problem';
 import { Handler, toExpressHandler } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeCheckNotificationStatusRecord } from '../../../domain/CheckNotificationStatusRecord';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 
 const checkNotificationStatusInputType = t.union([
   t.strict({

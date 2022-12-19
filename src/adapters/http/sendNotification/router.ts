@@ -9,7 +9,7 @@ import { constant } from 'fp-ts/lib/function';
 import * as Problem from '../Problem';
 import { Handler, toExpressHandler, removeNullValues } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 import { makeNewNotificationRecord } from '../../../domain/NewNotificationRecord';
 import { NewNotificationRequest } from '../../../generated/pnapi/NewNotificationRequest';
 

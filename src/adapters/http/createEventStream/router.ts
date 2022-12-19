@@ -11,7 +11,7 @@ import { Handler, toExpressHandler } from '../Handler';
 import { StreamCreationRequest } from '../../../generated/streams/StreamCreationRequest';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeCreateEventStreamRecord } from '../../../domain/CreateEventStreamRecord';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 
 // TODO: Try to use generated responseType
 const handler =

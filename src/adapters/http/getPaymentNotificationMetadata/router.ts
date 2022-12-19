@@ -9,7 +9,7 @@ import * as Apply from 'fp-ts/Apply';
 import { Handler, toExpressHandler } from '../Handler';
 import { IUN } from '../../../generated/pnapi/IUN';
 import * as Problem from '../Problem';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 import { makeGetPaymentNotificationMetadataRecord } from '../../../domain/GetPaymentNotificationMetadataRecord';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 

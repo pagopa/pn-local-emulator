@@ -11,7 +11,7 @@ import { IUN } from '../../../generated/pnapi/IUN';
 import * as Problem from '../Problem';
 import { makeGetNotificationDetailRecord } from '../../../domain/GetNotificationDetailRecord';
 import { SystemEnv } from '../../../useCases/SystemEnv';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 
 const handler =
   (env: SystemEnv): Handler =>

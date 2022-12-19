@@ -8,7 +8,7 @@ import * as Apply from 'fp-ts/Apply';
 import * as Problem from '../Problem';
 import { Handler, toExpressHandler } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 import { makeListEventStreamRecord } from '../../../domain/ListEventStreamRecord';
 
 const handler =

@@ -10,7 +10,7 @@ import { Handler, toExpressHandler } from '../Handler';
 import * as Problem from '../Problem';
 import { IUN } from '../../../generated/pnapi/IUN';
 import { LegalFactCategory } from '../../../generated/pnapi/LegalFactCategory';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeLegalFactDownloadMetadataRecord } from '../../../domain/LegalFactDownloadMetadataRecord';
 

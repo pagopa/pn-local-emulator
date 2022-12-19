@@ -9,7 +9,7 @@ import * as Problem from '../Problem';
 import { PreLoadBulkRequest } from '../../../generated/pnapi/PreLoadBulkRequest';
 import { Handler, toExpressHandler } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 import { makePreLoadRecord } from '../../../domain/PreLoadRecord';
 
 const handler =

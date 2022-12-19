@@ -15,7 +15,7 @@ import { AmzChecksumSHA256 } from '../../../generated/api/AmzChecksumSHA256';
 import { Handler, toExpressHandler } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeUploadToS3Record } from '../../../domain/UploadToS3Record';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 
 const computeSha256 = (bytes: Buffer) => crypto.createHash('sha256').update(bytes).digest('base64');
 

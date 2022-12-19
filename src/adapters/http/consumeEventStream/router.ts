@@ -10,7 +10,7 @@ import { Handler, toExpressHandler } from '../Handler';
 import * as Problem from '../Problem';
 import { makeConsumeEventStreamRecord } from '../../../domain/ConsumeEventStreamRecord';
 import { SystemEnv } from '../../../useCases/SystemEnv';
-import { persistRecord } from '../../../useCases/UseCase';
+import { persistRecord } from '../../../useCases/PersistRecord';
 
 export const handler =
   (env: SystemEnv): Handler =>
