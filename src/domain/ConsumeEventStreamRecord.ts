@@ -67,7 +67,7 @@ export const makeConsumeEventStreamRecord =
           // override the eventId to create a simple cursor based pagination
           RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
           RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
-          (output) => ({ statusCode: 200 as const, returned: output })
+          (output) => ({ statusCode: 200 as const, headers: { 'retry-after': env.retryAfterMs }, returned: output })
         )
       )
     ),

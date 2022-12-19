@@ -15,6 +15,7 @@ pipe(
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
       senderPAId: 'aSenderPaId', // TODO: senderPaId move this value into configuration
+      retryAfterMs: 1000,
       downloadDocumentURL: config.server.downloadDocumentURL,
       sampleStaticPdfFileName: 'sample.pdf',
       iunGenerator: IUNGenerator,

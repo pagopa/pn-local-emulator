@@ -49,7 +49,10 @@ export const makeCheckNotificationStatusRecord =
                 t.exact(NewNotificationRequestStatusResponse).encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
             )
           ),
-          O.map((response) => ({ statusCode: 200 as const, returned: response })),
+          O.map((response) => ({
+            statusCode: 200 as const,
+            returned: { ...response, retryAfter: env.retryAfterMs / 1000 },
+          })),
           O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
         )
       )

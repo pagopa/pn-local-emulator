@@ -25,7 +25,7 @@ export const handler =
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
+          ({ output }) => T.of(res.header(output.headers).status(output.statusCode).send(output.returned))
         )
       )
     );
