@@ -1,34 +1,39 @@
 import express from 'express';
-import { pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
+import { flow, pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
+import * as Apply from 'fp-ts/Apply';
+import { constant } from 'fp-ts/lib/function';
 import * as Problem from '../Problem';
-import { ApiKey } from '../../../generated/definitions/ApiKey';
-import { NewNotificationRequest } from '../../../generated/definitions/NewNotificationRequest';
-import { SendNotificationUseCase } from '../../../useCases/SendNotificationUseCase';
 import { Handler, toExpressHandler, removeNullValues } from '../Handler';
+import { SystemEnv } from '../../../useCases/SystemEnv';
+import { persistRecord } from '../../../useCases/PersistRecord';
+import { makeNewNotificationRecord } from '../../../domain/NewNotificationRecord';
+import { NewNotificationRequest } from '../../../generated/pnapi/NewNotificationRequest';
 
 const handler =
-  (sendNotificationUseCase: SendNotificationUseCase): Handler =>
+  (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
-      E.of(sendNotificationUseCase),
-      E.ap(ApiKey.decode(req.headers['x-api-key'])),
-      E.ap(NewNotificationRequest.decode(removeNullValues(req.body))),
-      // Create response
+      Apply.sequenceS(E.Apply)({
+        apiKey: t.string.decode(req.headers['x-api-key']),
+        body: NewNotificationRequest.decode(removeNullValues(req.body)),
+      }),
+      E.map(flow(makeNewNotificationRecord(env), constant, persistRecord(env))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(_.statusCode).send(_.returned))
+          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
         )
       )
     );
 
-export const makeSendNotificationRouter = (sendNotificationUseCase: SendNotificationUseCase): express.Router => {
+export const makeSendNotificationRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.post('/delivery/requests', toExpressHandler(handler(sendNotificationUseCase)));
+  router.post('/delivery/requests', toExpressHandler(handler(env)));
 
   return router;
 };

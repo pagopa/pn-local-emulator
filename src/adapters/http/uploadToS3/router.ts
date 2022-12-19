@@ -1,28 +1,37 @@
+import crypto from 'crypto';
 import express from 'express';
 import { pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
+import * as Apply from 'fp-ts/Apply';
+import { constant, flow } from 'fp-ts/lib/function';
 import * as Problem from '../Problem';
-import { AmzDocumentKey } from '../../../generated/definitions/AmzDocumentKey';
-import { AmzSdkChecksumAlg } from '../../../generated/definitions/AmzSdkChecksumAlg';
-import { AmzMetaSecret } from '../../../generated/definitions/AmzMetaSecret';
-import { AmzChecksumSHA256 } from '../../../generated/definitions/AmzChecksumSHA256';
-import { UploadToS3UseCase } from '../../../useCases/UploadToS3UseCase';
+import { AmzDocumentKey } from '../../../generated/api/AmzDocumentKey';
+import { AmzSdkChecksumAlg } from '../../../generated/api/AmzSdkChecksumAlg';
+import { AmzMetaSecret } from '../../../generated/api/AmzMetaSecret';
+import { AmzChecksumSHA256 } from '../../../generated/api/AmzChecksumSHA256';
 import { Handler, toExpressHandler } from '../Handler';
+import { SystemEnv } from '../../../useCases/SystemEnv';
+import { makeUploadToS3Record } from '../../../domain/UploadToS3Record';
+import { persistRecord } from '../../../useCases/PersistRecord';
+
+const computeSha256 = (bytes: Buffer) => crypto.createHash('sha256').update(bytes).digest('base64');
 
 const handler =
-  (uploadToS3UseCase: UploadToS3UseCase): Handler =>
+  (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
-      E.of(uploadToS3UseCase),
-      E.ap(t.string.decode(req.url)),
-      E.ap(AmzDocumentKey.decode(req.params.key)),
-      E.ap(t.union([t.undefined, AmzSdkChecksumAlg]).decode(req.headers['x-amz-sdk-checksum-algorithm'])),
-      E.ap(AmzMetaSecret.decode(req.headers['x-amz-meta-secret'])),
-      E.ap(AmzChecksumSHA256.decode(req.headers['x-amz-checksum-sha256'])),
-      E.ap(E.of(req.body)),
+      Apply.sequenceS(E.Apply)({
+        url: t.string.decode(req.url),
+        key: AmzDocumentKey.decode(req.params.key),
+        checksumAlg: t.union([t.undefined, AmzSdkChecksumAlg]).decode(req.headers['x-amz-sdk-checksum-algorithm']),
+        secret: AmzMetaSecret.decode(req.headers['x-amz-meta-secret']),
+        checksum: AmzChecksumSHA256.decode(req.headers['x-amz-checksum-sha256']),
+        computedSha256: E.of(computeSha256(req.body)),
+      }),
+      E.map(flow(makeUploadToS3Record(env), constant, persistRecord(env))),
       // Create response
       E.map(
         TE.fold(
@@ -32,10 +41,14 @@ const handler =
       )
     );
 
-export const makeUploadToS3Router = (uploadToS3UseCase: UploadToS3UseCase): express.Router => {
+export const makeUploadToS3Router = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.put('/uploadS3/:key', express.raw({ type: 'application/pdf' }), toExpressHandler(handler(uploadToS3UseCase)));
+  router.put(
+    '/uploadS3/:key',
+    express.raw({ type: 'application/pdf', limit: '100mb' }),
+    toExpressHandler(handler(env))
+  );
 
   return router;
 };

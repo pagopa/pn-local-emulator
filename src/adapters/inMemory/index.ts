@@ -1,11 +1,11 @@
 import * as TE from 'fp-ts/TaskEither';
-import { Repository } from '../../domain/Repository';
+import { Record, RecordRepository } from '../../domain/Repository';
 import { Logger } from '../../logger';
 
 // TODO: Instead of mutable variable, try to use the State Monad (or STM)
-export const makeRepository =
+export const makeRecordRepository =
   (logger: Logger) =>
-  <T>(snapshot: ReadonlyArray<T>): Repository<T> => {
+  (snapshot: ReadonlyArray<Record>): RecordRepository => {
     // TODO: For now we are simulating a database using a mutable variable
     // eslint-disable-next-line functional/no-let
     let store = [...snapshot];

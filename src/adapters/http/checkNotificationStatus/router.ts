@@ -4,51 +4,49 @@ import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
 import * as TE from 'fp-ts/TaskEither';
+import * as Apply from 'fp-ts/Apply';
+import { flow } from 'fp-ts/lib/function';
 import * as Problem from '../Problem';
 import { Handler, toExpressHandler } from '../Handler';
-import { NotificationRequestId } from '../../../generated/definitions/NotificationRequestId';
-import { PaProtocolNumber } from '../../../generated/definitions/PaProtocolNumber';
-import { IdempotenceToken } from '../../../generated/definitions/IdempotenceToken';
-import { CheckNotificationStatusUseCase } from '../../../useCases/CheckNotificationStatusUseCase';
-import { ApiKey } from '../../../generated/definitions/ApiKey';
+import { SystemEnv } from '../../../useCases/SystemEnv';
+import { makeCheckNotificationStatusRecord } from '../../../domain/CheckNotificationStatusRecord';
+import { persistRecord } from '../../../useCases/PersistRecord';
 
 const checkNotificationStatusInputType = t.union([
   t.strict({
-    notificationRequestId: NotificationRequestId,
+    notificationRequestId: t.string,
   }),
   t.strict({
-    paProtocolNumber: PaProtocolNumber,
-    idempotenceToken: t.union([t.undefined, IdempotenceToken]),
+    paProtocolNumber: t.string,
+    idempotenceToken: t.union([t.undefined, t.string]),
   }),
 ]);
 
-const checkNotificationStatusHandler =
-  (checkNotificationStatusUseCase: CheckNotificationStatusUseCase): Handler =>
+const handler =
+  (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
-      E.of(checkNotificationStatusUseCase),
-      E.ap(ApiKey.decode(req.headers['x-api-key'])),
-      E.ap(
-        checkNotificationStatusInputType.decode({
+      Apply.sequenceS(E.Apply)({
+        apiKey: t.string.decode(req.headers['x-api-key']),
+        body: checkNotificationStatusInputType.decode({
           notificationRequestId: req.query.notificationRequestId,
           paProtocolNumber: req.query.paProtocolNumber,
           idempotenceToken: req.query.idempotenceToken,
-        })
-      ),
+        }),
+      }),
+      E.map(flow(makeCheckNotificationStatusRecord(env), persistRecord(env))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(_.statusCode).send(_.returned))
+          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
         )
       )
     );
 
-export const makeNotificationStatusRouter = (
-  checkNotificationStatusUseCase: CheckNotificationStatusUseCase
-): express.Router => {
+export const makeNotificationStatusRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery/requests', toExpressHandler(checkNotificationStatusHandler(checkNotificationStatusUseCase)));
+  router.get('/delivery/requests', toExpressHandler(handler(env)));
 
   return router;
 };

@@ -1,35 +1,41 @@
 import express from 'express';
+import * as t from 'io-ts';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
 import * as TE from 'fp-ts/TaskEither';
+import * as Apply from 'fp-ts/Apply';
+import { constant, flow } from 'fp-ts/lib/function';
 import * as Problem from '../Problem';
-import { CreateEventStreamUseCase } from '../../../useCases/CreateEventStreamUseCase';
 import { Handler, toExpressHandler } from '../Handler';
-import { ApiKey } from '../../../generated/definitions/ApiKey';
 import { StreamCreationRequest } from '../../../generated/streams/StreamCreationRequest';
+import { SystemEnv } from '../../../useCases/SystemEnv';
+import { makeCreateEventStreamRecord } from '../../../domain/CreateEventStreamRecord';
+import { persistRecord } from '../../../useCases/PersistRecord';
 
 // TODO: Try to use generated responseType
 const handler =
-  (createEventStreamUseCase: CreateEventStreamUseCase): Handler =>
+  (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
-      E.of(createEventStreamUseCase),
-      E.ap(ApiKey.decode(req.headers['x-api-key'])),
-      E.ap(StreamCreationRequest.decode(req.body)),
+      Apply.sequenceS(E.Apply)({
+        apiKey: t.string.decode(req.headers['x-api-key']),
+        body: StreamCreationRequest.decode(req.body),
+      }),
+      E.map(flow(makeCreateEventStreamRecord(env), constant, persistRecord(env))),
       // Create response
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(_.statusCode).send(_.returned))
+          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
         )
       )
     );
 
-export const makeCreateEventStreamRouter = (createEventStreamUseCase: CreateEventStreamUseCase): express.Router => {
+export const makeCreateEventStreamRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.post('/delivery-progresses/streams', toExpressHandler(handler(createEventStreamUseCase)));
+  router.post('/delivery-progresses/streams', toExpressHandler(handler(env)));
 
   return router;
 };

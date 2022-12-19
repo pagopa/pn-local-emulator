@@ -4,14 +4,16 @@ import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
 import * as TE from 'fp-ts/TaskEither';
 import * as Problem from '../Problem';
-import { GetChecklistResultUseCase } from '../../../useCases/GetChecklistResultUseCase';
 import { Handler, toExpressHandler } from '../Handler';
+import { evaluateReport } from '../../../domain/reportengine/reportengine';
+import { report } from '../../../domain/checks/report';
+import { SystemEnv } from '../../../useCases/SystemEnv';
 
-const getChecklistResultHandler =
-  (getChecklistResultUseCase: GetChecklistResultUseCase): Handler =>
+const handler =
+  (env: SystemEnv): Handler =>
   (_, res) =>
     pipe(
-      E.of(getChecklistResultUseCase()),
+      E.of(pipe(env.recordRepository.list(), TE.map(evaluateReport(report)))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
@@ -21,10 +23,10 @@ const getChecklistResultHandler =
       )
     );
 
-export const makeChecklistRouter = (getChecklistResultUseCase: GetChecklistResultUseCase): express.Router => {
+export const makeChecklistRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/checklistresult', toExpressHandler(getChecklistResultHandler(getChecklistResultUseCase)));
+  router.get('/checklistresult', toExpressHandler(handler(env)));
 
   return router;
 };

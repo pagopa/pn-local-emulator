@@ -3,6 +3,21 @@ info:
   title: 'Internal HTTP API'
   version: '0.0.0'
 paths:
+  "/uploadS3/{key}":
+    parameters:
+      - $ref: "#/components/parameters/pathAwsDocumentKeyParam"
+    put:
+      summary: "Simulate the s3 upload"
+      description: >
+        This endpoint simulate the upload to s3.
+      parameters:
+        - $ref: "#/components/parameters/headerAmzSdkChecksumAlgParam"
+        - $ref: "#/components/parameters/headerAmzMetaSecretParam"
+        - $ref: "#/components/parameters/headerAmzChecksumSHA256Param"
+      responses:
+        '200':
+          $ref: "#/components/responses/200UploadS3Response"
+
   "/checklistresult":
     get:
       description: >-
@@ -11,8 +26,52 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/200ChecklistResultResponse'
+
 components:
+  parameters:
+    pathAwsDocumentKeyParam:
+      name: key
+      in: path
+      description: The key of the document
+      required: true
+      schema:
+        $ref: '#/components/schemas/AmzDocumentKey'
+    headerAmzSdkChecksumAlgParam:
+      name: x-amz-sdk-checksum-algorithm
+      in: header
+      required: false
+      schema:
+        $ref: '#/components/schemas/AmzSdkChecksumAlg'
+    headerAmzMetaSecretParam:
+      name: x-amz-meta-secret
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/AmzMetaSecret'
+    headerAmzChecksumSHA256Param:
+      name: x-amz-checksum-sha256
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/AmzChecksumSHA256'
+
   schemas:
+    ApiKey:
+      type: string
+    AmzDocumentKey:
+      example: '8F7E/9A3B/1234/AB87'
+      type: string
+    AmzSdkChecksumAlg:
+      type: string
+      enum:
+        - SHA256
+    AmzMetaSecret:
+      type: string
+    AmzChecksumSHA256:
+      type: string
+    AmzVersionId:
+      type: integer
+
     ChecklistResult:
       type: array
       items:
@@ -42,7 +101,15 @@ components:
       required:
         - name
         - result
+
   responses:
+    200UploadS3Response:
+      description: >
+        The upload to s3 response
+      headers:
+        x-amz-version-id:
+          schema:
+          $ref: "#/components/schemas/AmzVersionId"
     200ChecklistResultResponse:
       description: Checklist result
       content:

@@ -1,8 +1,6 @@
 import * as data from '../../__tests__/data';
 import { EventTypeEnum } from '../../../generated/streams/StreamCreationRequest';
 import { unauthorizedResponse } from '../../types';
-import { aDate, notificationId } from '../../__tests__/data';
-import { NewStatusEnum } from '../../../generated/streams/ProgressResponseElement';
 
 // TODO: Refactor using fast-check
 export const preLoadRecordSingletonList = [data.preLoadRecord];
