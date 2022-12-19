@@ -9,7 +9,7 @@ import { Notification } from './Notification';
 import { Record, AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
-import { Snapshot } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
@@ -53,14 +53,15 @@ const makeProgressResponseElementFromNotificationRequest =
 export const makeConsumeEventStreamRecord =
   (env: DomainEnv) =>
   (input: ConsumeEventStreamRecord['input']) =>
-  (snapshot: Snapshot): ConsumeEventStreamRecord => ({
+  (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => ({
     type: 'ConsumeEventStreamRecord',
     input,
     output: pipe(
       authorizeApiKey(input.apiKey),
       E.foldW(identity, () =>
         pipe(
-          snapshot,
+          records,
+          computeSnapshot(env),
           // create ProgressResponse
           makeProgressResponse(env.dateGenerator()),
           // override the eventId to create a simple cursor based pagination

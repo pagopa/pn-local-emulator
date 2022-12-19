@@ -1,40 +1,43 @@
 import express from 'express';
 import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import * as tt from 'io-ts-types';
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/TaskEither';
+import * as Apply from 'fp-ts/Apply';
 import { Handler, toExpressHandler } from '../Handler';
-import { GetPaymentNotificationMetadataUseCase } from '../../../useCases/GetPaymentNotificationMetadataUseCase';
 import { IUN } from '../../../generated/pnapi/IUN';
 import * as Problem from '../Problem';
+import { persistRecord } from '../../../useCases/PersistRecord';
+import { makeGetPaymentNotificationMetadataRecord } from '../../../domain/GetPaymentNotificationMetadataRecord';
+import { SystemEnv } from '../../../useCases/SystemEnv';
 
 const handler =
-  (getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase): Handler =>
+  (env: SystemEnv): Handler =>
   (req, res) =>
     pipe(
-      E.of(getPaymentNotificationMetadataUseCase),
-      E.ap(t.string.decode(req.headers['x-api-key'])),
-      E.ap(IUN.decode(req.params.iun)),
-      E.ap(tt.NumberFromString.decode(req.params.recipientIdx)),
-      E.ap(t.string.decode(req.params.attachmentName)),
+      Apply.sequenceS(E.Apply)({
+        apiKey: t.string.decode(req.headers['x-api-key']),
+        iun: IUN.decode(req.params.iun),
+        recipientId: tt.NumberFromString.decode(req.params.recipientIdx),
+        attachmentName: t.string.decode(req.params.attachmentName),
+      }),
+      E.map(flow(makeGetPaymentNotificationMetadataRecord(env), persistRecord(env))),
       E.map(
         TE.fold(
-          () => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(_.statusCode).send(_.returned))
+          (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
+          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
         )
       )
     );
 
-export const makeGetPaymentNotificationMetadataRouter = (
-  getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase
-): express.Router => {
+export const makeGetPaymentNotificationMetadataRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
   router.get(
     '/delivery/notifications/sent/:iun/attachments/payment/:recipientIdx/:attachmentName',
-    toExpressHandler(handler(getPaymentNotificationMetadataUseCase))
+    toExpressHandler(handler(env))
   );
 
   return router;
