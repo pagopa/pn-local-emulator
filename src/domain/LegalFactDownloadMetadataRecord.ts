@@ -20,7 +20,7 @@ export type LegalFactDownloadMetadataRecord = AuditRecord & {
 export const makeLegalFactDownloadMetadataResponse = (env: DomainEnv): LegalFactDownloadMetadataResponse => ({
   filename: 'dummy-filename',
   contentLength: 10,
-  url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}`,
+  url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}?correlation-id=${env.iunGenerator()}`,
 });
 
 export const makeLegalFactDownloadMetadataRecord =

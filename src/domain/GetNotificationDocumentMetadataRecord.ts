@@ -27,7 +27,7 @@ export const makeNotificationAttachmentDownloadMetadataResponse =
     contentType: document.contentType,
     contentLength: 0,
     sha256: document.digests.sha256,
-    url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}`,
+    url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}?correlation-id=${env.iunGenerator()}`,
   });
 
 export const makeGetNotificationDocumentMetadataRecord =

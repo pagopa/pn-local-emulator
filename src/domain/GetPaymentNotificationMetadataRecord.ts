@@ -44,7 +44,7 @@ const makePaymentNotificationAttachmentDownloadMetadataResponse =
     contentType: paymentNotificationAttachment.contentType,
     contentLength: 0,
     sha256: paymentNotificationAttachment.digests.sha256,
-    url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}`,
+    url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}?correlation-id=${env.iunGenerator()}`,
   });
 
 export const makeGetPaymentNotificationMetadataRecord =
