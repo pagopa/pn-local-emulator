@@ -1,6 +1,6 @@
 import * as O from 'fp-ts/Option';
 import { DomainEnv } from './DomainEnv';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response } from './types';
 
 export type DownloadRecord = AuditRecord & {
