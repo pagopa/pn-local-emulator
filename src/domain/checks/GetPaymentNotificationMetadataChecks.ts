@@ -8,7 +8,6 @@ import { isGetPaymentNotificationMetadataRecord } from '../GetPaymentNotificatio
 import { Record } from '../Repository';
 import * as ConsumeEventStreamRecordChecks from './ConsumeEventStreamRecordChecks';
 
-// TODO add tests
 export const getPaymentNotificationMetadataWithIunC = pipe(
   R.Do,
   R.apS('consumeEventStreamRecordList', RA.filterMap(isConsumeEventStreamRecord)),
@@ -27,6 +26,7 @@ export const hasPAGOPAAsAttachmentNameC = flow(
   RA.exists(({ input }) => input.attachmentName === 'PAGOPA')
 );
 
-export const matchesIunAndHasPAGOPAAsAttachmentName: Reader<ReadonlyArray<Record>, boolean> = RA.exists(
-  flow(RA.of, pipe(getPaymentNotificationMetadataWithIunC, P.and(hasPAGOPAAsAttachmentNameC)))
+export const matchesIunAndHasPAGOPAAsAttachmentName: Reader<ReadonlyArray<Record>, boolean> = pipe(
+  getPaymentNotificationMetadataWithIunC,
+  P.and(hasPAGOPAAsAttachmentNameC)
 );
