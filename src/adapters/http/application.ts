@@ -35,7 +35,7 @@ export const makeApplication = (env: SystemEnv): express.Application => {
   app.use(makeGetPaymentNotificationMetadataRouter(env));
   app.use(makeGetLegalFactDocumentRouter(env));
   app.use(makeGetNotificationPriceRouter(env));
-  app.use(makeDownloadDocumentRouter());
+  app.use(makeDownloadDocumentRouter(env));
   return app;
 };
 
