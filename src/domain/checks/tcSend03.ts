@@ -1,7 +1,6 @@
 import { Group } from '../reportengine/reportengine';
 import * as GetNotificationDocumentMetadataChecks from './GetNotificationDocumentMetadataChecks';
 import * as GetPaymentNotificationMetadataChecks from './GetPaymentNotificationMetadataChecks';
-import { downloadedNotificationDocumentC } from './GetNotificationDocumentMetadataChecks';
 
 export const tcSend03 = Group({
   'Download documents attached to the notification': Group({
@@ -18,7 +17,8 @@ export const tcSend03 = Group({
         GetPaymentNotificationMetadataChecks.getPaymentNotificationMetadataWithIunC,
       'Have you requested the metadata of the PAGOPA payment attachment with the IUN retrieved previously?':
         GetPaymentNotificationMetadataChecks.matchesIunAndHasPAGOPAAsAttachmentName,
-      'Have you downloaded the PDF of the payment document?': () => false,
+      'Have you downloaded the PDF of the payment document?':
+        GetPaymentNotificationMetadataChecks.downloadedPaymentDocumentC,
     }),
   }),
 });
