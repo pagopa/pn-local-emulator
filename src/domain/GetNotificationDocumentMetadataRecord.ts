@@ -6,10 +6,10 @@ import { IUN } from '../generated/pnapi/IUN';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/pnapi/NotificationAttachmentDownloadMetadataResponse';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
+import { makeNotificationAttachmentDownloadMetadataResponse } from './NotificationAttachmentDownloadMetadataResponse';
 
 export type GetNotificationDocumentMetadataRecord = AuditRecord & {
   type: 'GetNotificationDocumentMetadataRecord';
@@ -19,16 +19,6 @@ export type GetNotificationDocumentMetadataRecord = AuditRecord & {
     | Response<403, UnauthorizedMessageBody>
     | Response<404>;
 };
-
-export const makeNotificationAttachmentDownloadMetadataResponse =
-  (env: DomainEnv) =>
-  (document: Notification['documents'][0]): NotificationAttachmentDownloadMetadataResponse => ({
-    filename: document.ref.key,
-    contentType: document.contentType,
-    contentLength: 0,
-    sha256: document.digests.sha256,
-    url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}?correlation-id=${env.iunGenerator()}`,
-  });
 
 export const makeGetNotificationDocumentMetadataRecord =
   (env: DomainEnv) =>

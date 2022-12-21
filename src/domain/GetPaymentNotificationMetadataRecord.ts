@@ -11,6 +11,7 @@ import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { computeSnapshot } from './Snapshot';
 import { Response, UnauthorizedMessageBody } from './types';
+import { makeNotificationAttachmentDownloadMetadataResponse } from './NotificationAttachmentDownloadMetadataResponse';
 
 export type GetPaymentNotificationMetadataRecord = AuditRecord & {
   type: 'GetPaymentNotificationMetadataRecord';
@@ -37,16 +38,6 @@ const getNotificationPaymentAttachment =
     }
   };
 
-const makePaymentNotificationAttachmentDownloadMetadataResponse =
-  (env: DomainEnv) =>
-  (paymentNotificationAttachment: NotificationPaymentAttachment): NotificationAttachmentDownloadMetadataResponse => ({
-    filename: paymentNotificationAttachment.ref.key,
-    contentType: paymentNotificationAttachment.contentType,
-    contentLength: 0,
-    sha256: paymentNotificationAttachment.digests.sha256,
-    url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}?correlation-id=${env.iunGenerator()}`,
-  });
-
 export const makeGetPaymentNotificationMetadataRecord =
   (env: DomainEnv) =>
   (input: GetPaymentNotificationMetadataRecord['input']) =>
@@ -63,7 +54,7 @@ export const makeGetPaymentNotificationMetadataRecord =
           RA.chain((notification) => (notification.iun === input.iun ? notification.recipients : RA.empty)),
           RA.filterMap((recipient) => O.fromNullable(recipient.payment)),
           RA.findLastMap(getNotificationPaymentAttachment(input.attachmentName)),
-          O.map(makePaymentNotificationAttachmentDownloadMetadataResponse(env)),
+          O.map(makeNotificationAttachmentDownloadMetadataResponse(env)),
           O.map((paymentAttachment) => ({ statusCode: 200 as const, returned: paymentAttachment })),
           O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
         )
