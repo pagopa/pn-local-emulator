@@ -10,6 +10,7 @@ import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { computeSnapshot } from './Snapshot';
 import { Response, UnauthorizedMessageBody } from './types';
+import { makePnDownloadDocumentURL } from './PnDownloadDocumentURL';
 
 export type LegalFactDownloadMetadataRecord = AuditRecord & {
   type: 'LegalFactDownloadMetadataRecord';
@@ -20,7 +21,7 @@ export type LegalFactDownloadMetadataRecord = AuditRecord & {
 export const makeLegalFactDownloadMetadataResponse = (env: DomainEnv): LegalFactDownloadMetadataResponse => ({
   filename: 'dummy-filename',
   contentLength: 10,
-  url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}?correlation-id=${env.iunGenerator()}`,
+  url: makePnDownloadDocumentURL(env),
 });
 
 export const makeLegalFactDownloadMetadataRecord =
