@@ -12,7 +12,7 @@ describe('GetNotificationDocumentMetadataChecks', () => {
     );
   });
 
-  it('calledDownloadEndpointC', () => {
+  it('downloadedNotificationDocumentC', () => {
     const check = GetNotificationDocumentMetadataChecks.downloadedNotificationDocumentC;
     expect(check([])).toStrictEqual(false);
     expect(check([data.consumeEventStreamRecordDelivered])).toStrictEqual(false);
