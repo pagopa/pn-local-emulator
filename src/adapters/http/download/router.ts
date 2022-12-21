@@ -7,12 +7,17 @@ import { makeDownloadRecord } from '../../../domain/DownloadRecord';
 import { persistRecord } from '../../../useCases/PersistRecord';
 
 const persistDownloadRecord =
-  (env: SystemEnv) => (req: express.Request, _res: express.Response, next: express.NextFunction) =>
+  (env: SystemEnv) =>
+  (req: express.Request, _res: express.Response, next: express.NextFunction): Promise<void> =>
     pipe(
       makeDownloadRecord(env)({ url: req.originalUrl }),
       constant,
       persistRecord(env),
-      TE.chain(() => TE.right(next()))
+      TE.bimap(
+        () => next(),
+        () => next()
+      ),
+      TE.toUnion
     )();
 
 export const makeDownloadDocumentRouter = (env: SystemEnv): express.Router => {
