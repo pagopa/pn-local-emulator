@@ -1,13 +1,17 @@
 import { pipe } from 'fp-ts/function';
+import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { DigitalAddressSourceEnum } from '../generated/pnapi/DigitalAddressSource';
+import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
 import { IUN } from '../generated/pnapi/IUN';
 import { LegalFactCategoryEnum } from '../generated/pnapi/LegalFactCategory';
-import { NewNotificationRequest } from '../generated/pnapi/NewNotificationRequest';
 import { NotificationRecipient } from '../generated/pnapi/NotificationRecipient';
 import { ResponseStatusEnum } from '../generated/pnapi/ResponseStatus';
 import { TimelineElement } from '../generated/pnapi/TimelineElement';
 import { TimelineElementCategoryEnum } from '../generated/pnapi/TimelineElementCategory';
+import { NotificationStatusHistory } from '../generated/pnapi/NotificationStatusHistory';
+import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
+import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 
 const makeTimelineListPEC =
@@ -152,11 +156,10 @@ const makeTimelineListPEC =
 
 export const makeTimelineList =
   (env: DomainEnv) =>
-  (iun: IUN) =>
-  (notification: NewNotificationRequest): ReadonlyArray<TimelineElement> =>
+  (notification: FullSentNotification): ReadonlyArray<TimelineElement> =>
     [
       {
-        elementId: `${iun}_request_accepted`,
+        elementId: `${notification.iun}_request_accepted`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
@@ -167,7 +170,7 @@ export const makeTimelineList =
         category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
       },
       {
-        elementId: `${iun}_aar_gen_1`,
+        elementId: `${notification.iun}_aar_gen_1`,
         timestamp: new Date(),
         legalFactsIds: [],
         category: TimelineElementCategoryEnum.AAR_GENERATION,
@@ -179,7 +182,7 @@ export const makeTimelineList =
         },
       },
       {
-        elementId: `${iun}_aar_gen_0`,
+        elementId: `${notification.iun}_aar_gen_0`,
         timestamp: new Date(),
         legalFactsIds: [],
         category: TimelineElementCategoryEnum.AAR_GENERATION,
@@ -190,5 +193,33 @@ export const makeTimelineList =
           generatedAarUrl: `safestorage://PN_AAR-0002-${env.iunGenerator()}`,
         },
       },
-      ...pipe(notification.recipients, RA.map(makeTimelineListPEC(env)(iun))),
+      ...pipe(notification.recipients, RA.chain(makeTimelineListPEC(env)(notification.iun))),
     ];
+
+export const makeNotificationStatusHistory =
+  (env: DomainEnv) =>
+  (timeline: ReadonlyArray<TimelineElement>): NotificationStatusHistory =>
+    [
+      {
+        status: NotificationStatusEnum.VIEWED,
+        activeFrom: pipe(
+          timeline,
+          RA.head,
+          O.fold(env.dateGenerator, ({ timestamp }) => timestamp || env.dateGenerator())
+        ),
+        relatedTimelineElements: pipe(
+          timeline,
+          RA.map(({ elementId }) => elementId || '')
+        ),
+      },
+    ];
+
+export const updateTimeline =
+  (env: DomainEnv) =>
+  (notification: Notification): Notification =>
+    pipe(notification, makeTimelineList(env), (timelineList) => ({
+      ...notification,
+      notificationStatus: NotificationStatusEnum.VIEWED,
+      notificationStatusHistory: makeNotificationStatusHistory(env)(timelineList),
+      timeline: timelineList,
+    }));
