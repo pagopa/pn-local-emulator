@@ -1,5 +1,6 @@
+import * as O from 'fp-ts/Option';
 import { DomainEnv } from './DomainEnv';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response } from './types';
 
 export type DownloadRecord = AuditRecord & {
@@ -7,6 +8,9 @@ export type DownloadRecord = AuditRecord & {
   input: { url: string };
   output: Response<200>;
 };
+
+export const isDownloadRecord = (record: Record): O.Option<DownloadRecord> =>
+  record.type === 'DownloadRecord' ? O.some(record) : O.none;
 
 export const makeDownloadRecord =
   (env: DomainEnv) =>

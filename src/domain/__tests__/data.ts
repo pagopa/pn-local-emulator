@@ -8,10 +8,7 @@ import { NewNotificationRecord } from '../NewNotificationRecord';
 import { PreLoadRecord } from '../PreLoadRecord';
 import { UploadToS3Record } from '../UploadToS3Record';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRecord';
-import {
-  GetNotificationDocumentMetadataRecord,
-  makeNotificationAttachmentDownloadMetadataResponse,
-} from '../GetNotificationDocumentMetadataRecord';
+import { GetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
 import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipient';
@@ -26,6 +23,8 @@ import {
 import { LegalFactCategoryEnum } from '../../generated/pnapi/LegalFactCategory';
 import { IUN } from '../../generated/pnapi/IUN';
 import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
+import { makeNotificationAttachmentDownloadMetadataResponse } from '../NotificationAttachmentDownloadMetadataResponse';
+import { DownloadRecord } from '../DownloadRecord';
 
 export const apiKey = {
   valid: 'key-value',
@@ -376,13 +375,15 @@ export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = 
 
 // GetNotificationDocumentMetadataRecord //////////////////////////////////////
 
+const getNotificationDocumentMetadataRecordOutput200: GetNotificationDocumentMetadataRecord['output'] = {
+  statusCode: 200,
+  returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
+};
+
 export const getNotificationDocumentMetadataRecord0: GetNotificationDocumentMetadataRecord = {
   type: 'GetNotificationDocumentMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 0 },
-  output: {
-    statusCode: 200,
-    returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
-  },
+  output: getNotificationDocumentMetadataRecordOutput200,
   loggedAt: aDate,
 };
 
@@ -401,10 +402,7 @@ export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMeta
 export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadataRecord = {
   type: 'GetPaymentNotificationMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, recipientId: 0, attachmentName: 'PAGOPA' },
-  output: {
-    statusCode: 200,
-    returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
-  },
+  output: getNotificationDocumentMetadataRecordOutput200,
   loggedAt: aDate,
 };
 
@@ -418,4 +416,20 @@ export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord
     returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),
   },
   loggedAt: aDate,
+};
+
+// DownloadRecord ////////////////////////////////////////////////////////////
+export const downloadRecord: DownloadRecord = {
+  type: 'DownloadRecord',
+  input: { url: getNotificationDocumentMetadataRecordOutput200.returned.url || aUrl },
+  output: {
+    statusCode: 200,
+    returned: undefined,
+  },
+  loggedAt: aDate,
+};
+
+export const downloadRecordWithFakeUrl: DownloadRecord = {
+  ...downloadRecord,
+  input: { url: 'https://fakeurl.com' },
 };
