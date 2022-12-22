@@ -27,12 +27,7 @@ export const computeSnapshot = (env: DomainEnv) =>
         RA.map((notificationRequest) =>
           pipe(
             notificationRequest,
-            makeNotification(
-              env.occurrencesAfterComplete,
-              env.senderPAId,
-              env.iunGenerator(),
-              env.dateGenerator()
-            )(checkNotificationStatusRecords)(consumeEventStreamRecords),
+            makeNotification(env)(checkNotificationStatusRecords)(consumeEventStreamRecords),
             E.fromOption(() => notificationRequest)
           )
         )

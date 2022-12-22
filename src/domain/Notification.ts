@@ -9,6 +9,8 @@ import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
 import { makeFullSentNotification } from './GetNotificationDetailRecord';
+import { DomainEnv } from './DomainEnv';
+import { updateTimeline } from './TimelineElement';
 
 export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 
@@ -53,7 +55,7 @@ const countFromConsume = (notificationRequestId: string) =>
  * Compose a NotificationRequest starting from a list of records
  */
 export const makeNotification =
-  (occurrencesAfterComplete: number, senderPaId: string, iun: IUN, sentAt: Date) =>
+  (env: DomainEnv) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
   (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>) =>
   (notificationRequest: NotificationRequest): O.Option<Notification> =>
@@ -63,7 +65,7 @@ export const makeNotification =
       // get iun from consume records
       O.alt(() => pipe(consumeEventStreamRecord, RA.findLastMap(getIunFromConsume(notificationRequest)))),
       // create Notification from iun if any
-      O.map((iun) => mkNotification(notificationRequest, sentAt, senderPaId, iun)),
+      O.map((iun) => mkNotification(notificationRequest, env.dateGenerator(), env.senderPAId, iun)),
       // try to create notification from find records
       // if no iun was found then create a new notification based on occurrences counter
       O.alt(() =>
@@ -73,9 +75,20 @@ export const makeNotification =
             pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
           ]),
           (occurrences) =>
-            occurrences >= occurrencesAfterComplete
-              ? O.some(mkNotification(notificationRequest, sentAt, senderPaId, iun))
+            occurrences >= env.occurrencesAfterComplete
+              ? O.some(mkNotification(notificationRequest, env.dateGenerator(), env.senderPAId, env.iunGenerator()))
               : O.none
+        )
+      ),
+      O.map((notification) =>
+        pipe(
+          M.concatAll(n.MonoidSum)([
+            pipe(findNotificationRequestRecord, countFromFind(notificationRequest.notificationRequestId)),
+            pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
+          ]),
+          (occurrences) =>
+            // when the notification is returned enough times, the timeline is updated
+            occurrences >= env.occurrencesAfterViewed ? updateTimeline(env)(notification) : notification
         )
       )
     );
