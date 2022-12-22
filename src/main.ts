@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { pipe } from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as http from './adapters/http/application';
@@ -20,6 +21,7 @@ pipe(
       sampleStaticPdfFileName: 'sample.pdf',
       iunGenerator: IUNGenerator,
       dateGenerator: () => new Date(),
+      uuidGenerator: () => crypto.randomUUID(),
       recordRepository: inMemory.makeRecordRepository(logger)([]),
       uploadToS3URL: config.server.uploadToS3URL,
     };

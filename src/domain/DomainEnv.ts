@@ -12,4 +12,5 @@ export type DomainEnv = {
   // generators
   iunGenerator: IO<IUN>;
   dateGenerator: IO<Date>;
+  uuidGenerator: IO<string>;
 };
