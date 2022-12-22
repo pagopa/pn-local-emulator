@@ -3,6 +3,10 @@
 
 A system that emulates a subset of the HTTP API provided by Piattaforma Notifiche platform, driven by well-defined use cases, and produces a report describing their coverage and correctness.
 
+## :book: Check out the documentation
+
+If you have to verify your integration, check out the [documentation](https://docs.pagopa.it/pnvalidator/) that describes the steps to run and use the `PnValidator`.
+
 ## How to use
 
 1. Start the `PnValidator` as described in the [How to run](#how-to-run) section.
@@ -18,44 +22,6 @@ If all the checks are `ok` then your integration covers the expected use cases.
 # this is an example, the port and the hostname depend on how you started the PnValidator system
 curl --location --request GET 'http://localhost:3000/checklistresult'
 ```
-
-## Testable use cases
-Currently, the `PnValidator` allows the emulation and testing of the use cases described down below. As the development proceeds, the list will expand.
-
-### TC-SEND-01
-Create a `NotificationRequest` providing two documents, the act to be notified and the pagoPA payment.
-
-1. Request two upload slots.
-2. Upload the two documents, act and payment, using the returned slots.
-3. Create a notification request carrying the following information:
-   - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
-   - the `recipients` field containing:
-      - `taxId`
-      - `digitalDomicile`
-      - `physicalAddress`
-      - `payment` referencing the payment file previously uploaded
-   - the `documents` field providing the act file previously uploaded
-
-### TC-SEND-01bis
-Create a `NotificationRequest` providing the act to be notified only (no payments are involved).
-
-1. Request an upload slot.
-2. Upload the act document using the returned slot.
-3. Create a notification request carrying the following information:
-    - `physicalCommunicationType` filled with `REGISTERED_LETTER_890` value
-    - the `recipients` field containing:
-        - `taxId`
-        - `digitalDomicile`
-        - `physicalAddress`
-    - the `documents` field providing the act file previously uploaded
-
-### TC-SEND-02
-Create an `EventStream` and consume it until the stream provides one or more notifications with a predefined status.
-
-1. Complete `TC-SEND-01` or `TC-SEND-01bis` use cases with success.
-2. Create a new `EventStream` with the `eventType` set to `TIMELINE`.
-3. Consume the `EventStream` multiple times until all the conditions are met.
-   - The conditions to be met are described in the endpoint that reports the use cases coverage (check [How to use](#how-to-use) section for more information).
 
 ## How to run
 We provide a couple of different ways to start the `PnValidator`:

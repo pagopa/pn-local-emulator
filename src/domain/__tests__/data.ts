@@ -8,10 +8,7 @@ import { NewNotificationRecord } from '../NewNotificationRecord';
 import { PreLoadRecord } from '../PreLoadRecord';
 import { UploadToS3Record } from '../UploadToS3Record';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRecord';
-import {
-  GetNotificationDocumentMetadataRecord,
-  makeNotificationAttachmentDownloadMetadataResponse,
-} from '../GetNotificationDocumentMetadataRecord';
+import { GetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
 import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipient';
@@ -26,6 +23,7 @@ import {
 import { LegalFactCategoryEnum } from '../../generated/pnapi/LegalFactCategory';
 import { IUN } from '../../generated/pnapi/IUN';
 import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
+import { makeNotificationAttachmentDownloadMetadataResponse } from '../NotificationAttachmentDownloadMetadataResponse';
 import { DownloadRecord } from '../DownloadRecord';
 
 export const apiKey = {
