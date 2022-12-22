@@ -21,6 +21,9 @@ export type GetNotificationDetailRecord = AuditRecord & {
   output: Response<200, FullSentNotification> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 
+export const isGetNotificationDetailRecord = (record: Record): O.Option<GetNotificationDetailRecord> =>
+  record.type === 'GetNotificationDetailRecord' ? O.some(record) : O.none;
+
 const makeTimelineElementId = (iun: IUN) => `${iun}_request_accepted`;
 
 const makeNotificationStatusHistoryElement = (

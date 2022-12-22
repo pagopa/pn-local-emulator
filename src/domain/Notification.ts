@@ -8,7 +8,11 @@ import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
-import { makeFullSentNotification } from './GetNotificationDetailRecord';
+import {
+  GetNotificationDetailRecord,
+  isGetNotificationDetailRecord,
+  makeFullSentNotification,
+} from './GetNotificationDetailRecord';
 import { DomainEnv } from './DomainEnv';
 import { updateTimeline } from './TimelineElement';
 
@@ -51,6 +55,14 @@ const countFromConsume = (notificationRequestId: string) =>
     RA.size
   );
 
+const countFromDetail = (iun: IUN) =>
+  flow(
+    RA.filterMap(isGetNotificationDetailRecord),
+    RA.filterMap(({ output }) => (output.statusCode === 200 ? O.some(output) : O.none)),
+    RA.filter(({ returned }) => returned.iun === iun),
+    RA.size
+  );
+
 /**
  * Compose a NotificationRequest starting from a list of records
  */
@@ -58,6 +70,7 @@ export const makeNotification =
   (env: DomainEnv) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
   (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>) =>
+  (getNotificationDetailRecord: ReadonlyArray<GetNotificationDetailRecord>) =>
   (notificationRequest: NotificationRequest): O.Option<Notification> =>
     pipe(
       // get iun from find records
@@ -85,6 +98,7 @@ export const makeNotification =
           M.concatAll(n.MonoidSum)([
             pipe(findNotificationRequestRecord, countFromFind(notificationRequest.notificationRequestId)),
             pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
+            pipe(getNotificationDetailRecord, countFromDetail(notification.iun)),
           ]),
           (occurrences) =>
             // when the notification is returned enough times, the timeline is updated
