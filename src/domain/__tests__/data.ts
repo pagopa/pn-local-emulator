@@ -428,3 +428,8 @@ export const downloadRecord: DownloadRecord = {
   },
   loggedAt: aDate,
 };
+
+export const downloadRecordWithFakeUrl: DownloadRecord = {
+  ...downloadRecord,
+  input: { url: 'https://fakeurl.com' },
+};
