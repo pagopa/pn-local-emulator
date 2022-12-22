@@ -20,6 +20,9 @@ describe('GetNotificationDocumentMetadataChecks', () => {
       false
     );
     expect(
+      check([data.consumeEventStreamRecordDelivered, data.getPaymentNotificationMetadataRecord, data.downloadRecord])
+    ).toStrictEqual(false);
+    expect(
       check([data.consumeEventStreamRecordDelivered, data.getNotificationDocumentMetadataRecord0, data.downloadRecord])
     ).toStrictEqual(true);
   });

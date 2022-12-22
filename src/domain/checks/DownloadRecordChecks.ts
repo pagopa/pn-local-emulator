@@ -1,26 +1,19 @@
 import { pipe } from 'fp-ts/function';
-import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as O from 'fp-ts/Option';
-import { isGetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
-import { isGetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
-import { isDownloadRecord } from '../DownloadRecord';
+import { GetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
+import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
+import { DownloadRecord } from '../DownloadRecord';
 
-export const calledDownloadEndpointC = pipe(
-  R.Do,
-  R.apS('getNotificationDocumentMetadataRecordList', RA.filterMap(isGetNotificationDocumentMetadataRecord)),
-  R.apS('getPaymentNotificationMetadataRecordList', RA.filterMap(isGetPaymentNotificationMetadataRecord)),
-  R.apS('downloadRecordList', RA.filterMap(isDownloadRecord)),
-  R.map(({ getNotificationDocumentMetadataRecordList, getPaymentNotificationMetadataRecordList, downloadRecordList }) =>
+export const metadataRecordMatchesDownloadRecordC =
+  (downloadRecords: ReadonlyArray<DownloadRecord>) =>
+  (metadataRecord: GetNotificationDocumentMetadataRecord | GetPaymentNotificationMetadataRecord): boolean =>
     pipe(
-      RA.concatW(getNotificationDocumentMetadataRecordList)(getPaymentNotificationMetadataRecordList),
-      RA.filterMap(({ output }) => (output.statusCode === 200 ? O.fromNullable(output.returned.url) : O.none)),
-      RA.every((url) =>
+      downloadRecords,
+      RA.exists(({ input }) =>
         pipe(
-          downloadRecordList,
-          RA.exists(({ input }) => url.endsWith(input.url))
+          metadataRecord.output.statusCode === 200 ? O.fromNullable(metadataRecord.output.returned.url) : O.none,
+          O.exists((metadataRecordUrl) => metadataRecordUrl.endsWith(input.url))
         )
       )
-    )
-  )
-);
+    );
