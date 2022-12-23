@@ -1,7 +1,7 @@
 import * as ConsumeEventStreamRecordChecks from '../ConsumeEventStreamRecordChecks';
 import * as useCaseData from './data';
 import { hasIunPopulatedC } from '../ConsumeEventStreamRecordChecks';
-import { makeTestSystemEnv } from '../../__tests__/data';
+import * as data from '../../__tests__/data';
 
 describe('ConsumeEventStreamRecordChecks', () => {
   it('requestWithStreamIdProvidedHasBeenMadeC', () => {
@@ -29,11 +29,19 @@ describe('ConsumeEventStreamRecordChecks', () => {
   });
 
   it('hasProperlyConsumedEvents', () => {
-    const check = ConsumeEventStreamRecordChecks.hasProperlyConsumedEvents(makeTestSystemEnv());
+    const check = ConsumeEventStreamRecordChecks.hasProperlyConsumedEvents(data.makeTestSystemEnv());
     expect(check([])).toStrictEqual(false);
     expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
     expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
     expect(check(useCaseData.consumeEventsOnCreatedStreamWithOnlyInValidationEvent)).toStrictEqual(false);
     expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
+  });
+
+  it('matchesAtLeastOneIun', () => {
+    const check = ConsumeEventStreamRecordChecks.matchesAtLeastOneIunC;
+    expect(check([])(data.aIun.valid)).toStrictEqual(false);
+    expect(check([data.consumeEventStreamRecord])(data.aIun.valid)).toStrictEqual(false);
+    expect(check([data.consumeEventStreamRecordDelivered])(data.aIun.invalid)).toStrictEqual(false);
+    expect(check([data.consumeEventStreamRecordDelivered])(data.aIun.valid)).toStrictEqual(true);
   });
 });

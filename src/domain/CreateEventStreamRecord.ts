@@ -27,7 +27,7 @@ export const makeCreateEventStreamRecord =
       authorizeApiKey(input.apiKey),
       E.foldW(identity, () => ({
         statusCode: 200 as const,
-        returned: { ...input.body, streamId: env.iunGenerator(), activationDate: env.dateGenerator() },
+        returned: { ...input.body, streamId: env.uuidGenerator(), activationDate: env.dateGenerator() },
       }))
     ),
     loggedAt: env.dateGenerator(),
