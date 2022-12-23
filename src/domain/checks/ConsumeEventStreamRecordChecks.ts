@@ -3,7 +3,6 @@ import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as R from 'fp-ts/Reader';
 import * as P from 'fp-ts/Predicate';
-import { Reader } from 'fp-ts/Reader';
 import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecord';
 import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecord';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
@@ -50,7 +49,7 @@ export const hasHonouredRetryAfterValueC =
       ({ result }) => result
     );
 
-export const hasProperlyConsumedEvents = (env: DomainEnv): Reader<ReadonlyArray<Record>, boolean> =>
+export const hasProperlyConsumedEvents = (env: DomainEnv): R.Reader<ReadonlyArray<Record>, boolean> =>
   RA.exists(
     flow(
       RA.of,
