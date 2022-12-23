@@ -45,11 +45,10 @@ export const hasHonouredRetryAfterValueC =
       RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
       RA.map(({ loggedAt }) => loggedAt.getTime()),
       flow(
-        RA.reduce([0, true], (acc: [number, boolean], curr: number): [number, boolean] =>
-          // eslint-disable-next-line sonarjs/no-redundant-boolean
-          curr - acc[0] >= env.retryAfterMs ? [curr, acc[1]] : [curr, acc[1] && false]
+        RA.reduce({ prev: 0, result: true }, ({ prev, result }, curr: number) =>
+          curr - prev >= env.retryAfterMs ? { prev: curr, result } : { prev: curr, result: false }
         ),
-        ([_, result]) => result
+        ({ result }) => result
       )
     );
 
