@@ -2,8 +2,6 @@ import * as ConsumeEventStreamRecordChecks from '../ConsumeEventStreamRecordChec
 import * as useCaseData from './data';
 import { hasIunPopulatedC } from '../ConsumeEventStreamRecordChecks';
 import * as data from '../../__tests__/data';
-import { consumeEventStreamRecordWithAcceptedEvent } from './data';
-import { checkNotificationStatusRecordAccepted, consumeEventStreamRecordDelivered } from '../../__tests__/data';
 
 describe('ConsumeEventStreamRecordChecks', () => {
   it('requestWithStreamIdProvidedHasBeenMadeC', () => {
@@ -31,7 +29,7 @@ describe('ConsumeEventStreamRecordChecks', () => {
   });
 
   it('hasProperlyConsumedEvents', () => {
-    const check = ConsumeEventStreamRecordChecks.hasProperlyConsumedEvents;
+    const check = ConsumeEventStreamRecordChecks.hasProperlyConsumedEvents(data.makeTestSystemEnv());
     expect(check([])).toStrictEqual(false);
     expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
     expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);

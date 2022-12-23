@@ -1,6 +1,7 @@
 import * as data from '../../__tests__/data';
 import { EventTypeEnum } from '../../../generated/streams/StreamCreationRequest';
 import { unauthorizedResponse } from '../../types';
+import { aDate } from '../../__tests__/data';
 
 // TODO: Refactor using fast-check
 export const preLoadRecordSingletonList = [data.preLoadRecord];
@@ -48,6 +49,7 @@ export const consumeEventStreamRecordWithAcceptedEvent = [
       statusCode: 200 as const,
       returned: [data.acceptedEvent],
     },
+    loggedAt: new Date(aDate.getTime() + 2000),
   },
 ];
 

@@ -3,11 +3,11 @@ import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as R from 'fp-ts/Reader';
 import * as P from 'fp-ts/Predicate';
-import { Reader } from 'fp-ts/Reader';
 import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecord';
 import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecord';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { Record } from '../Repository';
+import { DomainEnv } from '../DomainEnv';
 import { existsCreateEventStreamRecordWhitStreamId } from './CreateEventStreamRecordChecks';
 
 export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
@@ -36,9 +36,26 @@ export const hasIunPopulatedC = flow(
   RA.exists(({ iun }) => pipe(iun, O.fromNullable, O.isSome))
 );
 
-export const hasProperlyConsumedEvents: Reader<ReadonlyArray<Record>, boolean> = RA.exists(
-  flow(RA.of, pipe(hasNewStatusPropertySetToAcceptedC, P.and(hasIunPopulatedC)))
-);
+export const hasHonouredRetryAfterValueC =
+  (env: DomainEnv) =>
+  (records: ReadonlyArray<Record>): boolean =>
+    pipe(
+      records,
+      RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
+      RA.map(({ loggedAt }) => loggedAt.getTime()),
+      RA.reduce({ prev: 0, result: true }, ({ prev, result }, curr: number) =>
+        curr - prev >= env.retryAfterMs ? { prev: curr, result } : { prev: curr, result: false }
+      ),
+      ({ result }) => result
+    );
+
+export const hasProperlyConsumedEvents = (env: DomainEnv): R.Reader<ReadonlyArray<Record>, boolean> =>
+  RA.exists(
+    flow(
+      RA.of,
+      pipe(hasNewStatusPropertySetToAcceptedC, P.and(hasIunPopulatedC), P.and(hasHonouredRetryAfterValueC(env)))
+    )
+  );
 
 export const matchesAtLeastOneIunC = (records: ReadonlyArray<Record>) => (iun: string) =>
   pipe(

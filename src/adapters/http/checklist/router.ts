@@ -13,7 +13,7 @@ const handler =
   (env: SystemEnv): Handler =>
   (_, res) =>
     pipe(
-      E.of(pipe(env.recordRepository.list(), TE.map(evaluateReport(report)))),
+      E.of(pipe(env.recordRepository.list(), TE.map(evaluateReport(report(env))))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),

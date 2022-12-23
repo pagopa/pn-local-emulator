@@ -17,8 +17,6 @@ describe('GetPaymentNotificationMetadataChecks', () => {
       ])
     ).toStrictEqual(false);
 
-    expect(check([data.getPaymentNotificationMetadataRecord])).toStrictEqual(
-      true
-    );
+    expect(check([data.getPaymentNotificationMetadataRecord])).toStrictEqual(true);
   });
 });
