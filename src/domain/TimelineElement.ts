@@ -21,7 +21,7 @@ const makeTimelineListPEC =
     [
       {
         elementId: `${iun}_aar_gen_${index}`,
-        timestamp: new Date(),
+        timestamp: env.dateGenerator(),
         legalFactsIds: [],
         category: TimelineElementCategoryEnum.AAR_GENERATION,
         details: {
@@ -75,7 +75,7 @@ const makeTimelineListPEC =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: 'safestorage://PN_NOTIFICATION_ATTACHMENTS-0001-NRUG-D5AW-BN0N-07Z2',
+            key: `safestorage://PN_NOTIFICATION_ATTACHMENTS-${env.iunGenerator()}`,
             category: LegalFactCategoryEnum.PEC_RECEIPT,
           },
         ],
@@ -97,7 +97,7 @@ const makeTimelineListPEC =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: 'safestorage://PN_LEGAL_FACTS-0001-NRUG-D5AW-BN0N-07Z2',
+            key: `safestorage://PN_LEGAL_FACTS-0002-${env.iunGenerator()}`,
             category: LegalFactCategoryEnum.PEC_RECEIPT,
           },
         ],
@@ -117,7 +117,7 @@ const makeTimelineListPEC =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: 'safestorage://PN_LEGAL_FACTS-0001-NRUG-D5AW-BN0N-07Z2',
+            key: `safestorage://PN_LEGAL_FACTS-0001-${env.iunGenerator()}`,
             category: LegalFactCategoryEnum.DIGITAL_DELIVERY,
           },
         ],
@@ -154,7 +154,7 @@ const makeTimelineListPEC =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: 'safestorage://PN_LEGAL_FACTS-0002-TF2V-Z8RP-ZQRD-5AWL',
+            key: `safestorage://PN_LEGAL_FACTS-0002-${env.iunGenerator()}`,
             category: LegalFactCategoryEnum.RECIPIENT_ACCESS,
           },
         ],
