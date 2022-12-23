@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
@@ -102,6 +103,7 @@ export const makeTestSystemEnv = (
     retryAfterMs: aRetryAfterMs,
     iunGenerator: () => aIun.valid,
     dateGenerator: () => new Date(0),
+    uuidGenerator: () => crypto.randomUUID(),
     recordRepository: inMemory.makeRecordRepository(logger)([
       ...createNotificationRequestRecords,
       ...findNotificationRequestRecords,
