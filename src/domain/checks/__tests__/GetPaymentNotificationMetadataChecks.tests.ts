@@ -7,7 +7,6 @@ describe('GetPaymentNotificationMetadataChecks', () => {
     const check = GetPaymentNotificationMetadataChecks.matchesIunAndHasPAGOPAAsAttachmentName;
     expect(check([])).toStrictEqual(false);
     expect(check([data.consumeEventStreamRecord])).toStrictEqual(false);
-    expect(check([data.getPaymentNotificationMetadataRecord])).toStrictEqual(false);
     expect(
       check([
         data.consumeEventStreamRecordDelivered,
@@ -18,7 +17,7 @@ describe('GetPaymentNotificationMetadataChecks', () => {
       ])
     ).toStrictEqual(false);
 
-    expect(check([data.consumeEventStreamRecordDelivered, data.getPaymentNotificationMetadataRecord])).toStrictEqual(
+    expect(check([data.getPaymentNotificationMetadataRecord])).toStrictEqual(
       true
     );
   });
