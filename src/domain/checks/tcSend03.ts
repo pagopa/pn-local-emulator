@@ -11,9 +11,9 @@ export const tcSend03 = Group({
         GetNotificationDocumentMetadataChecks.downloadedNotificationDocumentC,
     }),
     'Have you downloaded the pagoPA payment document?': Group({
-      'Have you requested the metadata of the PAGOPA payment attachment with the IUN retrieved previously?':
+      'Have you requested the metadata of the pagoPA payment attachment with the IUN retrieved previously?':
         GetPaymentNotificationMetadataChecks.matchesIunAndHasPAGOPAAsAttachmentName,
-      'Have you downloaded the PDF of the payment document?':
+      'Have you downloaded the PDF of the pagoPA payment document?':
         GetPaymentNotificationMetadataChecks.downloadedPaymentDocumentC,
     }),
   }),
