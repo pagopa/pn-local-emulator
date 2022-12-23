@@ -44,12 +44,10 @@ export const hasHonouredRetryAfterValueC =
       records,
       RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
       RA.map(({ loggedAt }) => loggedAt.getTime()),
-      flow(
-        RA.reduce({ prev: 0, result: true }, ({ prev, result }, curr: number) =>
-          curr - prev >= env.retryAfterMs ? { prev: curr, result } : { prev: curr, result: false }
-        ),
-        ({ result }) => result
-      )
+      RA.reduce({ prev: 0, result: true }, ({ prev, result }, curr: number) =>
+        curr - prev >= env.retryAfterMs ? { prev: curr, result } : { prev: curr, result: false }
+      ),
+      ({ result }) => result
     );
 
 export const hasProperlyConsumedEvents = (env: DomainEnv): Reader<ReadonlyArray<Record>, boolean> =>
