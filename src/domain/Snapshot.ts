@@ -8,6 +8,7 @@ import { isNewNotificationRecord } from './NewNotificationRecord';
 import { makeNotificationRequestFromCreate, NotificationRequest } from './NotificationRequest';
 import { makeNotification, Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
+import { isGetNotificationDetailRecord } from './GetNotificationDetailRecord';
 
 export type Snapshot = ReadonlyArray<E.Either<NotificationRequest, Notification>>;
 
@@ -18,24 +19,28 @@ export const computeSnapshot = (env: DomainEnv) =>
     R.apS('notificationRequestRecords', RA.filterMap(isNewNotificationRecord)),
     R.apS('checkNotificationStatusRecords', RA.filterMap(isCheckNotificationStatusRecord)),
     R.apS('consumeEventStreamRecords', RA.filterMap(isConsumeEventStreamRecord)),
-    R.map(({ notificationRequestRecords, checkNotificationStatusRecords, consumeEventStreamRecords }) =>
-      pipe(
-        // create all the NotificationRequest
+    R.apS('getNotificationDetailRecords', RA.filterMap(isGetNotificationDetailRecord)),
+    R.map(
+      ({
         notificationRequestRecords,
-        RA.filterMap(makeNotificationRequestFromCreate),
-        // for each one try to create a Notification
-        RA.map((notificationRequest) =>
-          pipe(
-            notificationRequest,
-            makeNotification(
-              env.occurrencesAfterComplete,
-              env.senderPAId,
-              env.iunGenerator(),
-              env.dateGenerator()
-            )(checkNotificationStatusRecords)(consumeEventStreamRecords),
-            E.fromOption(() => notificationRequest)
+        checkNotificationStatusRecords,
+        consumeEventStreamRecords,
+        getNotificationDetailRecords,
+      }) =>
+        pipe(
+          // create all the NotificationRequest
+          notificationRequestRecords,
+          RA.filterMap(makeNotificationRequestFromCreate),
+          // for each one try to create a Notification
+          RA.map((notificationRequest) =>
+            pipe(
+              notificationRequest,
+              makeNotification(env)(checkNotificationStatusRecords)(consumeEventStreamRecords)(
+                getNotificationDetailRecords
+              ),
+              E.fromOption(() => notificationRequest)
+            )
           )
         )
-      )
     )
   );

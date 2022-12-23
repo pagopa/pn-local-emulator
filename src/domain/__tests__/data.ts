@@ -100,6 +100,7 @@ export const makeTestSystemEnv = (
     downloadDocumentURL: new URL('http://localhost/downloaddocument'),
     sampleStaticPdfFileName: 'sample.pdf',
     occurrencesAfterComplete: 2,
+    occurrencesAfterViewed: 4,
     senderPAId: aSenderPaId,
     retryAfterMs: aRetryAfterMs,
     iunGenerator: () => aIun.valid,

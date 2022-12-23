@@ -14,7 +14,8 @@ pipe(
     const logger = makeLogger();
 
     const systemEnv: SystemEnv = {
-      occurrencesAfterComplete: 2, // TODO: occurrencesAfterComplete move this value into configuration
+      occurrencesAfterComplete: 2, // TODO: move this value into configuration and find a better name ...
+      occurrencesAfterViewed: 4, // TODO: move this value into configuration and find a better name ...
       senderPAId: 'aSenderPaId', // TODO: senderPaId move this value into configuration
       retryAfterMs: 1000,
       downloadDocumentURL: config.server.downloadDocumentURL,
