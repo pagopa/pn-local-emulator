@@ -20,6 +20,11 @@ export type GetNotificationDocumentMetadataRecord = AuditRecord & {
     | Response<404>;
 };
 
+export const isGetNotificationDocumentMetadataRecord = (
+  record: Record
+): O.Option<GetNotificationDocumentMetadataRecord> =>
+  record.type === 'GetNotificationDocumentMetadataRecord' ? O.some(record) : O.none;
+
 export const makeGetNotificationDocumentMetadataRecord =
   (env: DomainEnv) =>
   (input: GetNotificationDocumentMetadataRecord['input']) =>

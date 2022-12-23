@@ -39,3 +39,11 @@ export const hasIunPopulatedC = flow(
 export const hasProperlyConsumedEvents: Reader<ReadonlyArray<Record>, boolean> = RA.exists(
   flow(RA.of, pipe(hasNewStatusPropertySetToAcceptedC, P.and(hasIunPopulatedC)))
 );
+
+export const matchesAtLeastOneIunC = (records: ReadonlyArray<Record>) => (iun: string) =>
+  pipe(
+    records,
+    RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
+    ConsumeEventStreamRecord.getProgressResponseList,
+    RA.exists(({ iun: iunFromEvents }) => iunFromEvents === iun)
+  );
