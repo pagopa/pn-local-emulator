@@ -8,6 +8,7 @@ import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecord';
 import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecord';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { Record } from '../Repository';
+import { DomainEnv } from '../DomainEnv';
 import { existsCreateEventStreamRecordWhitStreamId } from './CreateEventStreamRecordChecks';
 
 export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
@@ -36,6 +37,26 @@ export const hasIunPopulatedC = flow(
   RA.exists(({ iun }) => pipe(iun, O.fromNullable, O.isSome))
 );
 
-export const hasProperlyConsumedEvents: Reader<ReadonlyArray<Record>, boolean> = RA.exists(
-  flow(RA.of, pipe(hasNewStatusPropertySetToAcceptedC, P.and(hasIunPopulatedC)))
-);
+export const hasHonouredRetryAfterValueC =
+  (env: DomainEnv) =>
+  (records: ReadonlyArray<Record>): boolean =>
+    pipe(
+      records,
+      RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
+      RA.map(({ loggedAt }) => loggedAt.getTime()),
+      flow(
+        RA.reduce([0, true], (acc: [number, boolean], curr: number): [number, boolean] =>
+          // eslint-disable-next-line sonarjs/no-redundant-boolean
+          curr - acc[0] >= env.retryAfterMs ? [curr, acc[1]] : [curr, acc[1] && false]
+        ),
+        ([_, result]) => result
+      )
+    );
+
+export const hasProperlyConsumedEvents = (env: DomainEnv): Reader<ReadonlyArray<Record>, boolean> =>
+  RA.exists(
+    flow(
+      RA.of,
+      pipe(hasNewStatusPropertySetToAcceptedC, P.and(hasIunPopulatedC), P.and(hasHonouredRetryAfterValueC(env)))
+    )
+  );
