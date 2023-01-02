@@ -88,6 +88,8 @@ export const aDocument1 = {
 
 export const aRetryAfterMs = 1000;
 
+export const aNotificationPrice = 100;
+
 export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
@@ -103,6 +105,7 @@ export const makeTestSystemEnv = (
     occurrencesAfterViewed: 4,
     senderPAId: aSenderPaId,
     retryAfterMs: aRetryAfterMs,
+    notificationPrice: aNotificationPrice,
     iunGenerator: () => aIun.valid,
     dateGenerator: () => new Date(0),
     uuidGenerator: () => crypto.randomUUID(),

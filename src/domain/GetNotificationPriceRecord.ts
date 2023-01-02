@@ -45,7 +45,7 @@ export const makeGetNotificationPriceRecord =
             statusCode: 200 as const,
             returned: {
               iun,
-              amount: '1',
+              amount: `${env.notificationPrice}`,
               effectiveDate: env.dateGenerator(),
             },
           })

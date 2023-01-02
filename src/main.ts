@@ -20,6 +20,7 @@ pipe(
       retryAfterMs: 1000,
       downloadDocumentURL: config.server.downloadDocumentURL,
       sampleStaticPdfFileName: 'sample.pdf',
+      notificationPrice: 100,
       iunGenerator: IUNGenerator,
       dateGenerator: () => new Date(),
       uuidGenerator: () => crypto.randomUUID(),

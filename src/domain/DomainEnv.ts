@@ -10,6 +10,7 @@ export type DomainEnv = {
   sampleStaticPdfFileName: string;
   uploadToS3URL: URL;
   retryAfterMs: number;
+  notificationPrice: number;
   // generators
   iunGenerator: IO<IUN>;
   dateGenerator: IO<Date>;
