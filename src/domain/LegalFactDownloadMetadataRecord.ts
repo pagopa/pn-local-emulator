@@ -18,6 +18,9 @@ export type LegalFactDownloadMetadataRecord = AuditRecord & {
   output: Response<200, LegalFactDownloadMetadataResponse> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 
+export const isLegalFactDownloadMetadataRecord = (record: Record): O.Option<LegalFactDownloadMetadataRecord> =>
+  record.type === 'LegalFactDownloadMetadataRecord' ? O.some(record) : O.none;
+
 export const makeLegalFactDownloadMetadataResponse = (env: DomainEnv): LegalFactDownloadMetadataResponse => ({
   filename: 'dummy-filename',
   contentLength: 10,
