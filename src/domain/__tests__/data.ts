@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { unsafeCoerce } from 'fp-ts/function';
+import { pipe, unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
@@ -26,6 +26,8 @@ import { IUN } from '../../generated/pnapi/IUN';
 import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
 import { makeNotificationAttachmentDownloadMetadataResponse } from '../NotificationAttachmentDownloadMetadataResponse';
 import { DownloadRecord } from '../DownloadRecord';
+import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
+import * as RA from 'fp-ts/ReadonlyArray';
 
 export const apiKey = {
   valid: 'key-value',
@@ -369,11 +371,33 @@ const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
   notificationRequestId: notificationId.valid,
 })(aIun.valid);
 
+const acceptedNotificationWithTimeline = {
+  ...acceptedNotification,
+  timeline: [
+    {
+      elementId: `${acceptedNotification.iun}_request_accepted`,
+      timestamp: aDate,
+      legalFactsIds: [
+        {
+          key: aLegalFactId,
+          category: aLegalFactType,
+        },
+      ],
+      category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+    },
+  ],
+};
+
 export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = {
   type: 'GetNotificationDetailRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid },
   output: { statusCode: 200, returned: acceptedNotification },
   loggedAt: aDate,
+};
+
+export const getNotificationDetailRecordAcceptedWithTimeline: GetNotificationDetailRecord = {
+  ...getNotificationDetailRecordAccepted,
+  output: { statusCode: 200, returned: acceptedNotificationWithTimeline },
 };
 
 // GetNotificationDocumentMetadataRecord //////////////////////////////////////
