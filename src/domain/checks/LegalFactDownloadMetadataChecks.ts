@@ -24,7 +24,46 @@ const hasCalledDownloadEndpointForLegalFactC = pipe(
   )
 );
 
-export const downloadedNotificationDocumentC: R.Reader<ReadonlyArray<Record>, boolean> = pipe(
+const matchesIunC =
+  ({ output }: GetNotificationDetailRecord) =>
+  (legalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord) =>
+    pipe(output.statusCode === 200 && output.returned.iun === legalFactDownloadMetadataRecord.input.iun);
+
+const matchTimelineValuesC =
+  ({ output }: GetNotificationDetailRecord) =>
+  ({ input }: LegalFactDownloadMetadataRecord) =>
+    pipe(
+      output.statusCode === 200 &&
+        output.returned.timeline.some(({ legalFactsIds }) =>
+          legalFactsIds?.some(({ category, key }) => category === input.legalFactType && key === input.legalFactId)
+        )
+    );
+
+const matchesLegalFactDownloadMetadataRecordC =
+  (legalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord) =>
+  (getNotificationDetailRecord: GetNotificationDetailRecord) =>
+    legalFactDownloadMetadataRecord.output.statusCode === 200 &&
+    matchesIunC(getNotificationDetailRecord)(legalFactDownloadMetadataRecord) &&
+    matchTimelineValuesC(getNotificationDetailRecord)(legalFactDownloadMetadataRecord);
+
+export const getLegalFactDownloadMetadataRecord = pipe(
+  R.Do,
+  R.apS('legalFactDownloadMetadataRecordList', RA.filterMap(isLegalFactDownloadMetadataRecord)),
+  R.apS('getNotificationDetailRecordList', RA.filterMap(isGetNotificationDetailRecord)),
+  R.map(({ legalFactDownloadMetadataRecordList, getNotificationDetailRecordList }) =>
+    pipe(
+      legalFactDownloadMetadataRecordList,
+      RA.every((legalFactDownloadMetadataRecord) =>
+        pipe(
+          getNotificationDetailRecordList,
+          RA.exists(matchesLegalFactDownloadMetadataRecordC(legalFactDownloadMetadataRecord))
+        )
+      )
+    )
+  )
+);
+
+export const downloadedLegalFactsDocumentC: R.Reader<ReadonlyArray<Record>, boolean> = pipe(
   getLegalFactDownloadMetadataRecord,
   P.and(hasCalledDownloadEndpointForLegalFactC)
 );
