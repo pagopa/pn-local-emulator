@@ -1,40 +1,72 @@
 import * as ConsumeEventStreamRecordChecks from '../ConsumeEventStreamRecordChecks';
-import * as useCaseData from './data';
 import { hasIunPopulatedC } from '../ConsumeEventStreamRecordChecks';
 import * as data from '../../__tests__/data';
+import { unauthorizedResponse } from '../../types';
 
 describe('ConsumeEventStreamRecordChecks', () => {
   it('requestWithStreamIdProvidedHasBeenMadeC', () => {
     const check = ConsumeEventStreamRecordChecks.requestWithStreamIdProvidedHasBeenMadeC;
     expect(check([])).toStrictEqual(false);
-    expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
-    expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
-    expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
+    expect(check([data.createEventStreamRecord])).toStrictEqual(false);
+    expect(
+      check([
+        {
+          ...data.createEventStreamRecord,
+          output: unauthorizedResponse,
+        },
+      ])
+    ).toStrictEqual(false);
+    expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordDelivered])).toStrictEqual(true);
   });
 
   it('hasNewStatusPropertySetToAcceptedC', () => {
     const check = ConsumeEventStreamRecordChecks.hasNewStatusPropertySetToAcceptedC;
     expect(check([])).toStrictEqual(false);
-    expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
-    expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
-    expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
+    expect(check([data.createEventStreamRecord])).toStrictEqual(false);
+    expect(
+      check([
+        {
+          ...data.createEventStreamRecord,
+          output: unauthorizedResponse,
+        },
+      ])
+    ).toStrictEqual(false);
+    expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordDelivered])).toStrictEqual(true);
   });
 
   it('hasIunPopulatedC', () => {
     const check = ConsumeEventStreamRecordChecks.hasIunPopulatedC;
     expect(check([])).toStrictEqual(false);
-    expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
-    expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
-    expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
+    expect(check([data.createEventStreamRecord])).toStrictEqual(false);
+    expect(
+      check([
+        {
+          ...data.createEventStreamRecord,
+          output: unauthorizedResponse,
+        },
+      ])
+    ).toStrictEqual(false);
+    expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordDelivered])).toStrictEqual(true);
   });
 
   it('hasProperlyConsumedEvents', () => {
     const check = ConsumeEventStreamRecordChecks.hasProperlyConsumedEvents(data.makeTestSystemEnv());
     expect(check([])).toStrictEqual(false);
-    expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
-    expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
-    expect(check(useCaseData.consumeEventsOnCreatedStreamWithOnlyInValidationEvent)).toStrictEqual(false);
-    expect(check(useCaseData.consumeEventsOnCreatedStream)).toStrictEqual(true);
+    expect(check([data.createEventStreamRecord])).toStrictEqual(false);
+    expect(
+      check([
+        {
+          ...data.createEventStreamRecord,
+          output: unauthorizedResponse,
+        },
+      ])
+    ).toStrictEqual(false);
+    expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordInValidation])).toStrictEqual(
+      false
+    );
+    expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordDeliveredDelayed])).toStrictEqual(
+      true
+    );
   });
 
   it('matchesAtLeastOneIun', () => {
