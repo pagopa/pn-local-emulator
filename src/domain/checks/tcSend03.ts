@@ -2,7 +2,6 @@ import { Group } from '../reportengine/reportengine';
 import * as GetNotificationDocumentMetadataChecks from './GetNotificationDocumentMetadataChecks';
 import * as GetPaymentNotificationMetadataChecks from './GetPaymentNotificationMetadataChecks';
 import * as LegalFactDownloadMetadataChecks from './LegalFactDownloadMetadataChecks';
-import { downloadedLegalFactsDocumentC } from './LegalFactDownloadMetadataChecks';
 
 export const tcSend03 = Group({
   'Download documents attached to the notification': Group({
