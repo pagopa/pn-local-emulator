@@ -1,5 +1,6 @@
 import * as LegalFactDownloadMetadataChecks from '../LegalFactDownloadMetadataChecks';
 import * as data from '../../__tests__/data';
+import { aIun } from '../../__tests__/data';
 
 describe('LegalFactDownloadMetadataChecks', () => {
   it('getLegalFactDownloadMetadataRecord', () => {
@@ -8,6 +9,15 @@ describe('LegalFactDownloadMetadataChecks', () => {
     expect(check([data.getLegalFactDownloadMetadataRecord, data.getNotificationDetailRecordAccepted])).toStrictEqual(
       false
     );
+    expect(
+      check([
+        {
+          ...data.getLegalFactDownloadMetadataRecord,
+          input: { ...data.getLegalFactDownloadMetadataRecord.input, iun: aIun.invalid },
+        },
+        data.getNotificationDetailRecordAcceptedWithTimeline,
+      ])
+    ).toStrictEqual(false);
 
     expect(
       check([data.getLegalFactDownloadMetadataRecord, data.getNotificationDetailRecordAcceptedWithTimeline])
