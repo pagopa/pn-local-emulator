@@ -1,16 +1,12 @@
-import { flow, pipe } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as R from 'fp-ts/Reader';
 import * as P from 'fp-ts/Predicate';
 import { isDownloadRecord } from '../DownloadRecord';
 import { Record } from '../Repository';
-import { isLegalFactDownloadMetadataRecord } from '../LegalFactDownloadMetadataRecord';
+import { isLegalFactDownloadMetadataRecord, LegalFactDownloadMetadataRecord } from '../LegalFactDownloadMetadataRecord';
+import { GetNotificationDetailRecord, isGetNotificationDetailRecord } from '../GetNotificationDetailRecord';
 import * as DownloadRecordChecks from './DownloadRecordChecks';
-
-export const getLegalFactDownloadMetadataRecord = flow(
-  RA.filterMap(isLegalFactDownloadMetadataRecord),
-  RA.exists(({ output }) => output.statusCode === 200)
-);
 
 const hasCalledDownloadEndpointForLegalFactC = pipe(
   R.Do,
