@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { pipe, unsafeCoerce } from 'fp-ts/function';
+import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
