@@ -1,6 +1,5 @@
 import * as LegalFactDownloadMetadataChecks from '../LegalFactDownloadMetadataChecks';
 import * as data from '../../__tests__/data';
-import { aIun } from '../../__tests__/data';
 
 describe('LegalFactDownloadMetadataChecks', () => {
   it('getLegalFactDownloadMetadataRecord', () => {
@@ -13,7 +12,7 @@ describe('LegalFactDownloadMetadataChecks', () => {
       check([
         {
           ...data.getLegalFactDownloadMetadataRecord,
-          input: { ...data.getLegalFactDownloadMetadataRecord.input, iun: aIun.invalid },
+          input: { ...data.getLegalFactDownloadMetadataRecord.input, iun: data.aIun.invalid },
         },
         data.getNotificationDetailRecordAcceptedWithTimeline,
       ])
