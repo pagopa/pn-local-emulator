@@ -12,10 +12,13 @@ module.exports = {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
   "modulePathIgnorePatterns": [
-    "./__tests__/data.ts"
+    "<rootDir>/src/__tests__/data.ts",
   ],
   "coveragePathIgnorePatterns": [
     "<rootDir>/src/generated/",
+  ],
+  "testPathIgnorePatterns": [
+      "<rootDir>/src/domain/__tests__"
   ],
   "coverageThreshold": {
     "global": {
