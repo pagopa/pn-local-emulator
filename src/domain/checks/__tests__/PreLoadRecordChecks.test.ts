@@ -1,29 +1,33 @@
 import * as PreLoadRecordChecks from '../PreLoadRecordChecks';
-import * as data from '../../__tests__/data';
+import { PreLoadRecords } from '../../__tests__/preLoadRecordData';
 
 describe('PreLoadRecordChecks', () => {
   it('atLeastOnePreLoadRecordC', () => {
     const check = PreLoadRecordChecks.atLeastOnePreLoadRecordC;
-    expect(check([])).toStrictEqual(false);
-    expect(check([data.preLoadRecord])).toStrictEqual(true);
-    expect(check([data.preLoadRecordBulk])).toStrictEqual(true);
+    expect(check(PreLoadRecords.empty)).toStrictEqual(false);
+    expect(check(PreLoadRecords.one)).toStrictEqual(true);
+    expect(check(PreLoadRecords.two)).toStrictEqual(true);
+    expect(check(PreLoadRecords.oneWithMultipleFiles)).toStrictEqual(true);
   });
   it('atLeastOnePreLoadRecordWithPdfC', () => {
     const check = PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC;
-    expect(check([])).toStrictEqual(false);
-    expect(check([data.preLoadRecord])).toStrictEqual(true);
-    expect(check([data.preLoadRecordBulk])).toStrictEqual(true);
+    expect(check(PreLoadRecords.empty)).toStrictEqual(false);
+    expect(check(PreLoadRecords.one)).toStrictEqual(true);
+    expect(check(PreLoadRecords.twoWithPdf)).toStrictEqual(true);
+    expect(check(PreLoadRecords.oneWithMultipleFiles)).toStrictEqual(true);
   });
   it('atLeastOneValidSlotC', () => {
     const check = PreLoadRecordChecks.atLeastOneValidSlotC;
-    expect(check([])).toStrictEqual(false);
-    expect(check([data.preLoadRecord])).toStrictEqual(true);
-    expect(check([data.preLoadRecordBulk])).toStrictEqual(true);
+    expect(check(PreLoadRecords.empty)).toStrictEqual(false);
+    expect(check(PreLoadRecords.one)).toStrictEqual(true);
+    expect(check(PreLoadRecords.two)).toStrictEqual(true);
+    expect(check(PreLoadRecords.oneWithMultipleFiles)).toStrictEqual(true);
   });
   it('atLeastTwoValidSlotC', () => {
     const check = PreLoadRecordChecks.atLeastTwoValidSlotC;
-    expect(check([])).toStrictEqual(false);
-    expect(check([data.preLoadRecord])).toStrictEqual(false);
-    expect(check([data.preLoadRecord, data.preLoadRecord])).toStrictEqual(true);
+    expect(check(PreLoadRecords.one)).toStrictEqual(false);
+    expect(check(PreLoadRecords.one)).toStrictEqual(false);
+    expect(check(PreLoadRecords.twoWithPdf)).toStrictEqual(true);
+    expect(check(PreLoadRecords.oneWithMultipleFiles)).toStrictEqual(true);
   });
 });

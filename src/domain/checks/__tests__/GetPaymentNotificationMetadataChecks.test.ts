@@ -1,21 +1,14 @@
 import * as GetPaymentNotificationMetadataChecks from '../GetPaymentNotificationMetadataChecks';
-import * as data from '../../__tests__/data';
+import { MetadataRecords } from '../../__tests__/getMetadataRecordData';
 
 describe('GetPaymentNotificationMetadataChecks', () => {
+  const PaymentMetadata = MetadataRecords.payment;
   it('matchesIunAndHasPAGOPAAsAttachmentName', () => {
     const check = GetPaymentNotificationMetadataChecks.matchesIunAndHasPAGOPAAsAttachmentName;
-    expect(check([])).toStrictEqual(false);
-    expect(check([data.consumeEventStreamRecord])).toStrictEqual(false);
-    expect(
-      check([
-        data.consumeEventStreamRecordDelivered,
-        {
-          ...data.getPaymentNotificationMetadataRecord,
-          input: { ...data.getPaymentNotificationMetadataRecord.input, attachmentName: 'F24_STANDARD' },
-        },
-      ])
-    ).toStrictEqual(false);
+    expect(check(PaymentMetadata.empty)).toStrictEqual(false);
+    expect(check(PaymentMetadata.onlyConsume)).toStrictEqual(false);
+    expect(check(PaymentMetadata.withF24Payment)).toStrictEqual(false);
 
-    expect(check([data.getPaymentNotificationMetadataRecord])).toStrictEqual(true);
+    expect(check(PaymentMetadata.withPagoPAPayment)).toStrictEqual(true);
   });
 });

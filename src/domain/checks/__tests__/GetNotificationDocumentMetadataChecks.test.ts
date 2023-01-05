@@ -1,28 +1,21 @@
 import * as GetNotificationDocumentMetadataChecks from '../GetNotificationDocumentMetadataChecks';
-import * as data from '../../__tests__/data';
+import { MetadataRecords } from '../../__tests__/getMetadataRecordData';
 
 describe('GetNotificationDocumentMetadataChecks', () => {
+  const NotificationMetadata = MetadataRecords.notification;
   it('getNotificationDocumentMetadataC', () => {
     const check = GetNotificationDocumentMetadataChecks.getNotificationDocumentMetadataC;
-    expect(check([])).toStrictEqual(false);
-    expect(check([data.consumeEventStreamRecord])).toStrictEqual(false);
-    expect(check([data.consumeEventStreamRecordDelivered, data.getNotificationDocumentMetadataRecord0])).toStrictEqual(
-      true
-    );
+    expect(check(NotificationMetadata.empty)).toStrictEqual(false);
+    expect(check(NotificationMetadata.onlyConsume)).toStrictEqual(false);
+    expect(check(NotificationMetadata.withAcceptedEventAndMetadata)).toStrictEqual(true);
   });
 
   it('downloadedNotificationDocumentC', () => {
     const check = GetNotificationDocumentMetadataChecks.downloadedNotificationDocumentC;
-    expect(check([])).toStrictEqual(false);
-    expect(check([data.consumeEventStreamRecordDelivered])).toStrictEqual(false);
-    expect(check([data.consumeEventStreamRecordDelivered, data.getNotificationDocumentMetadataRecord0])).toStrictEqual(
-      false
-    );
-    expect(
-      check([data.consumeEventStreamRecordDelivered, data.getPaymentNotificationMetadataRecord, data.downloadRecord])
-    ).toStrictEqual(false);
-    expect(
-      check([data.consumeEventStreamRecordDelivered, data.getNotificationDocumentMetadataRecord0, data.downloadRecord])
-    ).toStrictEqual(true);
+    expect(check(NotificationMetadata.empty)).toStrictEqual(false);
+    expect(check(NotificationMetadata.onlyConsume)).toStrictEqual(false);
+    expect(check(NotificationMetadata.withAcceptedEventAndMetadata)).toStrictEqual(false);
+    expect(check(NotificationMetadata.withoutDocumentWithDownloadRequest)).toStrictEqual(false);
+    expect(check(NotificationMetadata.withDocumentWithDownloadRequest)).toStrictEqual(true);
   });
 });

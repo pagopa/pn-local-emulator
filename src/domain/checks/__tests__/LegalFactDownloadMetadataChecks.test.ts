@@ -1,28 +1,17 @@
 import * as LegalFactDownloadMetadataChecks from '../LegalFactDownloadMetadataChecks';
-import * as data from '../../__tests__/data';
+import { MetadataRecords } from '../../__tests__/getMetadataRecordData';
 
 describe('LegalFactDownloadMetadataChecks', () => {
+  const LegalFactMetadata = MetadataRecords.legalFact;
   it('getLegalFactDownloadMetadataRecord', () => {
     const check = LegalFactDownloadMetadataChecks.getLegalFactDownloadMetadataRecord;
-    expect(check([data.getLegalFactDownloadMetadataRecord])).toStrictEqual(false);
-    expect(check([data.getLegalFactDownloadMetadataRecord, data.getNotificationDetailRecordAccepted])).toStrictEqual(
-      false
-    );
-    expect(
-      check([
-        {
-          ...data.getLegalFactDownloadMetadataRecord,
-          input: { ...data.getLegalFactDownloadMetadataRecord.input, iun: data.aIun.invalid },
-        },
-        data.getNotificationDetailRecordAcceptedWithTimeline,
-      ])
-    ).toStrictEqual(false);
+    expect(check(LegalFactMetadata.onlyLegalFact)).toStrictEqual(false);
+    expect(check(LegalFactMetadata.withAcceptedNotification)).toStrictEqual(false);
+    expect(check(LegalFactMetadata.withInvalidIunAndWithTimeline)).toStrictEqual(false);
 
-    expect(
-      check([data.getLegalFactDownloadMetadataRecord, data.getNotificationDetailRecordAcceptedWithTimeline])
-    ).toStrictEqual(true);
+    expect(check(LegalFactMetadata.validWithTimeline)).toStrictEqual(true);
 
     // If no legal facts are present, the check should be true
-    expect(check([])).toStrictEqual(true);
+    expect(check(LegalFactMetadata.empty)).toStrictEqual(true);
   });
 });
