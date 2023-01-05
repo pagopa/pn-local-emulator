@@ -20,27 +20,21 @@ const hasCalledDownloadEndpointForLegalFactC = pipe(
   )
 );
 
-const matchesIunC =
-  ({ output }: GetNotificationDetailRecord) =>
-  (legalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord) =>
-    pipe(output.statusCode === 200 && output.returned.iun === legalFactDownloadMetadataRecord.input.iun);
-
-const matchTimelineValuesC =
-  ({ output }: GetNotificationDetailRecord) =>
-  ({ input }: LegalFactDownloadMetadataRecord) =>
-    pipe(
-      output.statusCode === 200 &&
-        output.returned.timeline.some(({ legalFactsIds }) =>
-          legalFactsIds?.some(({ category, key }) => category === input.legalFactType && key === input.legalFactId)
-        )
-    );
-
 const matchesLegalFactDownloadMetadataRecordC =
-  (legalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord) =>
-  (getNotificationDetailRecord: GetNotificationDetailRecord) =>
-    legalFactDownloadMetadataRecord.output.statusCode === 200 &&
-    matchesIunC(getNotificationDetailRecord)(legalFactDownloadMetadataRecord) &&
-    matchTimelineValuesC(getNotificationDetailRecord)(legalFactDownloadMetadataRecord);
+  ({ input, output }: LegalFactDownloadMetadataRecord) =>
+  (notificationRecord: GetNotificationDetailRecord) =>
+    output.statusCode === 200 &&
+    notificationRecord.output.statusCode === 200 &&
+    notificationRecord.output.returned.iun === input.iun &&
+    pipe(
+      notificationRecord.output.returned.timeline,
+      RA.exists(({ legalFactsIds }) =>
+        pipe(
+          legalFactsIds || [],
+          RA.exists(({ category, key }) => category === input.legalFactType && key === input.legalFactId)
+        )
+      )
+    );
 
 export const getLegalFactDownloadMetadataRecord = pipe(
   R.Do,
