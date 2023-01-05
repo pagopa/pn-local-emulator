@@ -3,18 +3,16 @@ import * as data from '../../__tests__/data';
 import { unauthorizedResponse } from '../../types';
 
 describe('ConsumeEventStreamRecordChecks', () => {
+  const unauthorizedCreateEventStreamRecord = {
+    ...data.createEventStreamRecord,
+    output: unauthorizedResponse,
+  };
+
   it('requestWithStreamIdProvidedHasBeenMadeC', () => {
     const check = ConsumeEventStreamRecordChecks.requestWithStreamIdProvidedHasBeenMadeC;
     expect(check([])).toStrictEqual(false);
     expect(check([data.createEventStreamRecord])).toStrictEqual(false);
-    expect(
-      check([
-        {
-          ...data.createEventStreamRecord,
-          output: unauthorizedResponse,
-        },
-      ])
-    ).toStrictEqual(false);
+    expect(check([unauthorizedCreateEventStreamRecord])).toStrictEqual(false);
     expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordDelivered])).toStrictEqual(true);
   });
 
@@ -22,14 +20,7 @@ describe('ConsumeEventStreamRecordChecks', () => {
     const check = ConsumeEventStreamRecordChecks.hasNewStatusPropertySetToAcceptedC;
     expect(check([])).toStrictEqual(false);
     expect(check([data.createEventStreamRecord])).toStrictEqual(false);
-    expect(
-      check([
-        {
-          ...data.createEventStreamRecord,
-          output: unauthorizedResponse,
-        },
-      ])
-    ).toStrictEqual(false);
+    expect(check([unauthorizedCreateEventStreamRecord])).toStrictEqual(false);
     expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordDelivered])).toStrictEqual(true);
   });
 
@@ -37,14 +28,7 @@ describe('ConsumeEventStreamRecordChecks', () => {
     const check = ConsumeEventStreamRecordChecks.hasIunPopulatedC;
     expect(check([])).toStrictEqual(false);
     expect(check([data.createEventStreamRecord])).toStrictEqual(false);
-    expect(
-      check([
-        {
-          ...data.createEventStreamRecord,
-          output: unauthorizedResponse,
-        },
-      ])
-    ).toStrictEqual(false);
+    expect(check([unauthorizedCreateEventStreamRecord])).toStrictEqual(false);
     expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordDelivered])).toStrictEqual(true);
   });
 
@@ -52,14 +36,7 @@ describe('ConsumeEventStreamRecordChecks', () => {
     const check = ConsumeEventStreamRecordChecks.hasProperlyConsumedEvents(data.makeTestSystemEnv());
     expect(check([])).toStrictEqual(false);
     expect(check([data.createEventStreamRecord])).toStrictEqual(false);
-    expect(
-      check([
-        {
-          ...data.createEventStreamRecord,
-          output: unauthorizedResponse,
-        },
-      ])
-    ).toStrictEqual(false);
+    expect(check([unauthorizedCreateEventStreamRecord])).toStrictEqual(false);
     expect(check([data.createTimelineEventStreamRecord, data.consumeEventStreamRecordInValidation])).toStrictEqual(
       false
     );

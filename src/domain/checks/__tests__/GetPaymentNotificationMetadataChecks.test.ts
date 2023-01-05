@@ -1,6 +1,5 @@
 import * as GetPaymentNotificationMetadataChecks from '../GetPaymentNotificationMetadataChecks';
 import * as data from '../../__tests__/data';
-import { matchesIunAndHasPAGOPAAsAttachmentName } from '../GetPaymentNotificationMetadataChecks';
 
 describe('GetPaymentNotificationMetadataChecks', () => {
   it('matchesIunAndHasPAGOPAAsAttachmentName', () => {
