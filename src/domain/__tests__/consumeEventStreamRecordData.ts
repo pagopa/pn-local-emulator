@@ -40,8 +40,8 @@ const consumeEventStreamRecordInValidation = {
   output: {
     ...baseConsumeEventStreamResponse,
     returned: [inValidationEvent],
-  }
-}
+  },
+};
 
 const consumeEventStreamRecordAccepted = {
   ...baseConsumeEventStreamRecord,
