@@ -1,12 +1,20 @@
 import * as CreateEventStreamRecordChecks from '../CreateEventStreamRecordChecks';
-import * as useCaseData from './data';
+import * as data from '../../__tests__/data';
+import { unauthorizedResponse } from '../../types';
 
 describe('CreateEventStreamRecordChecks', () => {
   it('hasCreatedStreamWithEventTypeTimelineC', () => {
     const check = CreateEventStreamRecordChecks.hasCreatedStreamWithEventTypeTimelineC;
     expect(check([])).toStrictEqual(false);
-    expect(check(useCaseData.createEventStreamRecordWithoutEventType)).toStrictEqual(false);
-    expect(check(useCaseData.failedRequestCreateEventStream)).toStrictEqual(false);
-    expect(check(useCaseData.createEventStreamRecordWithEventTypeTimeline)).toStrictEqual(true);
+    expect(check([data.createEventStreamRecord])).toStrictEqual(false);
+    expect(
+      check([
+        {
+          ...data.createEventStreamRecord,
+          output: unauthorizedResponse,
+        },
+      ])
+    ).toStrictEqual(false);
+    expect(check([data.createTimelineEventStreamRecord])).toStrictEqual(true);
   });
 });

@@ -16,7 +16,7 @@ const hasUniquePreloadIdx = (record: PreLoadRecord) =>
     (totalUniquePreloadIdx) => totalUniquePreloadIdx === record.input.body.length
   );
 
-export const hasApplicationPdfAsContentType = (record: PreLoadRecord) =>
+const hasApplicationPdfAsContentType = (record: PreLoadRecord) =>
   pipe(
     record.input.body,
     RA.every(({ contentType }) => contentType === 'application/pdf')

@@ -26,8 +26,8 @@ import { IUN } from '../../generated/pnapi/IUN';
 import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
 import { makeNotificationAttachmentDownloadMetadataResponse } from '../NotificationAttachmentDownloadMetadataResponse';
 import { DownloadRecord } from '../DownloadRecord';
+import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
 import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
-import * as RA from 'fp-ts/ReadonlyArray';
 
 export const apiKey = {
   valid: 'key-value',
@@ -309,6 +309,14 @@ export const createEventStreamRecord: CreateEventStreamRecord = {
   loggedAt: aDate,
 };
 
+export const createTimelineEventStreamRecord: CreateEventStreamRecord = {
+  ...createEventStreamRecord,
+  input: {
+    ...createEventStreamRecord.input,
+    body: { ...createEventStreamRecord.input.body, eventType: EventTypeEnum.TIMELINE },
+  },
+};
+
 // ListEventStreamRecord ////////////////////////////////////////////////////
 
 export const listEventStreamRecord: ListEventStreamRecord = {
@@ -354,6 +362,14 @@ export const consumeEventStreamRecord: ConsumeEventStreamRecord = {
   loggedAt: aDate,
 };
 
+export const consumeEventStreamRecordInValidation = {
+  ...consumeEventStreamRecord,
+  output: {
+    ...consumeEventStreamResponse,
+    returned: [inValidationEvent],
+  },
+};
+
 export const consumeEventStreamRecordDelivered = {
   ...consumeEventStreamRecord,
   output: {
@@ -364,6 +380,11 @@ export const consumeEventStreamRecordDelivered = {
       iun: aIun.valid,
     })),
   },
+};
+
+export const consumeEventStreamRecordDeliveredDelayed = {
+  ...consumeEventStreamRecordDelivered,
+  loggedAt: new Date(aDate.getTime() + 2000),
 };
 
 // GetNotificationDetailRecord /////////////////////////////////////////////////
