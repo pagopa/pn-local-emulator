@@ -4,10 +4,16 @@ import * as O from 'fp-ts/Option';
 import { GetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { DownloadRecord } from '../DownloadRecord';
+import { LegalFactDownloadMetadataRecord } from '../LegalFactDownloadMetadataRecord';
 
 export const metadataRecordMatchesDownloadRecordC =
   (downloadRecords: ReadonlyArray<DownloadRecord>) =>
-  (metadataRecord: GetNotificationDocumentMetadataRecord | GetPaymentNotificationMetadataRecord): boolean =>
+  (
+    metadataRecord:
+      | GetNotificationDocumentMetadataRecord
+      | GetPaymentNotificationMetadataRecord
+      | LegalFactDownloadMetadataRecord
+  ): boolean =>
     pipe(
       downloadRecords,
       RA.exists(({ input }) =>
