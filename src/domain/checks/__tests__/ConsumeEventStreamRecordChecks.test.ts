@@ -1,5 +1,4 @@
 import * as ConsumeEventStreamRecordChecks from '../ConsumeEventStreamRecordChecks';
-import { hasIunPopulatedC } from '../ConsumeEventStreamRecordChecks';
 import * as data from '../../__tests__/data';
 import { unauthorizedResponse } from '../../types';
 
