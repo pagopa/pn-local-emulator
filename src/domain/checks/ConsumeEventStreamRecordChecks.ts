@@ -56,11 +56,3 @@ export const hasProperlyConsumedEvents = (env: DomainEnv): R.Reader<ReadonlyArra
       pipe(hasNewStatusPropertySetToAcceptedC, P.and(hasIunPopulatedC), P.and(hasHonouredRetryAfterValueC(env)))
     )
   );
-
-export const matchesAtLeastOneIunC = (records: ReadonlyArray<Record>) => (iun: string) =>
-  pipe(
-    records,
-    RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
-    ConsumeEventStreamRecord.getProgressResponseList,
-    RA.exists(({ iun: iunFromEvents }) => iunFromEvents === iun)
-  );

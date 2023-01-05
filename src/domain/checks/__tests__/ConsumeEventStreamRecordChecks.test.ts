@@ -44,12 +44,4 @@ describe('ConsumeEventStreamRecordChecks', () => {
       true
     );
   });
-
-  it('matchesAtLeastOneIun', () => {
-    const check = ConsumeEventStreamRecordChecks.matchesAtLeastOneIunC;
-    expect(check([])(data.aIun.valid)).toStrictEqual(false);
-    expect(check([data.consumeEventStreamRecord])(data.aIun.valid)).toStrictEqual(false);
-    expect(check([data.consumeEventStreamRecordDelivered])(data.aIun.invalid)).toStrictEqual(false);
-    expect(check([data.consumeEventStreamRecordDelivered])(data.aIun.valid)).toStrictEqual(true);
-  });
 });
