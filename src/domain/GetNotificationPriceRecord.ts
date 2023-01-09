@@ -15,6 +15,9 @@ export type GetNotificationPriceRecord = AuditRecord & {
   output: Response<200, NotificationPriceResponse> | Response<403, UnauthorizedMessageBody>;
 };
 
+export const isGetNotificationPrice = (record: Record) =>
+  record.type === 'GetNotificationPriceRecord' ? O.some(record) : O.none;
+
 const findNotification = (request: GetNotificationPriceRecord['input'], snapshot: Snapshot) =>
   pipe(
     snapshot,
