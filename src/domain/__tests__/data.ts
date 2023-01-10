@@ -92,7 +92,7 @@ export const aRetryAfterMs = 1000;
 
 export const aNotificationPrice = 100;
 
-export const aNoticeCode: noticeCode = unsafeCoerce('302000100000019421')
+export const aNoticeCode: noticeCode = unsafeCoerce('302000100000019421');
 
 export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
@@ -452,9 +452,9 @@ export const getNotificationPriceRecord: GetNotificationPriceRecord = {
     statusCode: 200,
     returned: {
       iun: aIun.valid,
-      amount: "100",
-      effectiveDate: aDate
-    }
+      amount: '100',
+      effectiveDate: aDate,
+    },
   },
   loggedAt: aDate,
-}
+};

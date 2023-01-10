@@ -3,11 +3,8 @@ import * as useCaseData from './data';
 import * as data from '../../__tests__/data';
 
 const ex0 = [...useCaseData.twoPreLoadRecordsOneUploadRecord];
-const ex1 = [...ex0, data.getNotificationPriceRecord]
-const ex2 = [
-  data.getNotificationPriceRecord,
-  data.newNotificationRecord,
-];
+const ex1 = [...ex0, data.getNotificationPriceRecord];
+const ex2 = [data.getNotificationPriceRecord, data.newNotificationRecord];
 const ex3 = [
   data.getNotificationPriceRecord,
   data.mkNewNotificationRecord(
@@ -31,11 +28,12 @@ describe('GetNotificationPriceRecordChecks', () => {
     expect(check(ex1)).toStrictEqual(true);
   });
   it('atLeastOneGetNotificationPriceRecordMatchingPreviousNotificationRequest', () => {
-    const check = GetNotificationPriceRecordChecks.atLeastOneGetNotificationPriceRecordMatchingPreviousNotificationRequest;
+    const check =
+      GetNotificationPriceRecordChecks.atLeastOneGetNotificationPriceRecordMatchingPreviousNotificationRequest;
     expect(check([])).toStrictEqual(false);
     expect(check(ex0)).toStrictEqual(false);
     expect(check(ex1)).toStrictEqual(false);
     expect(check(ex2)).toStrictEqual(false);
     expect(check(ex3)).toStrictEqual(true);
   });
-})
+});
