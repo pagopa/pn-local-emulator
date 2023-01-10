@@ -28,6 +28,7 @@ import { makeNotificationAttachmentDownloadMetadataResponse } from '../Notificat
 import { DownloadRecord } from '../DownloadRecord';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { noticeCode } from '../../generated/pnapi/noticeCode';
+import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
 
 export const apiKey = {
   valid: 'key-value',
@@ -376,11 +377,33 @@ const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
   notificationRequestId: notificationId.valid,
 })(aIun.valid);
 
+const acceptedNotificationWithTimeline = {
+  ...acceptedNotification,
+  timeline: [
+    {
+      elementId: `${acceptedNotification.iun}_request_accepted`,
+      timestamp: aDate,
+      legalFactsIds: [
+        {
+          key: aLegalFactId,
+          category: aLegalFactType,
+        },
+      ],
+      category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+    },
+  ],
+};
+
 export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = {
   type: 'GetNotificationDetailRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid },
   output: { statusCode: 200, returned: acceptedNotification },
   loggedAt: aDate,
+};
+
+export const getNotificationDetailRecordAcceptedWithTimeline: GetNotificationDetailRecord = {
+  ...getNotificationDetailRecordAccepted,
+  output: { statusCode: 200, returned: acceptedNotificationWithTimeline },
 };
 
 // GetNotificationDocumentMetadataRecord //////////////////////////////////////
