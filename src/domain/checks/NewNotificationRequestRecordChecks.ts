@@ -161,3 +161,21 @@ export const atLeastOneNotificationSentC = pipe(
     )
   )
 );
+
+export const atLeastOneNotificationSameSenderAndCreatorC = RA.exists(
+  flow(
+    isNewNotificationRecord,
+    O.exists((record) =>
+      pipe(
+        record.input.body.recipients,
+        RA.exists((recipient) =>
+          pipe(
+            recipient.payment?.creditorTaxId,
+            O.fromNullable,
+            O.exists((creditorTaxId) => creditorTaxId === record.input.body.senderTaxId)
+          )
+        )
+      )
+    )
+  )
+);

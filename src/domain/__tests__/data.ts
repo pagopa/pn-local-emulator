@@ -26,8 +26,9 @@ import { IUN } from '../../generated/pnapi/IUN';
 import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
 import { makeNotificationAttachmentDownloadMetadataResponse } from '../NotificationAttachmentDownloadMetadataResponse';
 import { DownloadRecord } from '../DownloadRecord';
+import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
+import { noticeCode } from '../../generated/pnapi/noticeCode';
 import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
-import * as RA from 'fp-ts/ReadonlyArray';
 
 export const apiKey = {
   valid: 'key-value',
@@ -92,6 +93,8 @@ export const aRetryAfterMs = 1000;
 
 export const aNotificationPrice = 100;
 
+export const aNoticeCode: noticeCode = unsafeCoerce('302000100000019421');
+
 export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
@@ -135,7 +138,7 @@ export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0]
   },
   payment: {
     creditorTaxId: unsafeCoerce('77777777777'),
-    noticeCode: unsafeCoerce('302000100000019421'),
+    noticeCode: aNoticeCode,
     pagoPaForm: {
       digests: {
         sha256: aSha256,
@@ -462,4 +465,19 @@ export const downloadRecord: DownloadRecord = {
 export const downloadRecordWithFakeUrl: DownloadRecord = {
   ...downloadRecord,
   input: { url: 'https://fakeurl.com' },
+};
+
+// GetNotificationPriceRecord ////////////////////////////////////////////////
+export const getNotificationPriceRecord: GetNotificationPriceRecord = {
+  type: 'GetNotificationPriceRecord',
+  input: { apiKey: apiKey.valid, paTaxId: newNotificationRequest.senderTaxId, noticeCode: aNoticeCode },
+  output: {
+    statusCode: 200,
+    returned: {
+      iun: aIun.valid,
+      amount: '100',
+      effectiveDate: aDate,
+    },
+  },
+  loggedAt: aDate,
 };
