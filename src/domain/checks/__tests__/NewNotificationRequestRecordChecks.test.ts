@@ -6,6 +6,20 @@ const ex2 = [data.preLoadRecord, data.preLoadRecord, data.uploadToS3Record, data
 const ex3 = [...ex2, data.newNotificationRecord];
 const ex4 = [...ex2, data.mkNewNotificationRecord([data.aDocument0], [data.aRecipient])];
 const ex5 = [...ex2, data.mkNewNotificationRecord([data.aDocument0], [{ ...data.aRecipient, payment: undefined }])];
+const ex6 = [
+  ...ex2,
+  data.mkNewNotificationRecord(
+    [data.aDocument0],
+    [
+      {
+        ...data.aRecipient,
+        payment: data.aRecipient.payment
+          ? { ...data.aRecipient.payment, creditorTaxId: data.newNotificationRecord.input.body.senderTaxId }
+          : undefined,
+      },
+    ]
+  ),
+];
 
 describe('TC-SEND-01', () => {
   describe('Create a notification request', () => {
@@ -67,6 +81,20 @@ describe('TC-SEND-01', () => {
       expect(check(ex3)).toStrictEqual(false);
       expect(check(ex5)).toStrictEqual(false);
       expect(check(ex4)).toStrictEqual(true);
+    });
+  });
+});
+
+describe('TC-PAYMENT-01', () => {
+  describe('Create a notification request providing the same sender and creditor', () => {
+    it('atLeastOneNotificationSameSenderAndCreatorC', () => {
+      const check = NewNotificationRequestRecordChecks.atLeastOneNotificationSameSenderAndCreatorC;
+      expect(check([])).toStrictEqual(false);
+      expect(check(ex3)).toStrictEqual(false);
+      expect(check(ex5)).toStrictEqual(false);
+      expect(check(ex4)).toStrictEqual(false);
+      expect(check(ex5)).toStrictEqual(false);
+      expect(check(ex6)).toStrictEqual(true);
     });
   });
 });
