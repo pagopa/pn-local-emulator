@@ -1,8 +1,7 @@
 import * as GetNotificationPriceRecordChecks from '../GetNotificationPriceRecordChecks';
-import * as useCaseData from './data';
 import * as data from '../../__tests__/data';
 
-const ex0 = [...useCaseData.twoPreLoadRecordsOneUploadRecord];
+const ex0 = [data.preLoadRecord, data.preLoadRecord, data.uploadToS3Record];
 const ex1 = [...ex0, data.getNotificationPriceRecord];
 const ex2 = [data.getNotificationPriceRecord, data.newNotificationRecord];
 const ex3 = [
