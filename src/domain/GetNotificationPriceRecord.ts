@@ -5,15 +5,18 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { NotificationPriceResponse } from '../generated/pnapi/NotificationPriceResponse';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody, unauthorizedResponse } from './types';
-import { Snapshot } from './Snapshot';
+import { computeSnapshot, Snapshot } from './Snapshot';
 
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';
   input: { apiKey: string; paTaxId: string; noticeCode: string };
   output: Response<200, NotificationPriceResponse> | Response<403, UnauthorizedMessageBody>;
 };
+
+export const isGetNotificationPrice = (record: Record) =>
+  record.type === 'GetNotificationPriceRecord' ? O.some(record) : O.none;
 
 const findNotification = (request: GetNotificationPriceRecord['input'], snapshot: Snapshot) =>
   pipe(
@@ -32,12 +35,12 @@ const findNotification = (request: GetNotificationPriceRecord['input'], snapshot
 export const makeGetNotificationPriceRecord =
   (env: DomainEnv) =>
   (input: GetNotificationPriceRecord['input']) =>
-  (snapshot: Snapshot): GetNotificationPriceRecord => ({
+  (records: ReadonlyArray<Record>): GetNotificationPriceRecord => ({
     type: 'GetNotificationPriceRecord',
     input,
     output: pipe(
       authorizeApiKey(input.apiKey),
-      E.map(() => findNotification(input, snapshot)),
+      E.map(() => findNotification(input, computeSnapshot(env)(records))),
       E.map(
         O.foldW(
           () => unauthorizedResponse,
@@ -45,7 +48,7 @@ export const makeGetNotificationPriceRecord =
             statusCode: 200 as const,
             returned: {
               iun,
-              amount: '1',
+              amount: `${env.notificationPrice}`,
               effectiveDate: env.dateGenerator(),
             },
           })

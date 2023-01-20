@@ -4,12 +4,12 @@ import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/pnapi/NotificationAttachmentDownloadMetadataResponse';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
-import { Snapshot } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
+import { makeNotificationAttachmentDownloadMetadataResponse } from './NotificationAttachmentDownloadMetadataResponse';
 
 export type GetNotificationDocumentMetadataRecord = AuditRecord & {
   type: 'GetNotificationDocumentMetadataRecord';
@@ -20,20 +20,15 @@ export type GetNotificationDocumentMetadataRecord = AuditRecord & {
     | Response<404>;
 };
 
-export const makeNotificationAttachmentDownloadMetadataResponse =
-  (env: DomainEnv) =>
-  (document: Notification['documents'][0]): NotificationAttachmentDownloadMetadataResponse => ({
-    filename: document.ref.key,
-    contentType: document.contentType,
-    contentLength: 0,
-    sha256: document.digests.sha256,
-    url: `${env.downloadDocumentURL.href}/${env.sampleStaticPdfFileName}`,
-  });
+export const isGetNotificationDocumentMetadataRecord = (
+  record: Record
+): O.Option<GetNotificationDocumentMetadataRecord> =>
+  record.type === 'GetNotificationDocumentMetadataRecord' ? O.some(record) : O.none;
 
 export const makeGetNotificationDocumentMetadataRecord =
   (env: DomainEnv) =>
   (input: GetNotificationDocumentMetadataRecord['input']) =>
-  (snapshot: Snapshot): GetNotificationDocumentMetadataRecord => ({
+  (records: ReadonlyArray<Record>): GetNotificationDocumentMetadataRecord => ({
     type: 'GetNotificationDocumentMetadataRecord',
     input,
     loggedAt: env.dateGenerator(),
@@ -41,7 +36,7 @@ export const makeGetNotificationDocumentMetadataRecord =
       authorizeApiKey(input.apiKey),
       E.map(() =>
         pipe(
-          snapshot,
+          computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           RA.chain((notification) => (notification.iun === input.iun ? notification.documents : RA.empty)),
           // the types of docIdx don't fit (one is a string the other is a number)

@@ -2,19 +2,7 @@ import * as http from 'http';
 import express from 'express';
 import { Config } from '../../config';
 import { Logger } from '../../logger';
-import { PreLoadUseCase } from '../../useCases/PreLoadUseCase';
-import { UploadToS3UseCase } from '../../useCases/UploadToS3UseCase';
-import { SendNotificationUseCase } from '../../useCases/SendNotificationUseCase';
-import { CheckNotificationStatusUseCase } from '../../useCases/CheckNotificationStatusUseCase';
-import { GetChecklistResultUseCase } from '../../useCases/GetChecklistResultUseCase';
-import { CreateEventStreamUseCase } from '../../useCases/CreateEventStreamUseCase';
-import { ListEventStreamUseCase } from '../../useCases/ListEventStreamUseCase';
-import { GetNotificationDetailUseCase } from '../../useCases/GetNotificationDetailUseCase';
-import { ConsumeEventStreamUseCase } from '../../useCases/ConsumeEventStreamUseCase';
-import { GetNotificationDocumentMetadataUseCase } from '../../useCases/GetNotificationDocumentMetadataUseCase';
-import { GetPaymentNotificationMetadataUseCase } from '../../useCases/GetPaymentNotificationMetadataUseCase';
-import { GetLegalFactDownloadMetadataUseCase } from '../../useCases/GetLegalFactDownloadMetadataUseCase';
-import { GetNotificationPriceUseCase } from '../../useCases/GetNotificationPriceUseCase';
+import { SystemEnv } from '../../useCases/SystemEnv';
 import { makePreLoadRouter } from './preLoad/router';
 import { makeUploadToS3Router } from './uploadToS3/router';
 import { makeSendNotificationRouter } from './sendNotification/router';
@@ -30,38 +18,24 @@ import { makeGetLegalFactDocumentRouter } from './getLegalFactDocument/router';
 import { makeListEventStreamRouter } from './listEventStream/router';
 import { makeGetNotificationPriceRouter } from './getNotificationPrice/router';
 
-export const makeApplication = (
-  preLoadUseCase: PreLoadUseCase,
-  uploadToS3UseCase: UploadToS3UseCase,
-  sendNotificationUseCase: SendNotificationUseCase,
-  createEventStreamUseCase: CreateEventStreamUseCase,
-  checkNotificationStatusUseCase: CheckNotificationStatusUseCase,
-  getNotificationDetailUseCase: GetNotificationDetailUseCase,
-  consumeEventStreamUseCase: ConsumeEventStreamUseCase,
-  listEventStreamUseCase: ListEventStreamUseCase,
-  getChecklistResultUseCase: GetChecklistResultUseCase,
-  getNotificationDocumentMetadataUseCase: GetNotificationDocumentMetadataUseCase,
-  getPaymentNotificationMetadataUseCase: GetPaymentNotificationMetadataUseCase,
-  getLegalFactDownloadMetadataUseCase: GetLegalFactDownloadMetadataUseCase,
-  getNotificationPriceUseCase: GetNotificationPriceUseCase
-): express.Application => {
+export const makeApplication = (env: SystemEnv): express.Application => {
   const app = express();
   app.use(express.json());
   // create all routers and return the application
-  app.use(makePreLoadRouter(preLoadUseCase));
-  app.use(makeUploadToS3Router(uploadToS3UseCase));
-  app.use(makeSendNotificationRouter(sendNotificationUseCase));
-  app.use(makeCreateEventStreamRouter(createEventStreamUseCase));
-  app.use(makeNotificationStatusRouter(checkNotificationStatusUseCase));
-  app.use(makeConsumeEventStreamRouter(consumeEventStreamUseCase));
-  app.use(makeListEventStreamRouter(listEventStreamUseCase));
-  app.use(makeChecklistRouter(getChecklistResultUseCase));
-  app.use(makeGetNotificationDetailRouter(getNotificationDetailUseCase));
-  app.use(makeGetNotificationDocumentMetadataRouter(getNotificationDocumentMetadataUseCase));
-  app.use(makeGetPaymentNotificationMetadataRouter(getPaymentNotificationMetadataUseCase));
-  app.use(makeGetLegalFactDocumentRouter(getLegalFactDownloadMetadataUseCase));
-  app.use(makeGetNotificationPriceRouter(getNotificationPriceUseCase));
-  app.use(makeDownloadDocumentRouter());
+  app.use(makePreLoadRouter(env));
+  app.use(makeUploadToS3Router(env));
+  app.use(makeSendNotificationRouter(env));
+  app.use(makeCreateEventStreamRouter(env));
+  app.use(makeNotificationStatusRouter(env));
+  app.use(makeConsumeEventStreamRouter(env));
+  app.use(makeListEventStreamRouter(env));
+  app.use(makeChecklistRouter(env));
+  app.use(makeGetNotificationDetailRouter(env));
+  app.use(makeGetNotificationDocumentMetadataRouter(env));
+  app.use(makeGetPaymentNotificationMetadataRouter(env));
+  app.use(makeGetLegalFactDocumentRouter(env));
+  app.use(makeGetNotificationPriceRouter(env));
+  app.use(makeDownloadDocumentRouter(env));
   return app;
 };
 

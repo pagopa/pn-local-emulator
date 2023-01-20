@@ -8,11 +8,11 @@ import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { NotificationStatusHistoryElement } from '../generated/pnapi/NotificationStatusHistoryElement';
 import { TimelineElement } from '../generated/pnapi/TimelineElement';
 import { TimelineElementCategoryEnum } from '../generated/pnapi/TimelineElementCategory';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';
 import { authorizeApiKey } from './authorize';
-import { Snapshot } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { DomainEnv } from './DomainEnv';
 
 export type GetNotificationDetailRecord = AuditRecord & {
@@ -20,6 +20,9 @@ export type GetNotificationDetailRecord = AuditRecord & {
   input: { apiKey: string; iun: IUN };
   output: Response<200, FullSentNotification> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
+
+export const isGetNotificationDetailRecord = (record: Record): O.Option<GetNotificationDetailRecord> =>
+  record.type === 'GetNotificationDetailRecord' ? O.some(record) : O.none;
 
 const makeTimelineElementId = (iun: IUN) => `${iun}_request_accepted`;
 
@@ -57,7 +60,7 @@ export const makeFullSentNotification =
 export const makeGetNotificationDetailRecord =
   (env: DomainEnv) =>
   (input: GetNotificationDetailRecord['input']) =>
-  (snapshot: Snapshot): GetNotificationDetailRecord => ({
+  (records: ReadonlyArray<Record>): GetNotificationDetailRecord => ({
     type: 'GetNotificationDetailRecord',
     input,
     loggedAt: env.dateGenerator(),
@@ -65,7 +68,7 @@ export const makeGetNotificationDetailRecord =
       authorizeApiKey(input.apiKey),
       E.map(() =>
         pipe(
-          snapshot,
+          computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           RA.findFirstMap((notification) => (notification.iun === input.iun ? O.some(notification) : O.none)),
           O.map((returned) => ({ statusCode: 200 as const, returned })),

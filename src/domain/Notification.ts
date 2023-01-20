@@ -8,7 +8,13 @@ import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
-import { makeFullSentNotification } from './GetNotificationDetailRecord';
+import {
+  GetNotificationDetailRecord,
+  isGetNotificationDetailRecord,
+  makeFullSentNotification,
+} from './GetNotificationDetailRecord';
+import { DomainEnv } from './DomainEnv';
+import { updateTimeline } from './TimelineElement';
 
 export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 
@@ -49,13 +55,22 @@ const countFromConsume = (notificationRequestId: string) =>
     RA.size
   );
 
+const countFromDetail = (iun: IUN) =>
+  flow(
+    RA.filterMap(isGetNotificationDetailRecord),
+    RA.filterMap(({ output }) => (output.statusCode === 200 ? O.some(output) : O.none)),
+    RA.filter(({ returned }) => returned.iun === iun),
+    RA.size
+  );
+
 /**
  * Compose a NotificationRequest starting from a list of records
  */
 export const makeNotification =
-  (occurrencesAfterComplete: number, senderPaId: string, iun: IUN, sentAt: Date) =>
+  (env: DomainEnv) =>
   (findNotificationRequestRecord: ReadonlyArray<CheckNotificationStatusRecord>) =>
   (consumeEventStreamRecord: ReadonlyArray<ConsumeEventStreamRecord>) =>
+  (getNotificationDetailRecord: ReadonlyArray<GetNotificationDetailRecord>) =>
   (notificationRequest: NotificationRequest): O.Option<Notification> =>
     pipe(
       // get iun from find records
@@ -63,7 +78,7 @@ export const makeNotification =
       // get iun from consume records
       O.alt(() => pipe(consumeEventStreamRecord, RA.findLastMap(getIunFromConsume(notificationRequest)))),
       // create Notification from iun if any
-      O.map((iun) => mkNotification(notificationRequest, sentAt, senderPaId, iun)),
+      O.map((iun) => mkNotification(notificationRequest, env.dateGenerator(), env.senderPAId, iun)),
       // try to create notification from find records
       // if no iun was found then create a new notification based on occurrences counter
       O.alt(() =>
@@ -73,9 +88,21 @@ export const makeNotification =
             pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
           ]),
           (occurrences) =>
-            occurrences >= occurrencesAfterComplete
-              ? O.some(mkNotification(notificationRequest, sentAt, senderPaId, iun))
+            occurrences >= env.occurrencesAfterComplete
+              ? O.some(mkNotification(notificationRequest, env.dateGenerator(), env.senderPAId, env.iunGenerator()))
               : O.none
+        )
+      ),
+      O.map((notification) =>
+        pipe(
+          M.concatAll(n.MonoidSum)([
+            pipe(findNotificationRequestRecord, countFromFind(notificationRequest.notificationRequestId)),
+            pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
+            pipe(getNotificationDetailRecord, countFromDetail(notification.iun)),
+          ]),
+          (occurrences) =>
+            // when the notification is returned enough times, the timeline is updated
+            occurrences >= env.occurrencesAfterViewed ? updateTimeline(env)(notification) : notification
         )
       )
     );

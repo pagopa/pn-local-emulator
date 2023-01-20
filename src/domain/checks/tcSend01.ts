@@ -7,7 +7,7 @@ export const tcSend01 = Group({
   'Request at least two upload slots': Group({
     'Have you done at least one request?': PreLoadRecordChecks.atLeastOnePreLoadRecordC,
     'Have you required at least one pdf?': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
-    'Have you received at least two valid slots?': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,
+    'Have you received at least two valid slots?': PreLoadRecordChecks.atLeastTwoValidSlotC,
   }),
   'Upload at least two files': Group({
     'Have you upload two files using the information of previous step?':

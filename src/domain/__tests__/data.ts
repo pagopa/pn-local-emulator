@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
@@ -8,10 +9,7 @@ import { NewNotificationRecord } from '../NewNotificationRecord';
 import { PreLoadRecord } from '../PreLoadRecord';
 import { UploadToS3Record } from '../UploadToS3Record';
 import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNotificationDetailRecord';
-import {
-  GetNotificationDocumentMetadataRecord,
-  makeNotificationAttachmentDownloadMetadataResponse,
-} from '../GetNotificationDocumentMetadataRecord';
+import { GetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
 import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipient';
@@ -26,9 +24,16 @@ import {
 import { LegalFactCategoryEnum } from '../../generated/pnapi/LegalFactCategory';
 import { IUN } from '../../generated/pnapi/IUN';
 import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
+import { makeNotificationAttachmentDownloadMetadataResponse } from '../NotificationAttachmentDownloadMetadataResponse';
+import { DownloadRecord } from '../DownloadRecord';
+import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
+import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
+import { noticeCode } from '../../generated/pnapi/noticeCode';
+import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
 
 export const apiKey = {
   valid: 'key-value',
+  invalid: 'invalid-key-value',
 };
 
 export const notificationId = {
@@ -85,6 +90,12 @@ export const aDocument1 = {
   },
 };
 
+export const aRetryAfterMs = 1000;
+
+export const aNotificationPrice = 100;
+
+export const aNoticeCode: noticeCode = unsafeCoerce('302000100000019421');
+
 export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
   findNotificationRequestRecords: ReadonlyArray<CheckNotificationStatusRecord> = [],
@@ -97,9 +108,13 @@ export const makeTestSystemEnv = (
     downloadDocumentURL: new URL('http://localhost/downloaddocument'),
     sampleStaticPdfFileName: 'sample.pdf',
     occurrencesAfterComplete: 2,
+    occurrencesAfterViewed: 4,
     senderPAId: aSenderPaId,
+    retryAfterMs: aRetryAfterMs,
+    notificationPrice: aNotificationPrice,
     iunGenerator: () => aIun.valid,
     dateGenerator: () => new Date(0),
+    uuidGenerator: () => crypto.randomUUID(),
     recordRepository: inMemory.makeRecordRepository(logger)([
       ...createNotificationRequestRecords,
       ...findNotificationRequestRecords,
@@ -124,7 +139,7 @@ export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0]
   },
   payment: {
     creditorTaxId: unsafeCoerce('77777777777'),
-    noticeCode: unsafeCoerce('302000100000019421'),
+    noticeCode: aNoticeCode,
     pagoPaForm: {
       digests: {
         sha256: aSha256,
@@ -239,6 +254,7 @@ const checkNotificationStatusRecordReturned = {
   paProtocolNumber: paProtocolNumber.valid,
   notificationRequestId: notificationId.valid,
   notificationRequestStatus: 'WAITING',
+  retryAfter: aRetryAfterMs / 1000,
 };
 
 export const checkNotificationStatusRecord: CheckNotificationStatusRecord = {
@@ -297,6 +313,14 @@ export const createEventStreamRecord: CreateEventStreamRecord = {
   loggedAt: aDate,
 };
 
+export const createTimelineEventStreamRecord: CreateEventStreamRecord = {
+  ...createEventStreamRecord,
+  input: {
+    ...createEventStreamRecord.input,
+    body: { ...createEventStreamRecord.input.body, eventType: EventTypeEnum.TIMELINE },
+  },
+};
+
 // ListEventStreamRecord ////////////////////////////////////////////////////
 
 export const listEventStreamRecord: ListEventStreamRecord = {
@@ -325,6 +349,7 @@ export const inValidationEvent = {
 
 export const consumeEventStreamResponse = {
   statusCode: 200 as const,
+  headers: { 'retry-after': aRetryAfterMs },
   returned: [
     {
       eventId: '0',
@@ -341,6 +366,14 @@ export const consumeEventStreamRecord: ConsumeEventStreamRecord = {
   loggedAt: aDate,
 };
 
+export const consumeEventStreamRecordInValidation = {
+  ...consumeEventStreamRecord,
+  output: {
+    ...consumeEventStreamResponse,
+    returned: [inValidationEvent],
+  },
+};
+
 export const consumeEventStreamRecordDelivered = {
   ...consumeEventStreamRecord,
   output: {
@@ -353,6 +386,11 @@ export const consumeEventStreamRecordDelivered = {
   },
 };
 
+export const consumeEventStreamRecordDeliveredDelayed = {
+  ...consumeEventStreamRecordDelivered,
+  loggedAt: new Date(aDate.getTime() + 2000),
+};
+
 // GetNotificationDetailRecord /////////////////////////////////////////////////
 
 const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
@@ -361,6 +399,23 @@ const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
   notificationRequestId: notificationId.valid,
 })(aIun.valid);
 
+const acceptedNotificationWithTimeline = {
+  ...acceptedNotification,
+  timeline: [
+    {
+      elementId: `${acceptedNotification.iun}_request_accepted`,
+      timestamp: aDate,
+      legalFactsIds: [
+        {
+          key: aLegalFactId,
+          category: aLegalFactType,
+        },
+      ],
+      category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+    },
+  ],
+};
+
 export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = {
   type: 'GetNotificationDetailRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid },
@@ -368,15 +423,22 @@ export const getNotificationDetailRecordAccepted: GetNotificationDetailRecord = 
   loggedAt: aDate,
 };
 
+export const getNotificationDetailRecordAcceptedWithTimeline: GetNotificationDetailRecord = {
+  ...getNotificationDetailRecordAccepted,
+  output: { statusCode: 200, returned: acceptedNotificationWithTimeline },
+};
+
 // GetNotificationDocumentMetadataRecord //////////////////////////////////////
+
+const getNotificationDocumentMetadataRecordOutput200: GetNotificationDocumentMetadataRecord['output'] = {
+  statusCode: 200,
+  returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
+};
 
 export const getNotificationDocumentMetadataRecord0: GetNotificationDocumentMetadataRecord = {
   type: 'GetNotificationDocumentMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, docIdx: 0 },
-  output: {
-    statusCode: 200,
-    returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
-  },
+  output: getNotificationDocumentMetadataRecordOutput200,
   loggedAt: aDate,
 };
 
@@ -395,10 +457,7 @@ export const getNotificationDocumentMetadataRecord1: GetNotificationDocumentMeta
 export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadataRecord = {
   type: 'GetPaymentNotificationMetadataRecord',
   input: { apiKey: apiKey.valid, iun: aIun.valid, recipientId: 0, attachmentName: 'PAGOPA' },
-  output: {
-    statusCode: 200,
-    returned: makeNotificationAttachmentDownloadMetadataResponse(makeTestSystemEnv())(aDocument0),
-  },
+  output: getNotificationDocumentMetadataRecordOutput200,
   loggedAt: aDate,
 };
 
@@ -410,6 +469,37 @@ export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord
   output: {
     statusCode: 200,
     returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),
+  },
+  loggedAt: aDate,
+};
+
+// DownloadRecord ////////////////////////////////////////////////////////////
+export const downloadRecord: DownloadRecord = {
+  type: 'DownloadRecord',
+  input: { url: getNotificationDocumentMetadataRecordOutput200.returned.url || aUrl },
+  output: {
+    statusCode: 200,
+    returned: undefined,
+  },
+  loggedAt: aDate,
+};
+
+export const downloadRecordWithFakeUrl: DownloadRecord = {
+  ...downloadRecord,
+  input: { url: 'https://fakeurl.com' },
+};
+
+// GetNotificationPriceRecord ////////////////////////////////////////////////
+export const getNotificationPriceRecord: GetNotificationPriceRecord = {
+  type: 'GetNotificationPriceRecord',
+  input: { apiKey: apiKey.valid, paTaxId: newNotificationRequest.senderTaxId, noticeCode: aNoticeCode },
+  output: {
+    statusCode: 200,
+    returned: {
+      iun: aIun.valid,
+      amount: '100',
+      effectiveDate: aDate,
+    },
   },
   loggedAt: aDate,
 };

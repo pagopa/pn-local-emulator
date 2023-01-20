@@ -8,7 +8,7 @@ import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
-import { Snapshot } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 
 export type CheckNotificationStatusRecord = AuditRecord & {
   type: 'CheckNotificationStatusRecord';
@@ -25,7 +25,7 @@ export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckN
 export const makeCheckNotificationStatusRecord =
   (env: DomainEnv) =>
   (input: CheckNotificationStatusRecord['input']) =>
-  (snapshot: Snapshot): CheckNotificationStatusRecord => ({
+  (records: ReadonlyArray<Record>): CheckNotificationStatusRecord => ({
     type: 'CheckNotificationStatusRecord',
     input,
     loggedAt: env.dateGenerator(),
@@ -33,7 +33,7 @@ export const makeCheckNotificationStatusRecord =
       authorizeApiKey(input.apiKey),
       E.foldW(identity, () =>
         pipe(
-          snapshot,
+          computeSnapshot(env)(records),
           RA.findFirst(
             flow(E.toUnion, (notificationRequest) =>
               'notificationRequestId' in input.body
@@ -49,7 +49,10 @@ export const makeCheckNotificationStatusRecord =
                 t.exact(NewNotificationRequestStatusResponse).encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
             )
           ),
-          O.map((response) => ({ statusCode: 200 as const, returned: response })),
+          O.map((response) => ({
+            statusCode: 200 as const,
+            returned: { ...response, retryAfter: env.retryAfterMs / 1000 },
+          })),
           O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
         )
       )
