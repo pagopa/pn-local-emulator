@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: "Piattaforma Notifiche: API B2B per le Pubbliche Amministrazioni"
   description: "\n## Abstract\n  API utilizzate dalle pubbliche amministrazioni per\
-    \ __inviare richieste di notifiche__ e \n  __ottenere informazioni in modalit?\
+    \ __inviare richieste di notifiche__ e \n  __ottenere informazioni in modalità\
     \ pull__ sullo stato della \n  _\"richiesta di notifica\"_ (accettata o rifiutata)\
     \ e, in caso di richiesta accettata, \n  sulle comunicazioni effettuate, o solo\
     \ tentate, nei confronti dei destinatari della notifica.\n\n## Operazioni utilizzate,\
@@ -139,24 +139,24 @@ info:
     \ y=\"314.779367591\" text-anchor=\"start\" dominant-baseline=\"alphabetic\" xml:space=\"\
     preserve\">[upload]</text></g></g><g/><g/><g/></g></svg>   \n  \n  </br>\n  </br>\n\
     \  </br>\n  \n  #### 3. Verifica accettazione richiesta di invio notifica\n\n\
-    \  Per questa verifica possono essere utilizzate due modalit?:\n  \n  1. __richiesta\
+    \  Per questa verifica possono essere utilizzate due modalità:\n  \n  1. __richiesta\
     \ puntale__: consigliato solo ai fini di test\n  2. __lettura da stream configurato__:\
-    \ consigliato per ambienti di produzione\n  \n  La differenza tra le due modalit?\
-    \ ? nell'interazione e nell'efficienza.\n  \n  Con la modalit? _\"richiesta puntuale\"\
-    _ ? necessario l'invocazione per ogni notifica,\n  mentre con la modalit? _\"\
-    stream\"_ ? possibile avere gli aggiornamenti\n  di stato di pi? notifiche con\
+    \ consigliato per ambienti di produzione\n  \n  La differenza tra le due modalità\
+    \ è nell'interazione e nell'efficienza.\n  \n  Con la modalità _\"richiesta puntuale\"\
+    _ è necessario l'invocazione per ogni notifica,\n  mentre con la modalità _\"\
+    stream\"_ è possibile avere gli aggiornamenti\n  di stato di più notifiche con\
     \ una sola invocazione.\n  \n  #### 3.1 Richiesta puntuale di verifica accettazione\n\
-    \n  Questa modalit? ? resa disponibile solo ai fini di test o di eventuali operazioni\n\
-    \  di allineamento poich? richiede l'invio di una richiesta per ogni notifica.\n\
+    \n  Questa modalità è resa disponibile solo ai fini di test o di eventuali operazioni\n\
+    \  di allineamento poiché richiede l'invio di una richiesta per ogni notifica.\n\
     \  Se il passo (2) avviene con successo si utilizza l'operazione \n  [getNotificationRequestStatus](#/SenderReadB2B/getNotificationRequestStatus)\n\
     \  per ottenere informazioni riguardo allo stato della \"richiesta di invio di\
-    \ notifica\". </br>\n  Nel campo _notificationRequestStatus_ sar? indicato:</br>\n\
-    \  >\\- <strong>WAITING:</strong> se la validazione ? ancora in corso.</br>\n\
+    \ notifica\". </br>\n  Nel campo _notificationRequestStatus_ sarà indicato:</br>\n\
+    \  >\\- <strong>WAITING:</strong> se la validazione è ancora in corso.</br>\n\
     \  \\- <strong>ACCEPTED:</strong> se richiesta di notifica accettata, lo _IUN_\
-    \ ? valorizzato.</br>\n  \\- <strong>REFUSED:</strong> se richiesta di notifica\
-    \ rifiutata, ? valorizzato il campo _errors_.</br>\n  </br>\n  </br>\n  </br>\n\
+    \ è valorizzato.</br>\n  \\- <strong>REFUSED:</strong> se richiesta di notifica\
+    \ rifiutata, è valorizzato il campo _errors_.</br>\n  </br>\n  </br>\n  </br>\n\
     \n  #### 3.2 Richiesta avanzamento via \"stream\" di verifica di accettazione\n\
-    \n  Questa modalit? ? consigliata. Per essere fruita ? necessaria un'operazione\
+    \n  Questa modalità è consigliata. Per essere fruita è necessaria un'operazione\
     \ preliminare \n  tramite la chiamata alla API [createEventStream](https://petstore.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpagopa%2Fpn-delivery-push%2Fdevelop%2Fdocs%2Fopenapi%2Fapi-external-b2b-webhook-v1.yaml#/Streams/createEventStream)\n\
     \  per configurare uno \"stream\" che registri il cambio di stato della notifica\
     \ con il seguente payload:</br></br>``\n  {\n    \"title\": \"NotificationAccepted\"\
@@ -167,32 +167,29 @@ info:
     \ solo successivamente alla configurazione\n  dello stream.\n  \n  </br>\n  </br>\n\
     \  </br>\n  </br>\n  \n</td>\n<td>\n\n  ### Ciclo di vita della notifica lato\
     \ mittente\n  \n  #### 1. Caricamento dei documenti della notifica\n  \n  Prima\
-    \ di invocare la richiesta di notifica ? necessario caricare i documenti della\
+    \ di invocare la richiesta di notifica è necessario caricare i documenti della\
     \ notifica (documenti e bollettini di pagamento).\n  \n  #### 1.a. Richiesta presigned\
     \ Url\n  \n  Invocare l'operazione [presignedUploadRequest](#/NewNotification/presignedUploadRequest)\
     \ \n  con cui prenotare il caricamento. Possono essere effettuate un massimo di\
-    \ 15 prenotazioni di caricamento\n  per ogni richiesta.</br>\n  In risposta si\
-    \ ottengono le seguenti informazioni:<br/>\n  \\- httpMethod <br/>\n  \\- secret\
-    \ <br/>\n  \\- url <br/>\n  L'url restituito ha una validit? di 1h.\n  \n  </br>\n\
-    \n  #### 1.b Upload documenti della notifica\n  \n  Per ogni documento utilizzare\
-    \ un richiesta HTTP con metodo _httpMethod_ (POST o PUT) \n  all'url indicato\
-    \ dal campo _url_. <br/>\n  In tale richiesta vanno aggiunti i seguenti header:\
-    \ <br/>\n  \\- _content-type_: valorizzato come il campo \"contentType\" della\
-    \ richiesta di cui al punto (1.a) <br/>\n  \\- _x-amz-meta-secret_: valorizzato\
-    \ con il valore del campo \"secret\" della risposta di cui al punto (1.a) <br/>\n\
-    \  \\- _trailer_: valorizzato con ```x-amz-checksum-sha256``` <br/>\n  \\- _x-amz-checksum-sha256_:\
-    \ valorizzato con il checksum sha256, codificato in base 64, del contenuto binario\
-    \ del file che verr? caricato. (__N.B.__ questo ? un trailer HTTP non un header).\n\
-    \    Vedi [HTTP Trailer](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer)\
-    \ <br/>\n\n  Dalla risposta va letto l'header _x-amz-version-id_ che verr? usato\
-    \ nell'invocazione \n  successiva di richiesta creazione della notifica. Questo\
-    \ garantisce che eventuali utilizzi multipli (anche malevoli) del \n  presignedUrl\
-    \ non vadano a sovrascrivere il file generando disservizi.\n \n  </br>\n  </br>\n\
-    \  </br>\n  \n  #### 2. Richiesta di invio della notifica\n\n  Per effettuare\
-    \ una richiesta di invio notifica, invocare l'operazione \n  [sendNewNotification](#/NewNotification/sendNewNotification)\
-    \ utilizzando i riferimenti dei file \n  caricati ottenuti al punto (1.b).\n \
-    \ \n  </br>\n  </br>\n  </br>\n  </br>\n  </br>\n  </br>\n  </br>\n        \n\
-    >>><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"\
+    \ <span id=\"numberOfPresignedRequest\">15</span> prenotazioni di caricamento\n\
+    \  per ogni richiesta.</br>\n  In risposta si ottengono le seguenti informazioni:<br/>\n\
+    \  \\- httpMethod <br/>\n  \\- secret <br/>\n  \\- url <br/>\n  L'url restituito\
+    \ ha una validità di 1h.\n  \n  </br>\n\n  #### 1.b Upload documenti della notifica\n\
+    \  \n  Per ogni documento utilizzare un richiesta HTTP con metodo _httpMethod_\
+    \ (POST o PUT) \n  all'url indicato dal campo _url_. <br/>\n  In tale richiesta\
+    \ vanno aggiunti i seguenti header: <br/>\n  \\- _content-type_: valorizzato come\
+    \ il campo \"contentType\" della richiesta di cui al punto (1.a) <br/>\n  \\-\
+    \ _x-amz-meta-secret_: valorizzato con il valore del campo \"secret\" della risposta\
+    \ di cui al punto (1.a) <br/>\n  \\- _trailer_: valorizzato con ```x-amz-checksum-sha256```\
+    \ <br/>\n  \\- _x-amz-checksum-sha256_: valorizzato con il checksum sha256, codificato\
+    \ in base 64, del contenuto binario del file che verrà caricato. (__N.B.__ questo\
+    \ è un trailer HTTP non un header).\n    Vedi [HTTP Trailer](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer)\
+    \ <br/>\n\n \n  </br>\n  </br>\n  </br>\n  \n  #### 2. Richiesta di invio della\
+    \ notifica\n\n  Per effettuare una richiesta di invio notifica, invocare l'operazione\
+    \ \n  [sendNewNotification](#/NewNotification/sendNewNotification) utilizzando\
+    \ i riferimenti dei file \n  caricati ottenuti al punto (1.b).\n  \n  </br>\n\
+    \  </br>\n  </br>\n  </br>\n  </br>\n  </br>\n  </br>\n        \n>>><svg version=\"\
+    1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"\
     \ width=\"489\" height=\"731\"><desc>alt%20single%20request%20check%0Anote%20over%20PA%2CPN%3AOnly%20for%20test%20purpose%0Aspace%0Aspace%0Aloop%20check%0APA-%3EPN%3AgetNotificationRequestStatus(reqId)%20(3.1)%0APN%20-%3EPA%3AIUN%20(3.1)%0Aend%0Aspace%0Aelse%20Stream%20solution%0Anote%20over%20PA%2CPN%3ASee%20%3Clink%3Ahttps%3A%2F%2Fpetstore.swagger.io%2F%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fpagopa%2Fpn-delivery-push%2Fdevelop%2Fdocs%2Fopenapi%2Fapi-external-b2b-webhook-v1.yaml%3EAPI%20B2B%20avanzamento%20notifiche%3C%2Flink%3E%0APA-%3EPN%3AgetEvents(Stream)%20(3.2)%0APN-%3EPA%3Aevents%20%5B%20%5D%20(3.2)%0Aend</desc><defs/><g><g/><g/><g/><g/><g/><g/><g/><g><rect\
     \ fill=\"white\" stroke=\"none\" x=\"0\" y=\"0\" width=\"489\" height=\"731\"\
     /></g><g/><g><path fill=\"none\" stroke=\"black\" paint-order=\"fill stroke markers\"\
@@ -338,43 +335,54 @@ info:
     alphabetic\" xml:space=\"preserve\">[check]</text></g><g/></g><g/><g/></g></svg>\
     \ </td>\n  \n</tr>\n</table>\n\n\n  ### 4. Monitorare l'avanzamento di una notifica\n\
     \n  Allo stesso modo del monitoraggio dell'accettazione della notifica da parte\
-    \ della Piattaforma sono \n  disponibili le due modalit?.\n  \n  #### 4.1 Monitoraggio\
+    \ della Piattaforma sono \n  disponibili le due modalità.\n  \n  #### 4.1 Monitoraggio\
     \ puntuale\n\n  Se la \"richiesta di invio di notifica\" passa le validazioni\
-    \ viene trasformata in \"notifica\" e sar? \n  identificata dalla IUN restituito\
+    \ viene trasformata in \"notifica\" e sarà \n  identificata dalla IUN restituito\
     \ dall'operazione \n  [getNotificationRequestStatus](#/SenderReadB2B/getNotificationRequestStatus).</br>\
     \ \n  A tal punto si potranno utilizzare l'operazione _GET /delivery/notifications/sent/{iun}_\
     \ per \n  ottenere i dettagli della notifica, la _timeline_ che dettaglia il perfezionamento\
     \ della\n  notifica per il mittente e l'avanzamento delle comunicazioni nei confronti\
-    \ dei destinatari.\n  \n  #### 4.1 Monitoraggio tramite stream\n\n  Questa modalit?\
-    \ ? consigliata in produzione. Per essere fruita ? necessaria una operazione preliminare\n\
+    \ dei destinatari.\n  \n  #### 4.1 Monitoraggio tramite stream\n\n  Questa modalità\
+    \ è consigliata in produzione. Per essere fruita è necessaria una operazione preliminare\n\
     \  tramite la chiamata alla API [createEventStream](https://petstore.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpagopa%2Fpn-delivery-push%2Fdevelop%2Fdocs%2Fopenapi%2Fapi-external-b2b-webhook-v1.yaml#/Streams/createEventStream)\n\
     \  per configurare uno \"stream\" che registri il cambio di stato della notifica\
     \ con il seguente payload di esempio:</br></br>``\n  {\n    \"title\": \"NotificationAccepted\"\
     ,\n    \"eventType\": \"STATUS\"\n  }\n  ``</br></br>che permette di monitorare\
-    \ gli eventi di tipo \"STATO\". Successivamente si pu? ottenere il dettaglio della\
+    \ gli eventi di tipo \"STATO\". Successivamente si può ottenere il dettaglio della\
     \ stream appena creata chiamando la \n  API [getEventStream](https://petstore.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpagopa%2Fpn-delivery-push%2Fdevelop%2Fdocs%2Fopenapi%2Fapi-external-b2b-webhook-v1.yaml#/Streams/getEventStream),\
     \ mentre si possono ottenere i dati degli eventi richiamando la API [consumeEventStream](https://petstore.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fpagopa%2Fpn-delivery-push%2Fdevelop%2Fdocs%2Fopenapi%2Fapi-external-b2b-webhook-v1.yaml#/Events/consumeEventStream)\n\
     \n\n  __NOTA__ saranno disponibili i dati di cambiamento di stato occorsi solo\
-    \ successivamente alla configurazione\n  dello stream.\n  \n  </br>\n  \n<details>\n\
-    \  <summary><strong><big><big><big><big>FAQ</big></big></big></big></strong></summary>\n\
+    \ successivamente alla configurazione\n  dello stream.\n\n  </br>\n\n  ### 5.\
+    \ Download dei Legal Facts\n\n  E' possibile scaricare le Attestazioni Opponibili\
+    \ a Terzi e gli altri documenti conservati da Piattaforma Notifiche attraverso\
+    \ il servizio di [dowload Legal Fact](#/SenderReadB2B/getSentNotificationDocument)\
+    \ passando all'interno del path lo <strong>Iun</strong>, il <strong>legalFactType</strong>\
+    \ ed il <strong>legalFactId</strong>; si otterrà nella response un link che permette\
+    \ di scaricare il documento richiesto.</br> Per ottenere il <strong>legalFactType</strong>\
+    \ ed il <strong>legalFactId</strong> bisogna chiamare il servizio di [lettura\
+    \ dettaglio notifica](#/SenderReadB2B/getSentNotification) con lo <code>{Iun}</code>\
+    \ della notifica di interesse: all'interno del campo <i>timeline</i> della response\
+    \ è possibile trovare l'elenco degli eventi di quella notifica ed i <strong>legalFactType</strong>\
+    \ e <strong>legalFactId</strong> in corrispondenza degli eventi che generano documenti.\n\
+    \  \n  </br>\n  \n<details>\n  <summary><strong><big><big><big><big>FAQ</big></big></big></big></strong></summary>\n\
     \n><details>\n  <summary><strong>Cosa devo fare se ricevo</strong> `{\"message\"\
     : \"Unauthorized\"}`<strong>?</strong></summary>\n  <em>Il messaggio indica che\
     \ non sono disponibili le credenziali per utilizzare i servizi di PN. Per intraprendere\
     \ il processo di accreditamento, occorre contattare il personale preposto su [account@pagopa.it](mailto:account@pagopa.it)</em>\n\
     </details></br>\n><details>\n  <summary><strong>Le chiamate ai servizi esposti\
     \ da PN sono sicuri ?</strong></summary>\n  <em>Si. Le chiamate ai servizi esposti\
-    \ da PN avvengono in modalit? https utilizzando API Key. Non sono attualmente\
+    \ da PN avvengono in modalità https utilizzando API Key. Non sono attualmente\
     \ previsti meccanismi di crittazione/decrittazione dei documenti e/o accessi basati\
     \ su mutua autenticazione tramite certificato.</em>\n</details></br>\n><details>\n\
     \  <summary><strong>Dopo aver fatto l'upload dei documenti della notifica nella\
     \ fase 1, quanto tempo ho per inviare la notifica?</strong></summary>\n  <em>I\
     \ documenti memorizzati su bucket S3  durante la fase di caricamento (1.a e 1.b)\
-    \ vengono mantenuti per 3 giorni (in produzione 1 giorno), passati i quali vengono\
-    \ eliminati ed andranno ricaricati di nuovo se si vuole inoltrare la notifica.</em>\n\
-    </details>\n  </br>\n><details>\n  <summary><strong>Quali sono i passi da seguire\
-    \ per effettuare l?inoltro manuale della notifica ?</strong></summary>\n  <em>I\
-    \ passi necessari per eseguire l?inoltro della notifica sono i seguenti:</em></br>\n\
-    \  >><em><medium><strong>1) </strong>Pre inoltro della documentazione (atto di\
+    \ vengono mantenuti per <span id=\"pnTemporaryDocument\">7 giorni</span>, passati\
+    \ i quali vengono eliminati ed andranno ricaricati di nuovo se si vuole inoltrare\
+    \ la notifica.</em>\n</details></br>\n><details>\n  <summary><strong>Quali sono\
+    \ i passi da seguire per effettuare l’inoltro manuale della notifica ?</strong></summary>\n\
+    \  <em>I passi necessari per eseguire l’inoltro della notifica sono i seguenti:</em></br>\n\
+    \  >> <em><medium><strong>1) </strong>Pre inoltro della documentazione (atto di\
     \ notifica e moduli di pagamento).</br> Occorre chiamare il servizio <strong>presignedUploadRequest.</strong></medium></em></br></br>\n\
     \  <em><medium><strong>2) </strong>Upload della documentazione.</br> PA o PT devono\
     \ sviluppare un software che sia in grado di inviare la documentazione a Piattaforma\
@@ -382,33 +390,47 @@ info:
     \ httpMethod all'url restituita dal servizio<strong>presignedUploadRequest.</strong></medium></em></br></br>\n\
     \  <em><medium><strong>3) </strong>Invio della notifica.</br> Occorre chiamare\
     \ il servizio <strong>sendNewNotification.</strong></medium></em></br></br>\n\
-    </details></br>\n><details>\n  <summary><strong>Come avviene l?inoltro della notifica\
-    \ ?</strong></summary>\n  <em>L?inoltro della notifica pu? avvenire in modalit?\
-    \ automatica o manuale. La modalit? automatica prevede l?utilizzo della piattaforma\
-    \ PN e consente l?inoltro puntuale di una notifica. La modalit? manuale prevede\
-    \ l?utilizzo dei servizi di PN da parte della PA e consente l?inoltro massivo\
-    \ di notifiche.</em>\n</details></br>\n><details>\n  <summary><strong>Cos'? il\
-    \ codice di tassonomia(taxonomyCode) ?</strong></summary>\n  <em>Il codice di\
-    \ tassonomia(taxonomyCode) viene utilizzato per definire la tipolgia di atto e\
-    \ pu? essere recuperato nell'allegato 2 capitolo C del bando: \n  [__AVVISO PUBBLICO\
-    \ MISURA 1.4.5 PIATTAFORMA NOTIFICHE DIGITALI__](https://pnrrcomuni.fondazioneifel.it/bandi_public/Bando/325)</em>\n\
+    </details></br>\n><details>\n  <summary><strong>Come avviene l’inoltro della notifica\
+    \ ?</strong></summary>\n  <em>L’inoltro della notifica può avvenire in modalità\
+    \ automatica o manuale. La modalità automatica prevede l’utilizzo della piattaforma\
+    \ PN e consente l’inoltro puntuale di una notifica. La modalità manuale prevede\
+    \ l’utilizzo dei servizi di PN da parte della PA e consente l’inoltro massivo\
+    \ di notifiche.</em>\n</details></br>\n><details>\n  <summary><strong>Quali controlli\
+    \ vengono effettuati in seguito all'inserimento della notifica?</strong></summary>\n\
+    \  <em>I controlli effettuati da PN sono i seguenti:</em><ul><li><em>verifica\
+    \ che le informazioni inserite siano sintatticamente corrette</em></li><li><em>verifica\
+    \ che le combinazioni di <strong>creditorTaxId/noticeCode</strong> e <strong>creditorTaxId/alternativeNoticeCode</strong>\
+    \ siano univoche</em></li><li><em>verifica che la combinazione dei campi <strong>senderPaId,\
+    \ paProtocolNumber, idempotenceToken</strong> siano univoci</em></li></ul>\n</details></br>\n\
+    ><details>\n  <summary><strong> Cosa rappresentano i campi requiresAck e sendByMail?\
+    \ <font color=\"red\">queste funzioni non sono ancora implementate </font> </strong></summary>\n\
+    \  <em>Il campo booleano requiresAck permette di definire il momento esatto nel\
+    \ quale scatterà il perfezionamento per presa visione dell'atto: se falso basterà\
+    \ che il destinatario prenda visione del documento da notificare; se vero, oltre\
+    \ alla visualizzazione dovrà anche scaricare il documento da notificare.</br>\
+    \ Il campo boolean sendByMail permette di indicare se il documento avente questo\
+    \ parametro sarà spedito nelle comunicazioni cartacee o meno </em>\n</details></br>\n\
+    ><details>\n  <summary><strong>Cos'è il codice di tassonomia \\(taxonomyCode\\\
+    )?</strong></summary>\n  <em>Il codice di tassonomia(taxonomyCode) viene utilizzato\
+    \ per definire la tipolgia di atto e può essere recuperato nell'allegato 2 capitolo\
+    \ C del bando: \n  [__AVVISO PUBBLICO MISURA 1.4.5 PIATTAFORMA NOTIFICHE DIGITALI__](https://pnrrcomuni.fondazioneifel.it/bandi_public/Bando/325)</em>\n\
     </details></br>\n><details>\n  <summary><strong>Come si individua il domicilio\
     \ del destinatario di una notifica in base alla tipologia del destinatario (PF\
     \ e PG) ?</strong></summary>\n  <em>Quando si invia una notifica, occorre indicare\
     \ la tipologia del destinatario:</em>\n    <ul>\n      <li><em>Se il destinatario\
-    \ ? PF, l'ordine di individuazione ? il seguente:</em></br>\n        >>>><em><strong>1)\
+    \ è PF, l'ordine di individuazione è il seguente:</em></br>\n        >>>><em><strong>1)\
     \ </strong> Domicilio digitale di piattaforma (se disponibile, quello configurato\
     \ dal destinatario per l'ente mittente della notifica; in alternativa, quello\
-    \ configurato dal destinatario per la genericit? degli enti mittenti)</em></br>\n\
-    \        <em><strong>2) </strong> Domicilio digitale speciale indicato dall?ente\
+    \ configurato dal destinatario per la genericità degli enti mittenti)</em></br>\n\
+    \        <em><strong>2) </strong> Domicilio digitale speciale indicato dall’ente\
     \ mittente nella creazione della notifica</em></br>\n        <em><strong>3) </strong>\
     \ Domicilio digitale generale fornito dal registro pubblico <strong>INAD</strong></em>\n\
-    \      </li>\n      <li><em>se il destinatario ? PG, l'ordine di individuazione\
-    \ ? il seguente:</em></br>\n        >>>>>><em><strong>1) </strong> Domicilio digitale\
+    \      </li>\n      <li><em>se il destinatario è PG, l'ordine di individuazione\
+    \ è il seguente:</em></br>\n        >>>>>><em><strong>1) </strong> Domicilio digitale\
     \ di piattaforma (se disponibile, quello configurato dal destinatario per l'ente\
     \ mittente della notifica; in alternativa, quello configurato dal destinatario\
-    \ per la genericit? degli enti mittenti)</em></br>\n        <em><strong>2) </strong>\
-    \ Domicilio digitale speciale indicato dall?ente mittente nella creazione della\
+    \ per la genericità degli enti mittenti)</em></br>\n        <em><strong>2) </strong>\
+    \ Domicilio digitale speciale indicato dall’ente mittente nella creazione della\
     \ notifica</em></br>\n        <em><strong>3) </strong> Domicilio digitale generale\
     \ fornito dal registro delle imprese <strong>IniPEC</strong></em>\n      </li>\n\
     \    </ul>\n    </br>\n</details>\n  </br>\n><details>\n  <summary><strong>Quale\
@@ -416,14 +438,14 @@ info:
     \  <em>Non esiste una corrispondenza 1:1 tra eventi di timeline e cambiamenti\
     \ di stato; in particolare, solo alcuni eventi di timeline implicano un cambiamento\
     \ di stato</em>\n</details></br>\n><details>\n  <summary><strong>Quando eseguendo\
-    \ l?upload del documento si ottiene il seguente errore:</strong></br><font color=\"\
+    \ l’upload del documento si ottiene il seguente errore:</strong></br><font color=\"\
     red\"><strong>\\<Code>SignatureDoesNotMatch\\</Code></strong></font></br><font\
     \ color=\"red\"><strong>\\<Message>The request signature we calculated does not\
     \ match the signature you provided. Check your key and signing method.\\</Message></strong></font></summary>\n\
-    \  <em>Esistono varie casistiche che generano l?errore descritto; le pi? frequenti\
+    \  <em>Esistono varie casistiche che generano l’errore descritto; le più frequenti\
     \ sono:</em></br>\n  >>>>>>> <em><medium><strong>1) </strong>In uploadAllegati\
-    \ si ? utilizzato uno sha256 diverso da quello utilizzato in presignedUploadRequest.</medium></em></br><em><medium><strong>2)\
-    \ </strong>In uploadAllegati ? stato inserito uno sha256 che non corrisponde al\
+    \ si è utilizzato uno sha256 diverso da quello utilizzato in presignedUploadRequest.</medium></em></br><em><medium><strong>2)\
+    \ </strong>In uploadAllegati è stato inserito uno sha256 che non corrisponde al\
     \ documento che si desidera effettivamente inviare.</medium></em></br><em><medium><strong>3)\
     \ </strong>Sha256 corretto in presignedUploadRequest e coincidente con quello\
     \ caricato in uploadAllegati, ma secret errato.</medium></em></br>\n</details>\n\
@@ -431,7 +453,7 @@ info:
     \ un documento, passando x-amz-checksum-sha256 del file, si ottiene il seguente\
     \ errore: </br>`Value for x-amz-checksum-sha256 header is invalid`</br> cosa bisogna\
     \ fare?</strong></summary>\n  <em>Assicurarsi di avere eseguito i seguenti passaggi:</em></br>\n\
-    \  >>>><em><strong>a) </strong>Applicare al documento l?algoritmo di crittazione,\
+    \  >>>><em><strong>a) </strong>Applicare al documento l’algoritmo di crittazione,\
     \ ottenendo una rappresentazione di 64 caratteri in formato esadecimale <strong>^[A-Fa-f0-9]{64}$</strong></em></br>\n\
     \  <em><strong>b) </strong>Ottenere la relativa rappresentazione binaria.</em></br>\n\
     \  <em><strong>c) </strong>Applicare la codifica Base64.</em></br></br>\n  Esempio\
@@ -440,12 +462,12 @@ info:
     \ java.security.MessageDigest;`</br></br>`MessageDigest digest = MessageDigest.getInstance(\"\
     SHA-256\");`</br>`byte[] encodedhash = digest.digest( StreamUtils.copyToByteArray(\
     \ docInputStream ) );`</br>`String x-amz-checksum-sha256 = Base64Utils.encodeToString(\
-    \ hash )`\n</details></br>\n><details>\n  <summary><strong>Come si pu? verificare\
+    \ hash )`\n</details></br>\n><details>\n  <summary><strong>Come si può verificare\
     \ che lo \"x-amz-checksum-sha256\" sia corretto ?</strong></summary>\n  <em>Aprire\
     \ la shell di Git Bash o un terminal SSH ed eseguire il comando:</em></br></br>\n\
     \  `cat <fullPathFile/filename.ext> | openssl dgst -binary -sha256 | openssl base64\
-    \ ?A`</br></br>\n  <em>Il comando restituisce la codifica base64 della rappresentazione\
-    \ binaria di sha256, che pu? essere confrontato con quella generata dal codice.</em>\n\
+    \ –A`</br></br>\n  <em>Il comando restituisce la codifica base64 della rappresentazione\
+    \ binaria di sha256, che può essere confrontato con quella generata dal codice.</em>\n\
     </details></br>\n><details>\n  <summary><strong>Come posso simulare l'upload di\
     \ un documento su S3?</strong></summary>\n  <em>Aprire la shell di Git Bash o\
     \ un terminal SSH ed eseguire il comando:</em></br></br>\n  >`curl -X<httpMethod>\
@@ -454,64 +476,90 @@ info:
     \ \\ `</br>\n  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--upload-file <file>  \\ `</br>\n\
     \  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`-H\"x-amz-meta-secret: <secret>\" \\`</br>\n\
     \  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`<url>\" \\`\n  </br></br>\n  __\\<httpMethod\\\
-    >__: ? il metodo http (PUT o POST) indicato nella response della preload, da utilizzare\
-    \ per questa chiamata</br>\n  __\\<checksum\\>__: ? il checksum sha256, codificato\
+    >__: è il metodo http (PUT o POST) indicato nella response della preload, da utilizzare\
+    \ per questa chiamata</br>\n  __\\<checksum\\>__: è il checksum sha256, codificato\
     \ in base 64, del contenuto binario del file da caricare</br>\n  __\\<file\\>__:\
-    \ ? il path del file da caricare</br>\n  __\\<secret\\>__: ? il secret ottenuto\
-    \ nella response della preload</br>\n  __\\<url\\>__: ? l'url del bucket S3 ottenuto\
+    \ è il path del file da caricare</br>\n  __\\<secret\\>__: è il secret ottenuto\
+    \ nella response della preload</br>\n  __\\<url\\>__: è l'url del bucket S3 ottenuto\
     \ nella response della preload, sul quale effettuare l'upload del documento</br>\n\
+    </details></br>\n><details>\n  <summary><strong>Quanto tempo ho per scaricare\
+    \ le Attestazioni Opponibili a Terzi?</strong></summary>\n  <em>Gli atti opponibili\
+    \ ai terzi e i documenti relativi alla notificazione analogica e digitale (forniti\
+    \ dall'operatore postale e dal PEC provider) vengono archiviati da PN. Su entrambe\
+    \ le tipologie di documento vengono posti legal hold e retention a 10 anni; pertanto\
+    \ possono essere scaricati anche successivamente alla loro generazione. </em>\n\
     </details></br>\n><details>\n  <summary><strong>Dopo aver lanciato il servizio\
     \ [sendNewNotification](#/NewNotification/sendNewNotification) ottengo un messaggio\
     \ di errore su: <em>\"Max one recipient\", \"No recipient physical address\",\
     \ \"No recipient payment\", \"Alternative notice code equals to notice code\"\
     </em>.</br>Cosa devo fare?</strong></summary>\n  <em>Contatta il [supporto enti](mailto:pn-supporto-enti@pagopa.it)\
     \ segnalando questa situazione. </em>\n</details></br>\n><details>\n  <summary><strong>Come\
-    \ gestisce un Ente le spese di notifica verso il destinatario?</strong></summary>\n\
-    \  <em>L?Ente ha la possibilit? di applicare un costo forfettario (FLAT\\_RATE)\
-    \ o di applicare in maniera puntuale i costi della notifica in base alla modalit?\
-    \ di consegna (DELIVERY\\_MODE).</br> Nello specifico, quando l?Ente effettua\
-    \ una richiesta di notifica tramite <strong>POST /delivery/requests</strong> deve\
-    \ obbligatoriamente utilizzare l?elemento <strong>notificationFeePolicy</strong>\
+    \ si possono testare più Enti?</strong></summary>\n  <em>In ambiente di collaudo\
+    \ COLL si prevede di creare una User per ogni Ente che permette di accedere alla\
+    \ piattafora di Back-Office ed una key ad esso associata. Se si sta testando l'integrazione\
+    \ per più Enti  bisognerà richiedere, per ogni Ente, una user ed una key ad essa\
+    \ associata, contattando il [supporto enti](mailto:pn-supporto-enti@pagopa.it)</em>\n\
+    </details></br>\n><details>\n  <summary><strong>Come si possono testare i Codici\
+    \ Fiscali?</strong></summary>\n  <em>E' possible inserire le notifiche utilizzando\
+    \ un qualsiasi codice fiscale che rispetti il regex:</br><code>^([A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z]{1}[0-9LMNPQRSTUV]{2}[A-Z]{1}[0-9LMNPQRSTUV]{3}[A-Z]{1})|([0-9]{11})$</code></br>mentre\
+    \ i Codici Fiscali per testare l'invio all'appIO, utilizzabili SOLO in ambiente\
+    \ di collaudo COLL sono i seguenti: <strong>AAAAAA00A00A000C</strong> e <strong>AAAAAA00A00A000D</strong></em>\n\
+    </details></br>\n><details>\n  <summary><strong>E' possibile cancellare una notifica?</strong></summary>\n\
+    \  <em>Si, è possibile al momento cancellare una qualsiasi notifica, inserendo\
+    \ al suo posto una nuova notifica che abbia il campo <strong>\"cancelledIun\"\
+    </strong>  uguale a quello della notifica da cancellare. Se la nuova notifica\
+    \ utilizza gli stessi documenti, questi dovranno essere caricati di nuovo.</br>\
+    \ La funzione di cancellazione notifica potrà subire variazioni in futuro.</em>\n\
+    </details></br>\n><details>\n  <summary><strong>Come gestisce un Ente le spese\
+    \ di notifica verso il destinatario?</strong></summary>\n  <em>L’Ente ha la possibilità\
+    \ di applicare un costo forfettario (FLAT\\_RATE) o di applicare in maniera puntuale\
+    \ i costi della notifica in base alla modalità di consegna (DELIVERY\\_MODE).</br>\
+    \ Nello specifico, quando l’Ente effettua una richiesta di notifica tramite <strong>POST\
+    \ /delivery/requests</strong> deve obbligatoriamente utilizzare l’elemento <strong>notificationFeePolicy</strong>\
     \ per indicare la politica di addebitamento dei costi di notifica.\n  </em>\n\
-    </details></br>\n><details>\n  <summary><strong>In quale modo l?Ente comunica\
-    \ a Piattaforma Notifiche (PN) il costo forfettario?</strong></summary>\n  <em>L?\
-    Ente pu? gestire il costo forfettario, considerandolo alla creazione della posizione\
-    \ debitoria, poich? PN non gestisce il costo forfettario di notifica.</br> Il\
+    </details></br>\n><details>\n  <summary><strong>In quale modo l’Ente comunica\
+    \ a Piattaforma Notifiche (PN) il costo forfettario?</strong></summary>\n  <em>L’\
+    Ente può gestire il costo forfettario, considerandolo alla creazione della posizione\
+    \ debitoria, poiché PN non gestisce il costo forfettario di notifica.</br> Il\
     \ costo forfettario si applica solamente nei casi nei quali esista una legge che\
-    \ impone all?Ente l'utilizzo di costi di notifica diversi da quelli previsti dal\
+    \ impone all’Ente l'utilizzo di costi di notifica diversi da quelli previsti dal\
     \ DPCM Costi di Piattaforma Notifiche, oppure nel caso in cui l'Ente voglia assumersi\
-    \ completamente i costi di notifica. </em>\n</details></br>\n><details>\n  <summary><strong>Se\
-    \ l?Ente invia una richiesta di notifica in modalit? FLAT_RATE e chiama il servizio\
-    \ GET/delivery/price/{paTaxId}/{noticeCode}, quale sar? il costo (amount) notificato\
-    \ da PN?</strong></summary>\n  <em>Sar? notificato comunque il costo della notifica\
-    \ sostenuto da PagoPA, perch? tale valore potrebbe essere utilizzato ai fini della\
+    \ completamente i costi di notifica. </em>\n</details></br>\n><details>\n  <summary><strong>\
+    \ Come è possibile recuperare le informazioni relative alle spese di notifica?</strong></summary>\n\
+    \  <em>Si può utilizzare il servizio [NotificazionPrice](#/NotificationPrice/getNotificationPrice)\
+    \ passando come parametri il <strong>paTaxId</strong> dell'Ente e il <strong>noticeCode</strong>\
+    \ dell'atto che si vuole verificare</em>\n</details></br>\n><details>\n  <summary><strong>Se\
+    \ l’Ente invia una richiesta di notifica in modalità FLAT_RATE e chiama il servizio\
+    \ GET/delivery/price/{paTaxId}/{noticeCode}, quale sarà il costo (amount) notificato\
+    \ da PN?</strong></summary>\n  <em>Sarà notificato comunque il costo della notifica\
+    \ sostenuto da PagoPA, perché tale valore potrebbe essere utilizzato ai fini della\
     \ verifica della fatturazione.</em>\n</details></br>\n><details>\n  <summary><strong>Qual\
-    \ ? il costo della notifica per il destinatario in modalit? DELIVERY_MODE?</strong></summary>\n\
+    \ è il costo della notifica per il destinatario in modalità DELIVERY_MODE?</strong></summary>\n\
     \    <table \n    background-color=\"red\"\n    border=\"1px solid black\">\n\
-    \      <tr><th>Modalit?</th><th>Tipo di notifica</th><th>Esito Notifica</th><th>Tipo\
-    \ di canale analogico</th><th>Spese postali</th><th>Importo fornito all?Ente tramite\
+    \      <tr><th>Modalità</th><th>Tipo di notifica</th><th>Esito Notifica</th><th>Tipo\
+    \ di canale analogico</th><th>Spese postali</th><th>Importo fornito all’Ente tramite\
     \ il servizio GET delivery/price</th></tr><tr><td>DELIVERY\\_MODE</td><td>Notifica\
-    \ digitale</td><td>Destinatario raggiunto sul canale digitale</td><td>N/A</td><td>N/A</td><td>?\
+    \ digitale</td><td>Destinatario raggiunto sul canale digitale</td><td>N/A</td><td>N/A</td><td>€\
     \ 2.00 (costo base)</td></tr><tr><td>DELIVERY\\_MODE</td><td>Notifica digitale</td><td>Destinatario\
     \ non raggiungibile sul canale digitale</td><td>N/A</td><td>Costo raccomandata\
-    \ semplice</td><td>? 2.00 (costo base) + Costo raccomandata semplice</td></tr><tr><td>DELIVERY\\\
+    \ semplice</td><td>€ 2.00 (costo base) + Costo raccomandata semplice</td></tr><tr><td>DELIVERY\\\
     _MODE</td><td>Notifica analogica</td><td>Destinatario reperibile al primo indirizzo</td><td>Raccomandata\
-    \ A/R</td><td>Costo raccomandata A/R</td><td>? 2.00 (costo base)  + Costo A/R\
+    \ A/R</td><td>Costo raccomandata A/R</td><td>€ 2.00 (costo base)  + Costo A/R\
     \ (primo indirizzo)</td></tr><tr><td>DELIVERY\\_MODE</td><td>Notifica analogica</td><td>Destinatario\
-    \ reperibile al primo indirizzo</td><td>890</td><td>Costo 890</td><td>? 2.00 (costo\
+    \ reperibile al primo indirizzo</td><td>890</td><td>Costo 890</td><td>€ 2.00 (costo\
     \ base)  + Costo 890 (primo indirizzo)</td></tr><tr><td>DELIVERY\\_MODE</td><td>Notifica\
     \ analogica</td><td>Destinatario reperibile al secondo indirizzo</td><td>Raccomandata\
-    \ A/R</td><td>Costo raccomandata A/R</td><td>? 2.00 (costo base)  + Costo A/R\
+    \ A/R</td><td>Costo raccomandata A/R</td><td>€ 2.00 (costo base)  + Costo A/R\
     \ (primo indirizzo) + Costo A/R (secondo indirizzo)</td></tr><tr><td>DELIVERY\\\
     _MODE</td><td>Notifica analogica</td><td>Destinatario reperibile al secondo indirizzo</td><td>890</td><td>Costo\
-    \ 890</td><td>? 2.00 (costo base)  + Costo 890 (primo indirizzo) + Costo 890 (secondo\
+    \ 890</td><td>€ 2.00 (costo base)  + Costo 890 (primo indirizzo) + Costo 890 (secondo\
     \ indirizzo)</td></tr>\n    </table>\n</details></br>\n</details></br>\n<details>\n\
     \  <summary><strong><big><big><big><big>AMBIENTI</big></big></big></big></strong></summary>\n\
     <ul>   <li><strong>https://api.pn.pagopa.it:</strong></br>Ambiente di produzione</li>\
     \ <li><strong>https://api.coll.pagopa.it:</strong></br>Ambiente di collaudo</li>\
     \ <li><strong>https://api.svil.pn.pagopa.it:</strong></br>Ambiente di test. Potrebbe\
     \ subire modifiche/integrazioni in futuro, rimanendo comunque non-bloccante e\
-    \ rispettando il principio di retro-attivit?</li> <li><strong>https://api.dev.pn.pagopa.it:</strong></br>Ambiente\
+    \ rispettando il principio di retro-attività</li> <li><strong>https://api.dev.pn.pagopa.it:</strong></br>Ambiente\
     \ di sviluppo</li> </ul>   </details></br>\n  "
   termsOfService: https://notifichedigitali.pagopa.it/pubbliche-amministrazioni/index.html
   contact:
@@ -535,7 +583,7 @@ security:
 - ApiKeyAuth: []
 tags:
 - name: HealthCheck
-  description: Invocazioni per sapere lo stato del microservizio
+  description: Invocazioni per sapere lo stato di Piattaforma Notifiche
 - name: NewNotification
   description: Invocazioni per effettuare il pre-caricamento dei documenti della notifica
     e inviare notifiche
@@ -546,26 +594,57 @@ tags:
   description: Invocazioni per determinare il costo della notifica per il destinario.
 - name: LegalFacts
   description: Invocazioni per effettuare il downalod degli atti opponibili a terzi
+- name: PaymentEvents
+  description: Invocazioni per comunicare eventi di pagamento dalla PA
 paths:
   /status:
     get:
       tags:
       - HealthCheck
-      summary: healthCheck path
-      description: healtCheck path per verificare lo stato del microservizio
+      summary: status path
+      description: status path per verificare lo stato di Piattaforma Notifiche
       operationId: status
       responses:
         "200":
           description: Ok
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/PnStatusResponse'
+              example:
+                functionalities:
+                - NOTIFICATION_CREATE
+                - NOTIFICATION_VISUALIZATION
+                - NOTIFICATION_WORKFLOW
+                openIncidents: []
         "500":
           description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/PnStatusResponse'
+              example:
+                functionalities:
+                - NOTIFICATION_CREATE
+                - NOTIFICATION_VISUALIZATION
+                - NOTIFICATION_WORKFLOW
+                openIncidents:
+                - functionality: NOTIFICATION_CREATE
+                  status: KO
+                  startDate: 2019-08-24T14:15:22Z
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   /delivery/attachments/preload:
     post:
       tags:
       - NewNotification
       summary: Richiesta di pre-caricamento dei documenti della notifica
       description: Operazione che richiede a Piattaforma Notifica le informazioni
-        e le autorizzazioni necessarie  a precaricare uno o pi? file da allegare a
+        e le autorizzazioni necessarie  a precaricare uno o più file da allegare a
         una notifica. <br/>
       operationId: presignedUploadRequest
       requestBody:
@@ -601,7 +680,7 @@ paths:
       - SenderReadB2B
       summary: Verifica accettazione richiesta notifica
       description: Questa operazione serve per verificare se la richiesta di notifica
-        ? stata accettata e ottenere lo IUN associato a tale richiesta. <br/> Bisogna
+        è stata accettata e ottenere lo IUN associato a tale richiesta. <br/> Bisogna
         specificare il parametro _requestId_ oppure la coppia costituita dai parametri  _paProtocolNumber_
         e _idempotenceToken_. <br/>
       operationId: retrieveNotificationRequestStatus
@@ -616,7 +695,7 @@ paths:
           type: string
       - name: paProtocolNumber
         in: query
-        description: "Numero di protocollo associato alla notifica, pu? essere riutilizzato\
+        description: "Numero di protocollo associato alla notifica, può essere riutilizzato\
           \ per rettifiche."
         required: false
         style: form
@@ -645,6 +724,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         "500":
           description: Internal error
           content:
@@ -657,7 +742,11 @@ paths:
       summary: Richiesta invio notifica
       description: |-
         Operazione utilizzata dalla Pubblica Amministrazione per richiedere l'invio di una notifica.
-        La restituzione di uno stato HTTP 202 significa solo che la richiesta ? sintatticamente valida, non che la richiesta sia stata validata ed accettata. <br/> Per conoscere lo stato di accettazione della richiesta di notifica bisogna utilizzare l'operazione _getNotificationRequestStatus_ oppure utilizzare la modalit? push prevista dai webhook. <br/>
+
+        La restituzione di uno stato HTTP 202 significa solo che la richiesta è sintatticamente
+        valida, non che la richiesta sia stata validata ed accettata. <br/>
+        Per conoscere lo stato di accettazione della richiesta di notifica bisogna utilizzare l'operazione
+        _getNotificationRequestStatus_ oppure utilizzare la modalità push prevista dai webhook. <br/>
       operationId: sendNewNotification
       requestBody:
         content:
@@ -849,8 +938,8 @@ paths:
         description: Categoria dell'atto opponbile a terzi
         required: true
         schema:
-          # $ref: '#/components/schemas/LegalFactCategory'
           type: string
+#          $ref: '#/components/schemas/LegalFactCategory'
       - name: legalFactId
         in: path
         description: Identificativo dell'atto opponbile a terzi
@@ -895,8 +984,8 @@ paths:
         style: simple
         explode: false
         schema:
-          # $ref: '#/components/schemas/paTaxId'
           type: string
+#          $ref: '#/components/schemas/paTaxId'
         example: "77777777777"
       - name: noticeCode
         in: path
@@ -905,8 +994,8 @@ paths:
         style: simple
         explode: false
         schema:
-          # $ref: '#/components/schemas/noticeCode'
           type: string
+#          $ref: '#/components/schemas/noticeCode'
         example: "302000100000019421"
       responses:
         "200":
@@ -927,6 +1016,75 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Problem'
+  /delivery/events/payment/pagopa:
+    post:
+      tags:
+      - PaymentEvents
+      description: Questa API è a disposizione della Pubblica Amministrazione per
+        inviare eventi di chiusura di una o più posizioni debitorie di tipo PagoPA.
+        <br/>
+      operationId: paymentEventsRequestPagoPa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentEventsRequestPagoPa'
+        required: true
+      responses:
+        "204":
+          description: OK
+        "400":
+          description: Invalid input
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /delivery/events/payment/f24:
+    post:
+      tags:
+      - PaymentEvents
+      description: Questa API è a disposizione della Pubblica Amministrazione per
+        inviare eventi di chiusura di una o più posizioni debitorie di tipo F24. <br/>
+      operationId: paymentEventsRequestF24
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentEventsRequestF24'
+        required: true
+      responses:
+        "204":
+          description: OK
+        "400":
+          description: Invalid input
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
 components:
   schemas:
     PreLoadBulkRequest:
@@ -935,6 +1093,49 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/PreLoadRequest'
+    PnStatusResponse:
+      title: Stato attuale di PN
+      required:
+      - functionalities
+      - openIncidents
+      type: object
+      properties:
+        status:
+          maximum: 600
+          exclusiveMaximum: true
+          minimum: 100
+          type: integer
+          description: Bad Request
+          format: int32
+          example: 400
+        title:
+          maxLength: 64
+          pattern: "^[ -~]{0,64}$"
+          type: string
+          description: The server cannot process the request
+          example: Bad Request
+        detail:
+          maxLength: 4096
+          pattern: "^.{0,4096}$"
+          type: string
+          description: The server cannot process the request
+          example: Bad Request
+        functionalities:
+          title: elenco funzionalità di PN
+          type: array
+          description: Un array che comprende tutti i possibili valori dell'enum _PnFunctionality_
+          items:
+            $ref: '#/components/schemas/PnFunctionality'
+        openIncidents:
+          title: elenco disservizi correnti
+          type: array
+          description: Al più uno per funzionalità
+          items:
+            $ref: '#/components/schemas/PnDowntimeEntry'
+      description: Elenco delle funzionalità della piattaforma ed elenco dei disservizi
+        noti e attivi  al momento della richiesta. I disservizi (_openIncidents_)
+        segnalati sono al più uno  per funzionalità; gli attributi _endDate_ e _legalFactId_
+        non saranno valorizzati.
     PreLoadRequest:
       title: Richiesta di precaricamento di un File
       type: object
@@ -945,17 +1146,17 @@ components:
           description: "Identificativo univoco all'interno della request HTTP, serve\
             \ per correlare la risposta. "
         contentType:
-          title: MIME type del file che verr? caricato
+          title: MIME type del file che verrà caricato
           type: string
           description: |-
-            Il MIME type dell'allegato che dovr? essere caricato. Attualmente ? supportato solo
+            Il MIME type dell'allegato che dovrà essere caricato. Attualmente è supportato solo
               - application/pdf
           example: application/pdf
         sha256:
-          title: checksum sha256 del file che verr? caricato
+          title: checksum sha256 del file che verrà caricato
           type: string
           description: "checksum sha256, codificato in base 64, del contenuto binario\
-            \ del file che verr? caricato"
+            \ del file che verrà caricato"
           example: jezIVxlG1M1woCSUngM6KipUN3/p8cG5RMIPnuEanlE=
     PreLoadResponse:
       title: Informazioni per il caricamento file
@@ -983,10 +1184,10 @@ components:
           example: https://preloadpn.aws.amazon.......
         key:
           type: string
-          description: la chiave restituita sar? globalmente unica e andr? utilizzata
+          description: la chiave restituita sarà globalmente unica e andrà utilizzata
             nella richiesta  di notifica.
           example: PN_NOTIFICATION_ATTACHMENTS-0001-301W-B9CB-9U72-WIKD
-      description: Per ogni richiesta che ? stata fatta viene fornito un presigned
+      description: Per ogni richiesta che è stata fatta viene fornito un presigned
         URL e le  informazioni per usarlo.
     NotificationPriceResponse:
       title: Notification price Response
@@ -1013,7 +1214,7 @@ components:
         notificationRequestId:
           type: string
           description: "identificativo univoco di una richiesta di invio notifica,\
-            \ non ? lo IUN"
+            \ non è lo IUN"
         paProtocolNumber:
           type: string
           description: Identificativo inviato dalla pubblica amministrazione
@@ -1022,7 +1223,7 @@ components:
           description: 'Ripetizione del token usato per disambiguare "richieste di
             notificazione"  effetuate con lo stesso numero di protocollo (campo _paProtocolNumber_). '
       description: Contiene le informazioni per identificare una richiesta di invio
-        notifica che non ? ancora stata accettata da Piattaforma notifiche.
+        notifica che non è ancora stata accettata da Piattaforma notifiche.
     NewNotificationRequestStatusResponse:
       allOf:
       - $ref: '#/components/schemas/NewNotificationRequest'
@@ -1034,16 +1235,16 @@ components:
           notificationRequestId:
             type: string
             description: "identificativo univoco di una richiesta di invio notifica,\
-              \ non ? lo IUN"
+              \ non è lo IUN"
           notificationRequestStatus:
             type: string
             description: "- __WAITING__: in attesa di essere valutata - __ACCEPTED__:\
-              \ richiesta di notifica accettata, lo IUN ? valorizzato - __REFUSED__:\
-              \ richiesta di notifica rifiutata, ? valorizzato il campo _errors_"
+              \ richiesta di notifica accettata, lo IUN è valorizzato - __REFUSED__:\
+              \ richiesta di notifica rifiutata, è valorizzato il campo _errors_"
           retryAfter:
             type: integer
             description: Numero di secondi da attendere prima di effettuare una nuova
-              richiesta per  la stessa entit?; valorizzato quando lo status ? __WAITING__.
+              richiesta per  la stessa entità; valorizzato quando lo status è __WAITING__.
             format: int32
           iun:
             $ref: '#/components/schemas/IUN'
@@ -1135,10 +1336,81 @@ components:
             $ref: '#/components/schemas/NotificationStatusHistory'
           timeline:
             type: array
-            description: elenco dettagliato di tutto ci? che ? accaduto durrante il
+            description: elenco dettagliato di tutto ciò che è accaduto durrante il
               processo di notifica
             items:
               $ref: '#/components/schemas/TimelineElement'
+    PaymentEventsRequestPagoPa:
+      title: Invio eventi di pagamento da PA a PN
+      required:
+      - events
+      type: object
+      properties:
+        events:
+          type: array
+          description: Elenco degli eventi di pagamento
+          items:
+            $ref: '#/components/schemas/PaymentEventPagoPa'
+      description: Richiesta contenente un array di eventi di pagamento di tipo PagoPA
+        di cui una Pubblica Amministrazione deve avvisare Piattaforma Notifiche.
+    PaymentEventsRequestF24:
+      title: Invio eventi di pagamento da PA a PN
+      required:
+      - events
+      type: object
+      properties:
+        events:
+          type: array
+          description: Elenco degli eventi di pagamento
+          items:
+            $ref: '#/components/schemas/PaymentEventF24'
+      description: Richiesta contenente un array di eventi di pagamento di tipo F24
+        di cui una Pubblica Amministrazione deve avvisare Piattaforma Notifiche.
+    PaymentEventPagoPa:
+      title: Evento di pagamento PagoPa
+      required:
+      - creditorTaxId
+      - noticeCode
+      - paymentDate
+      type: object
+      properties:
+        noticeCode:
+          $ref: '#/components/schemas/noticeCode'
+        creditorTaxId:
+          $ref: '#/components/schemas/paTaxId'
+        paymentDate:
+          type: string
+          format: date-time
+      description: |-
+        Comprende: <br/>
+          - _noticeCode_: "codice avviso pagoPA" di pagamento del sistema pagoPA, usato per pagamento online.<br/>
+          - _creditorTaxId_: codice fiscale dell'ente a cui fa riferimento il "codice avviso pagoPA". <br/>
+          - data e ora del pagamento. <br/>
+    PaymentEventF24:
+      title: Evento di pagamento F24
+      required:
+      - iun
+      - paymentDate
+      - recipientTaxId
+      - recipientType
+      type: object
+      properties:
+        iun:
+          type: string
+        paymentDate:
+          type: string
+          format: date-time
+        recipientTaxId:
+          $ref: '#/components/schemas/TaxId'
+        recipientType:
+          pattern: PF|PG
+          type: string
+      description: |-
+        Comprende: <br/>
+          - lo _IUN_ della notifica pagata, <br/>
+          - data e ora del pagamento, <br/>
+          - il codice fiscale del destinatario pagatore, <br/>
+          - e la tipologia del destinatario pagatore (PF / PG). <br/>
     TimelineElement:
       type: object
       properties:
@@ -1164,24 +1436,28 @@ components:
       additionalProperties: false
     NotificationStatus:
       type: string
-      description: "stato di avanzamento del processo di notifica:\n  * `IN_VALIDATION`\
-        \ - notifica depositata in attesa di validazione\n  * `ACCEPTED` - notifica\
-        \ accettata \n  * `REFUSED` - notifica rifiutata\n  * `DELIVERING` - notifica\
-        \ in spedita\n  * `DELIVERED` - notifica ricevuta da tutti i destinatari\n\
-        \  * `VIEWED` - notifica presa visione per almeno un destinatario\n  * `EFFECTIVE_DATE`\
-        \ - notifica perfezionata per un destinatario\n  * `PAID` - notifica pagata\n\
-        \  * `UNREACHABLE` - notifica non recapitabile\n  * `CANCELLED` - notifica\
-        \ annullata dal mittente\n"
+      description: |
+        stato di avanzamento del processo di notifica:
+          * `IN_VALIDATION` - notifica depositata in attesa di validazione
+          * `ACCEPTED` - L'ente ha depositato la notifica con successo
+          * `REFUSED` - Notifica rifiutata a seguito della validazione
+          * `DELIVERING` - L'invio della notifica è in corso
+          * `DELIVERED` - La notifica è stata consegnata a tutti i destinatari
+          * `VIEWED` - Il destinatario ha letto la notifica entro il termine stabilito
+          * `EFFECTIVE_DATE` - Il destinatario non ha letto la notifica entro il termine stabilito
+          * `PAID` - Uno dei destinatari ha pagato la notifica
+          * `UNREACHABLE` - Il destinatario non è reperibile
+          * `CANCELLED` - L'ente ha annullato l'invio della notifica
       enum:
       - IN_VALIDATION
       - ACCEPTED
+      - REFUSED
       - DELIVERING
       - DELIVERED
       - VIEWED
       - EFFECTIVE_DATE
       - PAID
       - UNREACHABLE
-      - REFUSED
       - CANCELLED
     NotificationStatusHistory:
       type: array
@@ -1205,7 +1481,7 @@ components:
         url:
           type: string
           description: URL preautorizzato a cui effettuare una richiesta GET per ottenere
-            il  contenuto del documento. Presente solo se il documento ? pronto per
+            il  contenuto del documento. Presente solo se il documento è pronto per
             il download.
         retryAfter:
           type: number
@@ -1213,9 +1489,9 @@ components:
             del  documento sia scaricabile.
           format: decimal32
       description: |-
-        I due campi pi? importanti sono __url__ e __retryAfter__. <br/>
-          - __url__ ? presente se il file ? pronto per essere scaricato ed indica l'url a cui fare GET.
-          - __retryAfter__ indica che il file non ? stato archiviato e bisogner? aspettare un numero di
+        I due campi più importanti sono __url__ e __retryAfter__. <br/>
+          - __url__ è presente se il file è pronto per essere scaricato ed indica l'url a cui fare GET.
+          - __retryAfter__ indica che il file non è stato archiviato e bisognerà aspettare un numero di
             secondi non inferiore a quanto indicato dal campo _retryAfter_. <br/>
     NewNotificationRequest:
       required:
@@ -1233,7 +1509,7 @@ components:
           type: string
           description: Identificativo utilizzabile dal chiamante per disambiguare
             differenti  "richieste di notificazione" effettuate con lo stesso numero
-            di protocollo  (campo _paProtocolNumber_). Questo pu? essere necessario
+            di protocollo  (campo _paProtocolNumber_). Questo può essere necessario
             in caso di  "richiesta di notifica" rifiutata per errori nei codici di
             verifica degli allegati.
         paProtocolNumber:
@@ -1273,7 +1549,7 @@ components:
           type: string
           description: Tipologia comunicazione fisica
           enum:
-          - SIMPLE_REGISTERED_LETTER
+          - AR_REGISTERED_LETTER
           - REGISTERED_LETTER_890
         senderDenomination:
           $ref: '#/components/schemas/Denomination'
@@ -1281,7 +1557,7 @@ components:
           $ref: '#/components/schemas/paTaxId'
         group:
           type: string
-          description: Gruppo di utenti dell'ente mittente che pu? visualizzare la
+          description: Gruppo di utenti dell'ente mittente che può visualizzare la
             notifica
         amount:
           type: integer
@@ -1384,14 +1660,15 @@ components:
           description: Comune
         municipalityDetails:
           type: string
-          description: Frazione o localit?
+          description: Frazione o località
         province:
           type: string
           description: Provincia
         foreignState:
           type: string
           description: Denominazione paese estero
-      description: Indirizzo fisico scoperto durante fase di consegna
+      description: Indirizzo fisico scoperto durante fase di consegna (obbligatorio
+        solo in fase di Sperimentazione)
     NotificationPaymentInfo:
       title: Informazioni per effettuare il pagamento
       required:
@@ -1412,8 +1689,8 @@ components:
         f24standard:
           $ref: '#/components/schemas/NotificationPaymentAttachment'
       description: |-
-        Informazioni utili per effettuare il pagamento di una notifica, sono associate al destinatario perch? le spese di notifica possono differire a seconda del canale di notifica utilizzato. <br/>
-          - _notificationFeePolicy_: indica se il pagamento delle spese di notifica ? forfettario o
+        Informazioni utili per effettuare il pagamento di una notifica, sono associate al destinatario perché le spese di notifica possono differire a seconda del canale di notifica utilizzato. <br/>
+          - _notificationFeePolicy_: indica se il pagamento delle spese di notifica è forfettario o
              calcolato puntualmente. <br/>
           - _noticeCode_: "codice avviso pagoPA" di pagamento del sistema pagoPA, usato per pagamento online.<br/>
           - _creditorTaxId_: codice fiscale dell'ente a cui fa riferimento il "codice avviso pagoPA". <br/>
@@ -1470,7 +1747,7 @@ components:
       properties:
         key:
           type: string
-          description: Chiave in cui ? stato salvato l'allegato
+          description: Chiave in cui è stato salvato l'allegato
         versionToken:
           type: string
           description: Token per recuperare l'esatta istanza dell'allegato
@@ -1490,8 +1767,8 @@ components:
               necessario al fine del perfezionamento per presa visione.
           sendByMail:
             type: boolean
-            description: Se presente e valorizzato __true__ il documento verr? spedito  nelle
-              comunicazioni cartacee. In MVP questo flag sar? attivabile  solo su
+            description: Se presente e valorizzato __true__ il documento verrà spedito  nelle
+              comunicazioni cartacee. In MVP questo flag sarà attivabile  solo su
               un documento.
           docIdx:
             type: string
@@ -1527,7 +1804,7 @@ components:
         url:
           type: string
           description: URL preautorizzato a cui effettuare una richiesta GET per ottenere
-            il  contenuto del documento. Presente solo se il documento ? pronto per
+            il  contenuto del documento. Presente solo se il documento è pronto per
             il download.
         retryAfter:
           type: integer
@@ -1535,9 +1812,9 @@ components:
             del  documento sia disponibile per il download.
           format: int32
       description: |-
-        I due campi pi? importanti sono __url__ e __retryAfter__. <br/>
-          - __url__ ? presente se il file ? pronto per essere scaricato ed indica l'url a cui fare GET.
-          - __retryAfter__ indica che il file ? stato archiviato e bisogner? aspettare un numero di
+        I due campi più importanti sono __url__ e __retryAfter__. <br/>
+          - __url__ è presente se il file è pronto per essere scaricato ed indica l'url a cui fare GET.
+          - __retryAfter__ indica che il file è stato archiviato e bisognerà aspettare un numero di
             secondi non inferiore a quanto indicato dal campo _retryAfter_. <br/>
     SentNotification:
       description: Le informazioni riguardanti una richiesta di notifica accettata
@@ -1563,19 +1840,89 @@ components:
           documentsAvailable:
             type: boolean
             description: Indica se i documenti notificati sono ancora disponibili.
+    PnFunctionality:
+      title: Funzionalità di PN
+      type: string
+      description: "- __NOTIFICATION_CREATE__: la possibilità di creare nuove notifiche.\n\
+        - __NOTIFICATION_VISUALIZATION__: la possibilità di visualizzare le notifiche\
+        \ e scaricare gli atti. \n- __NOTIFICATION_WORKFLOW__: l'avanzamento del processo\
+        \ di notifica. "
+      enum:
+      - NOTIFICATION_CREATE
+      - NOTIFICATION_VISUALIZATION
+      - NOTIFICATION_WORKFLOW
+      x-enum-varnames:
+      - NOTIFICATION_CREATE
+      - NOTIFICATION_VISUALIZATION
+      - NOTIFICATION_WORKFLOW
+    PnDowntimeEntry:
+      title: Dati relativi ad un disservizio di PN.
+      required:
+      - functionality
+      - startDate
+      - status
+      type: object
+      properties:
+        functionality:
+          $ref: '#/components/schemas/PnFunctionality'
+        status:
+          $ref: '#/components/schemas/PnFunctionalityStatus'
+        startDate:
+          title: data inizio disservizio
+          type: string
+          format: date-time
+        endDate:
+          title: data fine disservizio
+          type: string
+          description: se il disservizio è ancora attivo questo campo sarà assente
+            o con valore _null_
+          format: date-time
+        legalFactId:
+          title: id dell'atto opponibile a terzi
+          type: string
+          description: Se assente o valorizzato _null_ indica che l'atto opponibile
+            a terzi non è ancora disponibile. Questo avviene per i disservizi ancora
+            aperti e per i disservizi  terminati da pochi minuti. <br/> Questo valore
+            è da utilizzare con l'API _getLegalFact_ di questo stesso servizio.
+        fileAvailable:
+          type: boolean
+    PnFunctionalityStatus:
+      type: string
+      enum:
+      - KO
+      - OK
     TimelineElementCategory:
       type: string
-      description: "stato di avanzamento del processo di notifica:`\n  * `REQUEST_ACCEPTED`\
-        \ - \n  * `SEND_COURTESY_MESSAGE` - \n  * `GET_ADDRESS` - \n  * `PUBLIC_REGISTRY_CALL`\
-        \ - \n  * `PUBLIC_REGISTRY_RESPONSE` - \n  * `SCHEDULE_ANALOG_WORKFLOW` -\
-        \ \n  * `SCHEDULE_DIGITAL_WORKFLOW` - \n  * `SEND_DIGITAL_DOMICILE` - \n \
-        \ * `SEND_DIGITAL_DOMICILE_FEEDBACK` - \n  * `SEND_DIGITAL_FEEDBACK` - \n\
-        \  * `REFINEMENT` - \n  * `SCHEDULE_REFINEMENT` - \n  * `DIGITAL_SUCCESS_WORKFLOW`\
-        \ - \n  * `DIGITAL_FAILURE_WORKFLOW` - \n  * `ANALOG_SUCCESS_WORKFLOW` - \n\
-        \  * `ANALOG_FAILURE_WORKFLOW` - \n  * `SEND_SIMPLE_REGISTERED_LETTER` - \n\
-        \  * `NOTIFICATION_VIEWED` - \n  * `SEND_ANALOG_DOMICILE` - \n  * `SEND_PAPER_FEEDBACK`\
-        \ - \n  * `PAYMENT` - \n  * `COMPLETELY_UNREACHABLE` - \n  * `REQUEST_REFUSED`\
-        \ - \n  * `AAR_GENERATION` - \n  * `NOT_HANDLED` -\n"
+      description: |
+        stato di avanzamento del processo di notifica:`
+          * `REQUEST_ACCEPTED` - Richiesta di notifica accettata a seguito dei controlli di validazione
+          * `REQUEST_REFUSED` - Richiesta di notifica rifiutata per fallimento di validazione
+          * `SEND_COURTESY_MESSAGE` - Invio di un messaggio di cortesia
+          * `GET_ADDRESS` - Informazioni sulla disponibilità dello specifico indirizzo
+          * `PUBLIC_REGISTRY_CALL` - Effettuata la richiesta ai registri pubblici per ottenere l'indirizzo generale
+          * `PUBLIC_REGISTRY_RESPONSE` - Ricevuta la risposta dei registri pubblici alla richiesta di ottenimento dell'indirizzo generale
+          * `SCHEDULE_ANALOG_WORKFLOW` - Inizio del workflow per invio cartaceo
+          * `SCHEDULE_DIGITAL_WORKFLOW` - Inizio del workflow per invio digitale (PEC)
+          * `SEND_DIGITAL_DOMICILE` - Invio digitale dell’avviso di notifica
+          * `SEND_DIGITAL_PROGRESS` - Ottenuto evento non finale da un invio digitale
+          * `SEND_DIGITAL_FEEDBACK` - Ottenuto esito ad un invio digitale
+          * `SCHEDULE_REFINEMENT` - Pianificato il perfezionamento per decorrenza termini
+          * `REFINEMENT` - Perfezionamento per decorrenza termini
+          * `DIGITAL_SUCCESS_WORKFLOW` - Completato con successo il workflow di invio digitale
+          * `DIGITAL_FAILURE_WORKFLOW` - Completato con fallimento il workflow di invio digitale
+          * `ANALOG_SUCCESS_WORKFLOW` - Completato con successo il workflow di invio cartaceo
+          * `ANALOG_FAILURE_WORKFLOW` - Completato con fallimento il workflow di invio cartaceo
+          * `PREPARE_SIMPLE_REGISTERED_LETTER` - Preparazione all'invio di raccomandata semplice
+          * `SEND_SIMPLE_REGISTERED_LETTER` - Invio di raccomandata semplice
+          * `NOTIFICATION_VIEWED` - Perfezionamento per presa visione
+          * `PREPARE_ANALOG_DOMICILE` - Preparazione all'invio cartaceo dell’avviso di notifica
+          * `SEND_ANALOG_DOMICILE` - Invio cartaceo dell’avviso di notifica
+          * `SEND_ANALOG_PROGRESS` - Ricezione evento non finale dell'invio cartaceo
+          * `SEND_ANALOG_FEEDBACK` - Ricezione esito dell'invio cartaceo
+          * `COMPLETELY_UNREACHABLE` - Tutti i destinatari risultano irraggiungibili
+          * `AAR_GENERATION` - Generazione dell’AAR (Avviso di Avvenuta Ricezione)
+          * `PAYMENT` - Ricezione pagamento della notifica
+          * `NOT_HANDLED` - Per la sperimentazione l'invio analogico non è previsto, viene inserito tale elemento di timeline
       enum:
       - REQUEST_ACCEPTED
       - SEND_COURTESY_MESSAGE
@@ -1593,10 +1940,13 @@ components:
       - DIGITAL_FAILURE_WORKFLOW
       - ANALOG_SUCCESS_WORKFLOW
       - ANALOG_FAILURE_WORKFLOW
+      - PREPARE_SIMPLE_REGISTERED_LETTER
       - SEND_SIMPLE_REGISTERED_LETTER
       - NOTIFICATION_VIEWED
+      - PREPARE_ANALOG_DOMICILE
       - SEND_ANALOG_DOMICILE
-      - SEND_PAPER_FEEDBACK
+      - SEND_ANALOG_PROGRESS
+      - SEND_ANALOG_FEEDBACK
       - PAYMENT
       - COMPLETELY_UNREACHABLE
       - REQUEST_REFUSED
@@ -1704,7 +2054,7 @@ components:
           $ref: '#/components/schemas/DigitalAddressSource'
         isAvailable:
           type: boolean
-          description: Disponibilit? indirizzo
+          description: Disponibilità indirizzo
         attemptDate:
           type: string
           description: Data tentativo
@@ -1727,16 +2077,39 @@ components:
           format: int32
         notificationCost:
           type: integer
-          description: "costo notifica in euro cents, pu? essere nullo se la notifica\
-            \ si ? perfezionata prima per decorrenza termini"
+          description: "costo notifica in euro cents, può essere nullo se la notifica\
+            \ si è perfezionata prima per decorrenza termini"
           format: int64
           example: 1220
         raddType:
-          type: string
-          description: Tipologia rete radd
+          $ref: '#/components/schemas/RaddType'
         raddTransactionId:
+          $ref: '#/components/schemas/RaddTransactionId'
+        delegateInfo:
+          $ref: '#/components/schemas/DelegateInfo'
+    RaddType:
+      type: string
+      description: |
+        tipo di Rete Anti Digital Divide <br/>
+        __FSU__: Fornitore Servizio Universale <br/>
+    RaddTransactionId:
+      type: string
+      description: Identificativo della pratica all'interno della rete RADD
+    DelegateInfo:
+      type: object
+      properties:
+        internalId:
           type: string
-          description: ID della pratica dell'evento proveniente dalla rete radd
+        taxId:
+          type: string
+        operatorUuid:
+          type: string
+        mandateId:
+          type: string
+        denomination:
+          type: string
+        delegateType:
+          $ref: '#/components/schemas/RecipientType'
     PublicRegistryCallDetails:
       required:
       - contactPhase
@@ -1756,7 +2129,7 @@ components:
           $ref: '#/components/schemas/ContactPhase'
         sentAttemptMade:
           type: integer
-          description: Numero di tentativi di notificazione gi? effettuati
+          description: Numero di tentativi di notificazione già effettuati
           format: int32
         sendDate:
           type: string
@@ -1770,7 +2143,7 @@ components:
       - ANALOG
     ContactPhase:
       type: string
-      description: Fase in cui ? avvenuta la richiesta
+      description: Fase in cui è avvenuta la richiesta
       enum:
       - CHOOSE_DELIVERY
       - SEND_ATTEMPT
@@ -1798,8 +2171,8 @@ components:
           format: int32
         notificationCost:
           type: integer
-          description: "costo notifica in euro cents, pu? essere nullo se la notifica\
-            \ si ? perfezionata prima per visualizzazione"
+          description: "costo notifica in euro cents, può essere nullo se la notifica\
+            \ si è perfezionata prima per visualizzazione"
           format: int64
           example: 1220
     RequestRefusedDetails:
@@ -1965,8 +2338,6 @@ components:
           format: int32
     SendAnalogDetails:
       required:
-      - investigation
-      - numberOfPages
       - physicalAddress
       - recIndex
       - sentAttemptMade
@@ -1985,18 +2356,21 @@ components:
           type: integer
           description: numero dei tentativi effettuati
           format: int32
-        investigation:
-          type: boolean
-          description: E' richiesta investigazione indirizzo fisico alternativo
-        numberOfPages:
+        relatedRequestId:
+          type: string
+          description: Id relativo alla eventuale precedente richiesta di invio cartaceo
+        productType:
+          type: string
+          description: Tipo di invio cartaceo effettivamente inviato
+        analogCost:
           type: integer
-          description: numero pagine pdf inviato
+          description: costo in eurocent dell'invio
           format: int32
     ServiceLevel:
       type: string
       description: Livello Servizio
       enum:
-      - SIMPLE_REGISTERED_LETTER
+      - AR_REGISTERED_LETTER
       - REGISTERED_LETTER_890
     SendAnalogFeedbackDetails:
       required:
@@ -2032,7 +2406,6 @@ components:
             description: "Lista errori, vuota in caso di successo"
     SimpleRegisteredLetterDetails:
       required:
-      - numberOfPages
       - physicalAddress
       - recIndex
       type: object
@@ -2043,9 +2416,12 @@ components:
           format: int32
         physicalAddress:
           $ref: '#/components/schemas/PhysicalAddress'
-        numberOfPages:
+        productType:
+          type: string
+          description: Tipo di invio cartaceo effettivamente inviato
+        analogCost:
           type: integer
-          description: numero pagine pdf inviato
+          description: costo in eurocent dell'invio
           format: int32
     AarGenerationDetails:
       required:
@@ -2160,7 +2536,7 @@ components:
           description: Comune in cui l'indirizzo si trova
         municipalityDetails:
           type: string
-          description: Frazione o localit?
+          description: Frazione o località
         province:
           type: string
           description: Provincia in cui si trova l'indirizzo
@@ -2181,6 +2557,11 @@ components:
           type: string
           description: account@domain
       description: Indirizzo di invio della notifica
+    RecipientType:
+      type: string
+      enum:
+      - PF
+      - PG
     TimelineElementId:
       type: string
   parameters:
@@ -2196,7 +2577,7 @@ components:
     paProtocolNumber:
       name: paProtocolNumber
       in: query
-      description: "Numero di protocollo associato alla notifica, pu? essere riutilizzato\
+      description: "Numero di protocollo associato alla notifica, può essere riutilizzato\
         \ per rettifiche."
       required: false
       style: form
