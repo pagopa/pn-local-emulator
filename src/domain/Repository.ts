@@ -12,6 +12,7 @@ import { GetNotificationPriceRecord } from './GetNotificationPriceRecord';
 import { GetPaymentNotificationMetadataRecord } from './GetPaymentNotificationMetadataRecord';
 import { LegalFactDownloadMetadataRecord } from './LegalFactDownloadMetadataRecord';
 import { DownloadRecord } from './DownloadRecord';
+import { DeleteStreamRecord } from './DeleteStreamRecord';
 import { GetEventStreamByIdRecord } from './GetEventStreamByIdRecord';
 
 export type AuditRecord = {
@@ -32,6 +33,7 @@ export type Record =
   | GetPaymentNotificationMetadataRecord
   | LegalFactDownloadMetadataRecord
   | DownloadRecord
+  | DeleteStreamRecord
   | GetEventStreamByIdRecord;
 
 export type RecordRepository = {
