@@ -13,6 +13,7 @@ import { GetPaymentNotificationMetadataRecord } from './GetPaymentNotificationMe
 import { LegalFactDownloadMetadataRecord } from './LegalFactDownloadMetadataRecord';
 import { DownloadRecord } from './DownloadRecord';
 import { DeleteStreamRecord } from './DeleteStreamRecord';
+import { GetEventStreamByIdRecord } from './GetEventStreamByIdRecord';
 
 export type AuditRecord = {
   loggedAt: Date;
@@ -32,7 +33,8 @@ export type Record =
   | GetPaymentNotificationMetadataRecord
   | LegalFactDownloadMetadataRecord
   | DownloadRecord
-  | DeleteStreamRecord;
+  | DeleteStreamRecord
+  | GetEventStreamByIdRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;
