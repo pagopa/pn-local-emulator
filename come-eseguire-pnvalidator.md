@@ -16,7 +16,9 @@ docker pull ghcr.io/pagopa/pn-local-emulator:latest
 docker run -p 3000:3000 ghcr.io/pagopa/pn-local-emulator:latest
 ```
 
-> Hint: Puoi cambiare la porta dove raggiungere il tool cambiando il valore per parametro `-p`.
+{% hint style="info" %}
+Puoi cambiare la porta cambiando il valore del parametro `-p`.
+{% endhint %}
 
 Per verificare il corretto funzionamento prova ad invocare l'endpoint che restituisce il report:
 
