@@ -11,7 +11,7 @@ import { IUNGenerator } from './adapters/randexp/IUNGenerator';
 pipe(
   parseConfig(process.env),
   E.map((config) => {
-    const logger = makeLogger();
+    const logger = makeLogger(config.logLevel);
 
     const systemEnv: SystemEnv = {
       occurrencesAfterComplete: 2, // TODO: move this value into configuration and find a better name ...
