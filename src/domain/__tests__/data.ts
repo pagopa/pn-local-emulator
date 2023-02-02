@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
-import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
+import { NewStatusEnum, TimelineEventCategoryEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
@@ -381,6 +381,7 @@ export const consumeEventStreamRecordDelivered = {
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
       newStatus: NewStatusEnum.ACCEPTED,
+      timelineEventCategory: TimelineEventCategoryEnum.REQUEST_ACCEPTED,
       iun: aIun.valid,
     })),
   },
