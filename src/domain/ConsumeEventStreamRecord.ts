@@ -25,7 +25,7 @@ export type ConsumeEventStreamRecord = AuditRecord & {
 export const isConsumeEventStreamRecord = (record: Record): O.Option<ConsumeEventStreamRecord> =>
   record.type === 'ConsumeEventStreamRecord' ? O.some(record) : O.none;
 
-const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
+export const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
   record.output.statusCode === 200 ? O.some(record.output.returned) : O.none;
 
 export const getProgressResponseList = flow(RA.filterMap(getProgressResponse), RA.flatten);

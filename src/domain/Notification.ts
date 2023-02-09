@@ -1,12 +1,14 @@
 import { pipe, flow } from 'fp-ts/function';
 import * as n from 'fp-ts/number';
+import * as s from 'fp-ts/string';
 import * as M from 'fp-ts/Monoid';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
 import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
+import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
-import { ConsumeEventStreamRecord, getProgressResponseList } from './ConsumeEventStreamRecord';
+import { ConsumeEventStreamRecord, getProgressResponse, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
 import {
   GetNotificationDetailRecord,
@@ -50,8 +52,16 @@ const countFromFind = (notificationRequestId: string) =>
 
 const countFromConsume = (notificationRequestId: string) =>
   flow(
-    getProgressResponseList,
-    RA.filter((e) => e.notificationRequestId === notificationRequestId),
+    RA.filterMap(getProgressResponse),
+    // for each page remove duplicated notificationRequestId
+    RA.map(
+      flow(
+        RA.filterMap((e) => O.fromNullable(e.notificationRequestId)),
+        RA.uniq(s.Eq)
+      )
+    ),
+    RA.flatten,
+    RA.filter((nrId) => nrId === notificationRequestId),
     RA.size
   );
 
@@ -62,6 +72,15 @@ const countFromDetail = (iun: IUN) =>
     RA.filter(({ returned }) => returned.iun === iun),
     RA.size
   );
+
+const makeStatus = (env: DomainEnv, occurrences: number) =>
+  env.occurrencesToDelivering <= occurrences && occurrences < env.occurrencesToDelivered
+    ? O.some(NotificationStatusEnum.DELIVERING)
+    : env.occurrencesToDelivered <= occurrences && occurrences < env.occurrencesToViewed
+    ? O.some(NotificationStatusEnum.DELIVERED)
+    : env.occurrencesToViewed <= occurrences
+    ? O.some(NotificationStatusEnum.VIEWED)
+    : O.none;
 
 /**
  * Compose a NotificationRequest starting from a list of records
@@ -88,7 +107,7 @@ export const makeNotification =
             pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
           ]),
           (occurrences) =>
-            occurrences >= env.occurrencesAfterComplete
+            occurrences >= env.occurrencesToAccepted
               ? O.some(mkNotification(notificationRequest, env.dateGenerator(), env.senderPAId, env.iunGenerator()))
               : O.none
         )
@@ -101,8 +120,12 @@ export const makeNotification =
             pipe(getNotificationDetailRecord, countFromDetail(notification.iun)),
           ]),
           (occurrences) =>
-            // when the notification is returned enough times, the timeline is updated
-            occurrences >= env.occurrencesAfterViewed ? updateTimeline(env)(notification) : notification
+            // update the notification according to the number of occurrencies
+            pipe(
+              makeStatus(env, occurrences),
+              O.map((newStatus) => updateTimeline(env)(notification, newStatus)),
+              O.getOrElse(() => notification)
+            )
         )
       )
     );
