@@ -20,9 +20,9 @@ import { updateTimeline } from './TimelineElement';
 
 export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 
-const mkNotification = (notificationRequest: NotificationRequest, sentAt: Date, senderPaId: string, iun: IUN) => ({
+const mkNotification = (env: DomainEnv, notificationRequest: NotificationRequest, iun: IUN) => ({
   ...notificationRequest,
-  ...makeFullSentNotification(senderPaId)(sentAt)(notificationRequest)(iun),
+  ...makeFullSentNotification(env)(env.dateGenerator())(notificationRequest)(iun),
 });
 
 const getIunFromFind =
@@ -97,7 +97,7 @@ export const makeNotification =
       // get iun from consume records
       O.alt(() => pipe(consumeEventStreamRecord, RA.findLastMap(getIunFromConsume(notificationRequest)))),
       // create Notification from iun if any
-      O.map((iun) => mkNotification(notificationRequest, env.dateGenerator(), env.senderPAId, iun)),
+      O.map((iun) => mkNotification(env, notificationRequest, iun)),
       // try to create notification from find records
       // if no iun was found then create a new notification based on occurrences counter
       O.alt(() =>
@@ -108,7 +108,7 @@ export const makeNotification =
           ]),
           (occurrences) =>
             occurrences >= env.occurrencesToAccepted
-              ? O.some(mkNotification(notificationRequest, env.dateGenerator(), env.senderPAId, env.iunGenerator()))
+              ? O.some(mkNotification(env, notificationRequest, env.iunGenerator()))
               : O.none
         )
       ),
