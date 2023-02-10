@@ -1,4 +1,4 @@
-ARG NODE_VERSION=18.13.0
+ARG NODE_VERSION=18.14.0
 # Step 1 - Compile code
 FROM node:${NODE_VERSION}-alpine as build
 
