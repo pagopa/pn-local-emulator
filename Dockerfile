@@ -10,7 +10,7 @@ RUN npm ci && npm run generate && npm run compile
 # Step 2 - Prepare production image
 FROM node:${NODE_VERSION}-alpine
 
-RUN npm install -g pm2@5.2.0
+RUN npm install -g pm2@5.2.2
 
 RUN mkdir -p /app
 RUN chown -Rh node:node /app
