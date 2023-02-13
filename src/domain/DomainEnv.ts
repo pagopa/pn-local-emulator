@@ -3,8 +3,10 @@ import { IUN } from '../generated/pnapi/IUN';
 
 export type DomainEnv = {
   // envs
-  occurrencesAfterComplete: number;
-  occurrencesAfterViewed: number;
+  occurrencesToAccepted: number;
+  occurrencesToDelivering: number;
+  occurrencesToDelivered: number;
+  occurrencesToViewed: number;
   senderPAId: string;
   downloadDocumentURL: URL;
   sampleStaticPdfFileName: string;

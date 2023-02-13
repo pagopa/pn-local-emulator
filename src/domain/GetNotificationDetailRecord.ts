@@ -5,15 +5,13 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
 import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
-import { NotificationStatusHistoryElement } from '../generated/pnapi/NotificationStatusHistoryElement';
-import { TimelineElement } from '../generated/pnapi/TimelineElement';
-import { TimelineElementCategoryEnum } from '../generated/pnapi/TimelineElementCategory';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';
 import { authorizeApiKey } from './authorize';
 import { computeSnapshot } from './Snapshot';
 import { DomainEnv } from './DomainEnv';
+import { updateTimeline } from './TimelineElement';
 
 export type GetNotificationDetailRecord = AuditRecord & {
   type: 'GetNotificationDetailRecord';
@@ -24,38 +22,23 @@ export type GetNotificationDetailRecord = AuditRecord & {
 export const isGetNotificationDetailRecord = (record: Record): O.Option<GetNotificationDetailRecord> =>
   record.type === 'GetNotificationDetailRecord' ? O.some(record) : O.none;
 
-const makeTimelineElementId = (iun: IUN) => `${iun}_request_accepted`;
-
-const makeNotificationStatusHistoryElement = (
-  iun: IUN,
-  status: NotificationStatusEnum,
-  activeFrom: Date
-): NotificationStatusHistoryElement => ({
-  status,
-  activeFrom,
-  relatedTimelineElements: [makeTimelineElementId(iun)],
-});
-
-const makeTimelineElement = (elementId: string): TimelineElement => ({
-  elementId,
-  category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
-  legalFactsIds: [],
-});
-
 export const makeFullSentNotification =
-  (senderPaId: string) =>
-  (sentAt: Date) =>
+  (env: DomainEnv) =>
   (notificationRequest: NotificationRequest) =>
-  (iun: IUN): FullSentNotification => ({
-    ...notificationRequest,
-    iun,
-    sentAt,
-    notificationStatus: NotificationStatusEnum.ACCEPTED,
-    notificationStatusHistory: [makeNotificationStatusHistoryElement(iun, NotificationStatusEnum.ACCEPTED, sentAt)],
-    documentsAvailable: true,
-    timeline: [pipe(iun, makeTimelineElementId, makeTimelineElement)],
-    senderPaId,
-  });
+  (iun: IUN): FullSentNotification =>
+    pipe(
+      {
+        ...notificationRequest,
+        iun,
+        sentAt: env.dateGenerator(),
+        notificationStatus: NotificationStatusEnum.ACCEPTED,
+        notificationStatusHistory: [],
+        documentsAvailable: true,
+        timeline: [],
+        senderPaId: env.senderPAId,
+      },
+      (notification) => updateTimeline(env)(notification, NotificationStatusEnum.ACCEPTED)
+    );
 
 export const makeGetNotificationDetailRecord =
   (env: DomainEnv) =>

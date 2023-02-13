@@ -184,12 +184,12 @@ export const makeTimelineList =
       ...pipe(notification.recipients, RA.chainWithIndex(makeTimelineListPEC(env)(notification.iun))),
     ];
 
-export const makeNotificationStatusHistory =
+const makeNotificationStatusHistory =
   (env: DomainEnv) =>
-  (timeline: ReadonlyArray<TimelineElement>): NotificationStatusHistory =>
+  (notificationStatus: NotificationStatusEnum, timeline: ReadonlyArray<TimelineElement>): NotificationStatusHistory =>
     [
       {
-        status: NotificationStatusEnum.VIEWED,
+        status: notificationStatus,
         activeFrom: pipe(
           timeline,
           RA.head,
@@ -204,10 +204,10 @@ export const makeNotificationStatusHistory =
 
 export const updateTimeline =
   (env: DomainEnv) =>
-  (notification: Notification): Notification =>
+  (notification: Notification, newNotificationStatus: NotificationStatusEnum): Notification =>
     pipe(notification, makeTimelineList(env), (timelineList) => ({
       ...notification,
-      notificationStatus: NotificationStatusEnum.VIEWED,
-      notificationStatusHistory: makeNotificationStatusHistory(env)(timelineList),
+      notificationStatus: newNotificationStatus,
+      notificationStatusHistory: makeNotificationStatusHistory(env)(newNotificationStatus, timelineList),
       timeline: timelineList,
     }));

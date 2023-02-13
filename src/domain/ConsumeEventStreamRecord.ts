@@ -3,7 +3,11 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { ProgressResponse } from '../generated/streams/ProgressResponse';
-import { NewStatusEnum, ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
+import {
+  NewStatusEnum,
+  ProgressResponseElement,
+  TimelineEventCategoryEnum,
+} from '../generated/streams/ProgressResponseElement';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
 import { Record, AuditRecord } from './Repository';
@@ -21,26 +25,33 @@ export type ConsumeEventStreamRecord = AuditRecord & {
 export const isConsumeEventStreamRecord = (record: Record): O.Option<ConsumeEventStreamRecord> =>
   record.type === 'ConsumeEventStreamRecord' ? O.some(record) : O.none;
 
-const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
+export const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
   record.output.statusCode === 200 ? O.some(record.output.returned) : O.none;
 
 export const getProgressResponseList = flow(RA.filterMap(getProgressResponse), RA.flatten);
 
 const makeProgressResponse = (timestamp: Date) =>
-  RA.map(
+  RA.chain(
     E.fold(
-      makeProgressResponseElementFromNotificationRequest(timestamp),
+      flow(makeProgressResponseElementFromNotificationRequest(timestamp), RA.of),
       makeProgressResponseElementFromNotification(timestamp)
     )
   );
 
 const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
-  (notification: Notification): ProgressResponseElement => ({
-    ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
-    iun: notification.iun,
-    newStatus: NewStatusEnum.ACCEPTED,
-  });
+  (notification: Notification): ReadonlyArray<ProgressResponseElement> =>
+    pipe(
+      notification.timeline,
+      RA.map(({ category }) => ({
+        ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
+        iun: notification.iun,
+        // NotificationStatusEnum and NewStatusEnum have the same values
+        newStatus: notification.notificationStatus as unknown as NewStatusEnum,
+        // TimelineElementCategoryEnum, and TimelineEventCategoryEnum have the same values
+        timelineEventCategory: category as unknown as TimelineEventCategoryEnum,
+      }))
+    );
 
 const makeProgressResponseElementFromNotificationRequest =
   (timestamp: Date) =>
@@ -60,8 +71,7 @@ export const makeConsumeEventStreamRecord =
       authorizeApiKey(input.apiKey),
       E.foldW(identity, () =>
         pipe(
-          records,
-          computeSnapshot(env),
+          computeSnapshot(env)(records),
           // create ProgressResponse
           makeProgressResponse(env.dateGenerator()),
           // override the eventId to create a simple cursor based pagination

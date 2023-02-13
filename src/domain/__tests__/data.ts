@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
-import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
+import { NewStatusEnum, TimelineEventCategoryEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
@@ -107,8 +107,10 @@ export const makeTestSystemEnv = (
     uploadToS3URL: config.server.uploadToS3URL,
     downloadDocumentURL: new URL('http://localhost/downloaddocument'),
     sampleStaticPdfFileName: 'sample.pdf',
-    occurrencesAfterComplete: 2,
-    occurrencesAfterViewed: 4,
+    occurrencesToAccepted: 2,
+    occurrencesToDelivering: 4,
+    occurrencesToDelivered: 6,
+    occurrencesToViewed: 8,
     senderPAId: aSenderPaId,
     retryAfterMs: aRetryAfterMs,
     notificationPrice: aNotificationPrice,
@@ -381,6 +383,7 @@ export const consumeEventStreamRecordDelivered = {
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
       newStatus: NewStatusEnum.ACCEPTED,
+      timelineEventCategory: TimelineEventCategoryEnum.REQUEST_ACCEPTED,
       iun: aIun.valid,
     })),
   },
@@ -393,7 +396,7 @@ export const consumeEventStreamRecordDeliveredDelayed = {
 
 // GetNotificationDetailRecord /////////////////////////////////////////////////
 
-const acceptedNotification = makeFullSentNotification(aSenderPaId)(aDate)({
+const acceptedNotification = makeFullSentNotification(makeTestSystemEnv())({
   ...newNotificationRequest,
   documents: [aDocument0, aDocument1],
   notificationRequestId: notificationId.valid,
