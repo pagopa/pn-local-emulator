@@ -396,7 +396,7 @@ export const consumeEventStreamRecordDeliveredDelayed = {
 
 // GetNotificationDetailRecord /////////////////////////////////////////////////
 
-const acceptedNotification = makeFullSentNotification(makeTestSystemEnv())(aDate)({
+const acceptedNotification = makeFullSentNotification(makeTestSystemEnv())({
   ...newNotificationRequest,
   documents: [aDocument0, aDocument1],
   notificationRequestId: notificationId.valid,

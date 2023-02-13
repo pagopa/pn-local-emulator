@@ -22,7 +22,7 @@ export type Notification = FullSentNotification & Pick<NotificationRequest, 'not
 
 const mkNotification = (env: DomainEnv, notificationRequest: NotificationRequest, iun: IUN) => ({
   ...notificationRequest,
-  ...makeFullSentNotification(env)(env.dateGenerator())(notificationRequest)(iun),
+  ...makeFullSentNotification(env)(notificationRequest)(iun),
 });
 
 const getIunFromFind =

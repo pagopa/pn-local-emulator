@@ -24,14 +24,13 @@ export const isGetNotificationDetailRecord = (record: Record): O.Option<GetNotif
 
 export const makeFullSentNotification =
   (env: DomainEnv) =>
-  (sentAt: Date) =>
   (notificationRequest: NotificationRequest) =>
   (iun: IUN): FullSentNotification =>
     pipe(
       {
         ...notificationRequest,
         iun,
-        sentAt,
+        sentAt: env.dateGenerator(),
         notificationStatus: NotificationStatusEnum.ACCEPTED,
         notificationStatusHistory: [],
         documentsAvailable: true,
