@@ -1,6 +1,6 @@
 ARG NODE_VERSION=18.14.0
 # Step 1 - Compile code
-FROM node:${NODE_VERSION}-alpine as build
+FROM node:${NODE_VERSION}-bullseye-slim as build
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ COPY --chown=node:node . /app
 RUN npm ci && npm run generate && npm run compile
 
 # Step 2 - Prepare production image
-FROM node:${NODE_VERSION}-alpine
+FROM node:${NODE_VERSION}-bullseye-slim
 
 RUN npm install -g pm2@5.2.2
 
