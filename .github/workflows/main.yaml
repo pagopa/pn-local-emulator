@@ -12,7 +12,6 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains two jobs named "build" and "container"
   build:
     name: Compile and test
     runs-on: ubuntu-latest
@@ -41,7 +40,7 @@ jobs:
       - name: Execute tests
         run: npm test
 
-  build-container:
+  build-and-push-container:
     name: Build container image
     needs: build
     runs-on: ubuntu-latest
@@ -70,14 +69,6 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  deliver:
-    name: Build and push container image
-    needs: build-container
-    # This job is trigger only on new tags
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-
-    steps:
       - name: Login to GitHub Package
         uses: docker/login-action@v2
         with:
@@ -91,8 +82,73 @@ jobs:
         with:
           images: ${{ env.CONTAINER_REGISTRY }}/${{ github.repository }}
 
-      - name: Build and push container image
+      - name: Build and push container image with tag
+        if: startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v3
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+
+      - name: Build and push container image with commit SHA
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ env.CONTAINER_REGISTRY }}/${{ env.image_tag }}
+
+  pn-e2e-tests:
+    name: PN E2E Tests
+    needs: build-and-push-container
+    runs-on: ubuntu-latest
+
+    container:
+      image: node:18.13.0-bullseye-slim
+
+    env:
+      EMULATOR_HOSTNAME: pn-emulator
+
+    # Execute the emulator in a container. Execute the emulator created starting from the current commit.
+    services:
+      pn-emulator:
+        image: ghcr.io/pagopa/pn-local-emulator:${{ github.sha }}
+        env:
+          HOSTNAME: ${{ env.EMULATOR_HOSTNAME }}
+        ports:
+          - 3000:3000
+
+    steps:
+      - name: Clone PN Client
+        uses: actions/checkout@v3
+        with:
+          repository: 'pagopa/pn-b2b-client'
+          # TODO: think if we should get this SHA or if we can use a branch
+          ref: 'babcad081c7b73e244b53315f59b9fae96589aa7'
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Run TC-SEND-01
+        run: |
+          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_01 verify -Dpn.external.base-url=http://pn-emulator:3000 -Dpn.external.api-key=key-value -Dpn.configuration.workflow.wait.millis=100 -Dpn.configuration.wait.millis=200
+
+      - name: Run TC-SEND-02
+        run: |
+          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_02 verify -Dpn.external.base-url=http://pn-emulator:3000 -Dpn.external.api-key=key-value -Dpn.configuration.workflow.wait.millis=100 -Dpn.configuration.wait.millis=200
+
+      - name: Run TC-SEND-03
+        run: |
+          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_03 verify -Dpn.external.base-url=http://pn-emulator:3000 -Dpn.external.api-key=key-value -Dpn.configuration.workflow.wait.millis=100 -Dpn.configuration.wait.millis=200
+
+      - name: Run TC-PAYMENT-01
+        run: |
+          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Pagamento_01 verify -Dpn.external.base-url=http://${{ env.EMULATOR_HOSTNAME }}:3000 -Dpn.external.api-key=key-value -Dpn.configuration.workflow.wait.millis=100 -Dpn.configuration.wait.millis=200
