@@ -105,6 +105,10 @@ jobs:
 
     env:
       EMULATOR_HOSTNAME: pn-emulator
+      EMULATOR_PORT: 3000
+      EMULATOR_API_KEY: key-value
+      WORKFLOW_WAIT_MILLIS: 100
+      WAIT_MILLIS: 200
 
     # Execute the emulator in a container. Execute the emulator created starting from the current commit.
     services:
@@ -120,7 +124,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'pagopa/pn-b2b-client'
-          # TODO: think if we should get this SHA or if we can use a branch
+          # This is the SHA of the commit where it is possible to pass a value for the Thread.sleep() method
           ref: 'babcad081c7b73e244b53315f59b9fae96589aa7'
 
       - name: Set up JDK 11
@@ -132,16 +136,16 @@ jobs:
 
       - name: Run TC-SEND-01
         run: |
-          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_01 verify -Dpn.external.base-url=http://pn-emulator:3000 -Dpn.external.api-key=key-value -Dpn.configuration.workflow.wait.millis=100 -Dpn.configuration.wait.millis=200
+          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_01 verify -Dpn.external.base-url=http://${{ env.EMULATOR_HOSTNAME }}:${{ env.EMULATOR_PORT }} -Dpn.external.api-key=${{ env.EMULATOR_API_KEY }} -Dpn.configuration.workflow.wait.millis=${{ env.WORKFLOW_WAIT_MILLIS }} -Dpn.configuration.wait.millis=${{ env.WAIT_MILLIS }}
 
       - name: Run TC-SEND-02
         run: |
-          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_02 verify -Dpn.external.base-url=http://pn-emulator:3000 -Dpn.external.api-key=key-value -Dpn.configuration.workflow.wait.millis=100 -Dpn.configuration.wait.millis=200
+          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_02 verify -Dpn.external.base-url=http://${{ env.EMULATOR_HOSTNAME }}:${{ env.EMULATOR_PORT }} -Dpn.external.api-key=${{ env.EMULATOR_API_KEY }} -Dpn.configuration.workflow.wait.millis=${{ env.WORKFLOW_WAIT_MILLIS }} -Dpn.configuration.wait.millis=${{ env.WAIT_MILLIS }}
 
       - name: Run TC-SEND-03
         run: |
-          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_03 verify -Dpn.external.base-url=http://pn-emulator:3000 -Dpn.external.api-key=key-value -Dpn.configuration.workflow.wait.millis=100 -Dpn.configuration.wait.millis=200
+          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Invio_03 verify -Dpn.external.base-url=http://${{ env.EMULATOR_HOSTNAME }}:${{ env.EMULATOR_PORT }} -Dpn.external.api-key=${{ env.EMULATOR_API_KEY }} -Dpn.configuration.workflow.wait.millis=${{ env.WORKFLOW_WAIT_MILLIS }} -Dpn.configuration.wait.millis=${{ env.WAIT_MILLIS }}
 
       - name: Run TC-PAYMENT-01
         run: |
-          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Pagamento_01 verify -Dpn.external.base-url=http://${{ env.EMULATOR_HOSTNAME }}:3000 -Dpn.external.api-key=key-value -Dpn.configuration.workflow.wait.millis=100 -Dpn.configuration.wait.millis=200
+          ./mvnw -Dtest=it.pagopa.pn.cucumber.Cucumber_Tc_Pagamento_01 verify -Dpn.external.base-url=http://${{ env.EMULATOR_HOSTNAME }}:${{ env.EMULATOR_PORT }} -Dpn.external.api-key=${{ env.EMULATOR_API_KEY }} -Dpn.configuration.workflow.wait.millis=${{ env.WORKFLOW_WAIT_MILLIS }} -Dpn.configuration.wait.millis=${{ env.WAIT_MILLIS }}
