@@ -125,7 +125,7 @@ jobs:
         with:
           repository: 'pagopa/pn-b2b-client'
           # This is the SHA of the commit where it is possible to pass a value for the Thread.sleep() method
-          ref: 'de69d6f577d4d5fb73aa25e2f74f94b96ceae33e'
+          ref: '3a5e63e64630240d6f63ae52d6aca6b310f7b19a'
 
       - name: Set up JDK 11
         uses: actions/setup-java@v3
