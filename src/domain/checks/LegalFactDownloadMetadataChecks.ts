@@ -43,10 +43,15 @@ export const getLegalFactDownloadMetadataRecord = pipe(
   R.map(({ legalFactDownloadMetadataRecordList, getNotificationDetailRecordList }) =>
     pipe(
       legalFactDownloadMetadataRecordList,
-      RA.every((legalFactDownloadMetadataRecord) =>
-        pipe(
-          getNotificationDetailRecordList,
-          RA.exists(matchesLegalFactDownloadMetadataRecordC(legalFactDownloadMetadataRecord))
+      pipe(
+        RA.isNonEmpty,
+        P.and(
+          RA.every((legalFactDownloadMetadataRecord) =>
+            pipe(
+              getNotificationDetailRecordList,
+              RA.exists(matchesLegalFactDownloadMetadataRecordC(legalFactDownloadMetadataRecord))
+            )
+          )
         )
       )
     )
