@@ -22,7 +22,7 @@ describe('LegalFactDownloadMetadataChecks', () => {
       check([data.getLegalFactDownloadMetadataRecord, data.getNotificationDetailRecordAcceptedWithTimeline])
     ).toStrictEqual(true);
 
-    // If no legal facts are present, the check should be true
-    expect(check([])).toStrictEqual(true);
+    // If no legal facts are present, the check should be false
+    expect(check([])).toStrictEqual(false);
   });
 });
