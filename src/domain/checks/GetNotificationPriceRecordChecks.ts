@@ -21,10 +21,13 @@ export const atLeastOneGetNotificationPriceRecordMatchingPreviousNotificationReq
             pipe(
               getNotificationPriceRecordList,
               RA.exists(
-                ({ input: { paTaxId, noticeCode } }) =>
+                ({ input: { paTaxId, noticeCode }, output }) =>
                   payment?.creditorTaxId === paTaxId &&
                   payment?.creditorTaxId === record.input.body.senderTaxId &&
-                  payment.noticeCode === noticeCode
+                  payment.noticeCode === noticeCode &&
+                  // Without this check, the system accepts requests
+                  // that result in an unauthorized response.
+                  output.statusCode === 200
               )
             )
           )

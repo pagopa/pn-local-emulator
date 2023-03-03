@@ -1,11 +1,12 @@
 import * as GetNotificationPriceRecordChecks from '../GetNotificationPriceRecordChecks';
 import * as data from '../../__tests__/data';
+import { unauthorizedResponse } from '../../types';
 
 const ex0 = [data.preLoadRecord, data.preLoadRecord, data.uploadToS3Record];
 const ex1 = [...ex0, data.getNotificationPriceRecord];
 const ex2 = [data.getNotificationPriceRecord, data.newNotificationRecord];
 const ex3 = [
-  data.getNotificationPriceRecord,
+  { ...data.getNotificationPriceRecord, output: unauthorizedResponse },
   data.mkNewNotificationRecord(
     [data.aDocument0],
     [
@@ -18,6 +19,7 @@ const ex3 = [
     ]
   ),
 ];
+const ex4 = [...ex3, data.getNotificationPriceRecord];
 
 describe('GetNotificationPriceRecordChecks', () => {
   it('atLeastOneGetNotificationPriceRecordC', () => {
@@ -33,6 +35,7 @@ describe('GetNotificationPriceRecordChecks', () => {
     expect(check(ex0)).toStrictEqual(false);
     expect(check(ex1)).toStrictEqual(false);
     expect(check(ex2)).toStrictEqual(false);
-    expect(check(ex3)).toStrictEqual(true);
+    expect(check(ex3)).toStrictEqual(false);
+    expect(check(ex4)).toStrictEqual(true);
   });
 });
