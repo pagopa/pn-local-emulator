@@ -1,6 +1,6 @@
 {
   "name": "pn-local-validator",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "A system that emulates some features of Piattaforma Notifiche platform.",
   "main": "dist/main.js",
   "scripts": {
