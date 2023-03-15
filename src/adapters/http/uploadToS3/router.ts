@@ -36,7 +36,7 @@ const handler =
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(200).header('x-amz-version-id', _.toString()).send())
+          ({ output }) => T.of(res.status(200).header('x-amz-version-id', output.returned.toString()).send())
         )
       )
     );
