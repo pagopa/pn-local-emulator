@@ -23,13 +23,10 @@ export const tcSend01bis = Group({
         NewNotificationRequestRecordChecks.atLeastOneValidDigitalDomicileC,
       'Have you filled the property physicalAddress?':
         NewNotificationRequestRecordChecks.atLeastOneValidPhysicalAddressC,
-      'Have you filled the following properties for every payment?': Group({
-        'Have you filled the property creditorTaxId?': NewNotificationRequestRecordChecks.atLeastOneValidCreditorTaxIdC,
-        'Have you filled the property noticeCode?': NewNotificationRequestRecordChecks.atLeastOneValidNoticeCodeC,
-      }),
     }),
     'Have you filled the property documents with the references of files previously uploaded?':
       NewNotificationRequestRecordChecks.atLeastOneRequestWithValidDocumentsC,
-    'Have you created at least one valid notification?': NewNotificationRequestRecordChecks.atLeastOneNotificationSentC,
+    'Have you created at least one valid notification?':
+      NewNotificationRequestRecordChecks.atLeastOneNotificationSentNoPaymentC,
   }),
 });
