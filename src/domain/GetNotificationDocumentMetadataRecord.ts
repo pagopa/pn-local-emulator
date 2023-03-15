@@ -41,7 +41,7 @@ export const makeGetNotificationDocumentMetadataRecord =
           RA.chain((notification) => (notification.iun === input.iun ? notification.documents : RA.empty)),
           // the types of docIdx don't fit (one is a string the other is a number)
           // for the moment just convert the most convenient
-          RA.filterWithIndex((i, document) => (document.docIdx || i.toString()) === input.docIdx.toString()),
+          RA.filterWithIndex((i) => i === input.docIdx),
           RA.last,
           O.map(makeNotificationAttachmentDownloadMetadataResponse(env)),
           O.map((document) => ({ statusCode: 200 as const, returned: document })),
