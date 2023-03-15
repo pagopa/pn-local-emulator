@@ -31,7 +31,7 @@ const matchesLegalFactDownloadMetadataRecordC =
       RA.exists(({ legalFactsIds }) =>
         pipe(
           legalFactsIds || [],
-          RA.exists(({ category, key }) => category === input.legalFactType && key === input.legalFactId)
+          RA.exists(({ category, key }) => category === input.legalFactType && key.endsWith(input.legalFactId))
         )
       )
     );
