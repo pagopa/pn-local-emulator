@@ -410,7 +410,7 @@ const acceptedNotificationWithTimeline = {
       timestamp: aDate,
       legalFactsIds: [
         {
-          key: aLegalFactId,
+          key: `safestorage://${aLegalFactId}`, // Format of the key is: safestorage://<legalFactId>
           category: aLegalFactType,
         },
       ],
