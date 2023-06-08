@@ -48,5 +48,7 @@ export const startApplication = (logger: Logger, config: Config, application: ex
   const [hostname, port] = [config.server.hostname, config.server.port];
   server.listen(port, hostname, () => {
     logger.info(`Server is listening on ${hostname}:${port}`);
+    logger.info(`Server uploadToS3URL is ${config.server.uploadToS3URL}`);
+    logger.info(`Server downloadDocumentURL is ${config.server.downloadDocumentURL}`);
   });
 };
