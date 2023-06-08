@@ -105,7 +105,7 @@ export const makeTestSystemEnv = (
 ): SystemEnv => {
   return {
     uploadToS3URL: config.server.uploadToS3URL,
-    downloadDocumentURL: new URL('http://localhost/downloaddocument'),
+    downloadDocumentURL: config.server.downloadDocumentURL,
     sampleStaticPdfFileName: 'sample.pdf',
     occurrencesToAccepted: 2,
     occurrencesToDelivering: 4,

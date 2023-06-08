@@ -18,6 +18,7 @@ export type Config = {
 const EnvCodec = t.type({
   PORT: t.string.pipe(tt.NumberFromString),
   HOSTNAME: t.string,
+  BASEURL: t.string,
   LOG_LEVEL: t.union([
     t.literal('debug'),
     t.literal('error'),
@@ -38,8 +39,8 @@ export const parseConfig = (envs: Record<string, undefined | string>): E.Either<
         server: {
           port: envs.PORT,
           hostname: envs.HOSTNAME,
-          uploadToS3URL: new URL(`http://${envs.HOSTNAME}:${envs.PORT}/uploadS3`),
-          downloadDocumentURL: new URL(`http://${envs.HOSTNAME}:${envs.PORT}/download`),
+          uploadToS3URL: new URL(`${envs.BASEURL}/uploadS3`),
+          downloadDocumentURL: new URL(`${envs.BASEURL}/download`),
         },
         logLevel: envs.LOG_LEVEL,
       })
