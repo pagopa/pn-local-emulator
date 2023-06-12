@@ -300,20 +300,24 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
 
 // CreateEventStreamRecord ////////////////////////////////////////////////////
 
-const streamCreationRequest = {
+const createEventStatusStreamBody = {
   title: 'Stream Title',
-  eventType: EventTypeEnum.TIMELINE,
+  eventType: EventTypeEnum.STATUS,
 };
 
-export const createEventStreamResponse = {
+export const createEventStatusStreamResponse = {
   statusCode: 200 as const,
-  returned: { ...streamCreationRequest, streamId: streamId.valid, activationDate: aDate },
+  returned: {
+    ...createEventStatusStreamBody,
+    streamId: streamId.valid,
+    activationDate: aDate
+  },
 };
 
 export const createEventStreamRecord: CreateEventStreamRecord = {
   type: 'CreateEventStreamRecord',
-  input: { apiKey: apiKey.valid, body: streamCreationRequest },
-  output: createEventStreamResponse,
+  input: { apiKey: apiKey.valid, body: createEventStatusStreamBody },
+  output: createEventStatusStreamResponse,
   loggedAt: aDate,
 };
 
@@ -323,6 +327,13 @@ export const createTimelineEventStreamRecord: CreateEventStreamRecord = {
     ...createEventStreamRecord.input,
     body: { ...createEventStreamRecord.input.body, eventType: EventTypeEnum.TIMELINE },
   },
+  output: {
+    ...createEventStatusStreamResponse,
+    returned: {
+      ...createEventStatusStreamResponse.returned,
+      eventType: EventTypeEnum.TIMELINE
+    }
+  },
 };
 
 // ListEventStreamRecord ////////////////////////////////////////////////////
@@ -330,7 +341,7 @@ export const createTimelineEventStreamRecord: CreateEventStreamRecord = {
 export const listEventStreamRecord: ListEventStreamRecord = {
   type: 'ListEventStreamRecord',
   input: { apiKey: apiKey.valid },
-  output: { statusCode: 200, returned: [createEventStreamResponse.returned] },
+  output: { statusCode: 200, returned: [createEventStatusStreamResponse.returned] },
   loggedAt: aDate,
 };
 
