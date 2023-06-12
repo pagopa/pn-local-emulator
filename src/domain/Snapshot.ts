@@ -9,11 +9,11 @@ import { makeNotificationRequestFromCreate, NotificationRequest } from './Notifi
 import { makeNotification, Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 import { isGetNotificationDetailRecord } from './GetNotificationDetailRecord';
+import { Record } from './Repository';
 
 export type Snapshot = ReadonlyArray<E.Either<NotificationRequest, Notification>>;
 
-// TODO: Use the State monad
-export const computeSnapshot = (env: DomainEnv) =>
+export const computeSnapshot = (env: DomainEnv): R.Reader<ReadonlyArray<Record>, Snapshot> =>
   pipe(
     R.Do,
     R.apS('notificationRequestRecords', RA.filterMap(isNewNotificationRecord)),
