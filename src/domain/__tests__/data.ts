@@ -310,7 +310,7 @@ export const createEventStatusStreamResponse = {
   returned: {
     ...createEventStatusStreamBody,
     streamId: streamId.valid,
-    activationDate: aDate
+    activationDate: aDate,
   },
 };
 
@@ -331,8 +331,8 @@ export const createTimelineEventStreamRecord: CreateEventStreamRecord = {
     ...createEventStatusStreamResponse,
     returned: {
       ...createEventStatusStreamResponse.returned,
-      eventType: EventTypeEnum.TIMELINE
-    }
+      eventType: EventTypeEnum.TIMELINE,
+    },
   },
 };
 
