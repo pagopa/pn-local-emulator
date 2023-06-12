@@ -43,7 +43,6 @@ const makeProgressResponseElementFromNotification =
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
         newStatus: notification.notificationStatus,
-        // TimelineElementCategoryEnum, and TimelineEventCategoryEnum have the same values
         timelineEventCategory: category,
       }))
     );
