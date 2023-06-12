@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
 import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
-import { NewStatusEnum, TimelineEventCategoryEnum } from '../../generated/streams/ProgressResponseElement';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
@@ -30,6 +29,7 @@ import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { noticeCode } from '../../generated/pnapi/noticeCode';
 import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
+import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 
 export const apiKey = {
   valid: 'key-value',
@@ -301,6 +301,7 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
 
 const streamCreationRequest = {
   title: 'Stream Title',
+  eventType: EventTypeEnum.TIMELINE
 };
 
 export const createEventStreamResponse = {
@@ -382,8 +383,8 @@ export const consumeEventStreamRecordDelivered = {
     ...consumeEventStreamResponse,
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
-      newStatus: NewStatusEnum.ACCEPTED,
-      timelineEventCategory: TimelineEventCategoryEnum.REQUEST_ACCEPTED,
+      newStatus: NotificationStatusEnum.ACCEPTED,
+      timelineEventCategory: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
       iun: aIun.valid,
     })),
   },

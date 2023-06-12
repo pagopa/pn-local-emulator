@@ -3,11 +3,7 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { ProgressResponse } from '../generated/streams/ProgressResponse';
-import {
-  NewStatusEnum,
-  ProgressResponseElement,
-  TimelineEventCategoryEnum,
-} from '../generated/streams/ProgressResponseElement';
+import { ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
 import { Record, AuditRecord } from './Repository';
@@ -46,10 +42,9 @@ const makeProgressResponseElementFromNotification =
       RA.map(({ category }) => ({
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
-        // NotificationStatusEnum and NewStatusEnum have the same values
-        newStatus: notification.notificationStatus as unknown as NewStatusEnum,
+        newStatus: notification.notificationStatus,
         // TimelineElementCategoryEnum, and TimelineEventCategoryEnum have the same values
-        timelineEventCategory: category as unknown as TimelineEventCategoryEnum,
+        timelineEventCategory: category,
       }))
     );
 

@@ -6,7 +6,7 @@
   "scripts": {
     "generate": "npm run generate:pnstream && npm run generate:api && npm run generate:pnapi",
     "generate:pnapi": "shx rm -rf ./src/generated/pnapi && shx mkdir -p ./src/generated/pnapi && gen-api-models --api-spec ./openapi/bundled-api-external-b2b-pa-v1.yaml --no-strict --out-dir ./src/generated/pnapi --request-types --response-decoders",
-    "generate:pnstream": "shx rm -rf ./src/generated/streams && shx mkdir -p ./src/generated/streams && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pn-delivery-push/d2b3854f646064740666cbe60fec5e77f9dfb4b7/docs/openapi/api-external-b2b-webhook-v1.yaml --no-strict --out-dir ./src/generated/streams",
+    "generate:pnstream": "shx rm -rf ./src/generated/streams && shx mkdir -p ./src/generated/streams && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pn-delivery-push/e70b59d6ff5f8ef70878c80ec87ab2a324beae5c/docs/openapi/api-external-b2b-webhook-bundle.yaml --no-strict --out-dir ./src/generated/streams",
     "generate:api": "shx rm -rf ./src/generated/api && shx mkdir -p ./src/generated/api && gen-api-models --api-spec ./openapi/internal.yaml --no-strict --out-dir ./src/generated/api",
     "clean": "tsc --build --clean",
     "postcompile": "shx cp -R ./src/adapters/http/download/exampledocuments ./dist/adapters/http/download/exampledocuments",
