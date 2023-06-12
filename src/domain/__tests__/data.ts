@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
-import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
+import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
@@ -29,6 +29,7 @@ import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { noticeCode } from '../../generated/pnapi/noticeCode';
 import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
+import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 
 export const apiKey = {
@@ -301,7 +302,7 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
 
 const streamCreationRequest = {
   title: 'Stream Title',
-  eventType: EventTypeEnum.TIMELINE
+  eventType: EventTypeEnum.TIMELINE,
 };
 
 export const createEventStreamResponse = {
@@ -339,7 +340,7 @@ export const acceptedEvent = {
   eventId: '1',
   timestamp: aDate,
   notificationRequestId: notificationId.valid,
-  newStatus: NewStatusEnum.ACCEPTED,
+  newStatus: NotificationStatusEnum.ACCEPTED,
   iun: aIun.valid,
 };
 
@@ -347,7 +348,7 @@ export const inValidationEvent = {
   eventId: '1',
   timestamp: aDate,
   notificationRequestId: notificationId.valid,
-  newStatus: NewStatusEnum.IN_VALIDATION,
+  newStatus: NotificationStatusEnum.IN_VALIDATION,
 };
 
 export const consumeEventStreamResponse = {
@@ -501,8 +502,7 @@ export const getNotificationPriceRecord: GetNotificationPriceRecord = {
     statusCode: 200,
     returned: {
       iun: aIun.valid,
-      amount: '100',
-      effectiveDate: aDate,
+      amount: 100,
     },
   },
   loggedAt: aDate,

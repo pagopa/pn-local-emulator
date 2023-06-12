@@ -26,7 +26,6 @@ const makeTimelineListPEC =
         category: TimelineElementCategoryEnum.AAR_GENERATION,
         details: {
           recIndex: index,
-          errors: [],
           numberOfPages: 1,
           generatedAarUrl: `safestorage://PN_AAR-0002-${env.iunGenerator()}`,
         },
@@ -41,7 +40,6 @@ const makeTimelineListPEC =
           digitalAddressSource: DigitalAddressSourceEnum.PLATFORM,
           isAvailable: false,
           attemptDate: env.dateGenerator(),
-          errors: [],
         },
       },
       {
@@ -54,7 +52,6 @@ const makeTimelineListPEC =
           digitalAddressSource: DigitalAddressSourceEnum.SPECIAL,
           isAvailable: true,
           attemptDate: env.dateGenerator(),
-          errors: [],
         },
       },
       {
@@ -66,7 +63,6 @@ const makeTimelineListPEC =
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
           digitalAddressSource: DigitalAddressSourceEnum.SPECIAL,
-          errors: [],
           retryNumber: 0,
         },
       },
@@ -84,11 +80,9 @@ const makeTimelineListPEC =
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
           digitalAddressSource: DigitalAddressSourceEnum.SPECIAL,
-          errors: [],
           retryNumber: 0,
           notificationDate: env.dateGenerator(),
           sendingReceipts: [{}],
-          eventCode: 'C001',
           shouldRetry: false,
         },
       },
@@ -106,7 +100,6 @@ const makeTimelineListPEC =
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
           digitalAddressSource: DigitalAddressSourceEnum.SPECIAL,
-          errors: [],
           responseStatus: ResponseStatusEnum.OK,
           notificationDate: env.dateGenerator(),
           sendingReceipts: [{}],
@@ -125,7 +118,6 @@ const makeTimelineListPEC =
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
-          errors: [],
         },
       },
       {
@@ -135,7 +127,6 @@ const makeTimelineListPEC =
         category: TimelineElementCategoryEnum.SCHEDULE_REFINEMENT,
         details: {
           recIndex: index,
-          errors: [],
         },
       },
       {
@@ -146,7 +137,6 @@ const makeTimelineListPEC =
         details: {
           recIndex: index,
           notificationCost: 100,
-          errors: [],
         },
       },
       {
@@ -161,7 +151,6 @@ const makeTimelineListPEC =
         category: TimelineElementCategoryEnum.NOTIFICATION_VIEWED,
         details: {
           recIndex: index,
-          errors: [],
         },
       },
     ];

@@ -22,12 +22,9 @@
               $ref: '#/components/schemas/PreLoadBulkRequest'
         required: true
 ```
-6. Change the `paths.["/delivery-push/{iun}/legal-facts/{legalFactType}/{legalFactId}"].get.parameters`
-   - Comment the `$ref` from the parameter `legalFactType` and add `type: string.`
-7. Change the `paths.["/delivery/price/{paTaxId}/{noticeCode}"].get.parameters`
-   - Comment the `$ref` from the parameter `paTaxId` and add `type: string.`
-   - Comment the `$ref` from the parameter `noticeCode` and add `type: string.`
-6. Done
+6. Replace the reference of errors from `#/components/schemas/schemas-ProblemError` to `#/components/schemas/ProblemError`
+7. Remove `schemas-ProblemError`.
+8. Done
 
 ```
 # Run the following command form ./openapi
@@ -37,5 +34,5 @@ cd openapi
 curl https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.35/swagger-codegen-cli-3.0.35.jar -O
 
 # 2.
-java -jar swagger-codegen-cli-3.0.35.jar generate -l openapi-yaml -i https://raw.githubusercontent.com/pagopa/pn-delivery/76d4c11911e2f07201bc7a1586d73ea74864fb68/docs/openapi/api-external-b2b-pa-v1.yaml -o . -DoutputFile=bundled-api-external-b2b-pa-v1.yaml
+java -jar swagger-codegen-cli-3.0.35.jar generate -l openapi-yaml -i https://raw.githubusercontent.com/pagopa/pn-delivery/6ba267f9d73ce2625bb259f288431a20052d8798/docs/openapi/api-external-b2b-pa-bundle.yaml -o . -DoutputFile=bundled-api-external-b2b-pa-v1.yaml
 ```

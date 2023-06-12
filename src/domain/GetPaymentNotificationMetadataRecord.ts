@@ -31,11 +31,8 @@ export const isGetPaymentNotificationMetadataRecord = (
 const getNotificationPaymentAttachment =
   (attachmentName: string) =>
   (payment: NotificationPaymentInfo): O.Option<NotificationPaymentAttachment> => {
+    // eslint-disable-next-line sonarjs/no-small-switch
     switch (attachmentName) {
-      case 'F24_FLAT':
-        return O.fromNullable(payment.f24flatRate);
-      case 'F24_STANDARD':
-        return O.fromNullable(payment.f24standard);
       case 'PAGOPA':
         return O.fromNullable(payment.pagoPaForm);
       default:
