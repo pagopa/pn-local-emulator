@@ -1,6 +1,6 @@
 ARG NODE_VERSION=18.13.0
 # Step 1 - Compile code
-FROM node:${NODE_VERSION}-alpine as build
+FROM node:${NODE_VERSION}-alpine AS build
 
 WORKDIR /app
 
@@ -23,6 +23,7 @@ ENV NODE_ENV=production
 ENV LOG_LEVEL=info
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV BASEURL=http://127.0.0.1:${PORT}
 
 # Install just the production dependencies and avoid to execute the prepare script (which invoke husky, a dev dependency)
 RUN npm install --ignore-scripts && npm cache clean --force
