@@ -368,6 +368,8 @@ export const consumeEventStreamResponse = {
   returned: [
     {
       eventId: '0',
+      analogCost: 325,
+      channel: "B2B",
       timestamp: aDate,
       notificationRequestId: notificationId.valid,
     },

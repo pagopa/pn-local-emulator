@@ -2,6 +2,7 @@ import { flow, pipe, identity } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { ProgressResponse } from '../generated/streams/ProgressResponse';
 import { ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
 import { NotificationRequest } from './NotificationRequest';
@@ -39,11 +40,17 @@ const makeProgressResponseElementFromNotification =
   (notification: Notification): ReadonlyArray<ProgressResponseElement> =>
     pipe(
       notification.timeline,
-      RA.map(({ category }) => ({
+      RA.map(({ category, legalFactsIds, details }) => ({
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
         newStatus: notification.notificationStatus,
         timelineEventCategory: category,
+        legalfactIds: legalFactsIds?.map(({ category }) => category),
+        recipientIndex: pipe(
+          details && 'recIndex' in details ? details.recIndex : undefined,
+          NonNegativeInteger.decode,
+          E.fold(() => undefined, identity)
+        ),
       }))
     );
 
@@ -53,6 +60,8 @@ const makeProgressResponseElementFromNotificationRequest =
     eventId: '0',
     timestamp,
     notificationRequestId: notificationRequest.notificationRequestId,
+    channel: 'B2B',
+    analogCost: 325,
   });
 
 export const makeConsumeEventStreamRecord =
