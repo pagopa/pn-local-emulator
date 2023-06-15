@@ -4,8 +4,9 @@ import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/pnapi/NotificationAttachmentDownloadMetadataResponse';
+import { Problem } from '../generated/pnapi/Problem';
 import { AuditRecord, Record } from './Repository';
-import { Response, UnauthorizedMessageBody } from './types';
+import { notFoundResponse, Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
@@ -17,7 +18,7 @@ export type GetNotificationDocumentMetadataRecord = AuditRecord & {
   output:
     | Response<200, NotificationAttachmentDownloadMetadataResponse>
     | Response<403, UnauthorizedMessageBody>
-    | Response<404>;
+    | Response<404, Problem>;
 };
 
 export const isGetNotificationDocumentMetadataRecord = (
@@ -45,7 +46,7 @@ export const makeGetNotificationDocumentMetadataRecord =
           RA.last,
           O.map(makeNotificationAttachmentDownloadMetadataResponse(env)),
           O.map((document) => ({ statusCode: 200 as const, returned: document })),
-          O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
+          O.getOrElseW(() => notFoundResponse('PN_DELIVERY_FILEINFONOTFOUND'))
         )
       ),
       E.toUnion
