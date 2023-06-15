@@ -6,11 +6,12 @@ import { IUN } from '../generated/pnapi/IUN';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/pnapi/NotificationAttachmentDownloadMetadataResponse';
 import { NotificationPaymentAttachment } from '../generated/pnapi/NotificationPaymentAttachment';
 import { NotificationPaymentInfo } from '../generated/pnapi/NotificationPaymentInfo';
+import { Problem } from '../generated/pnapi/Problem';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { computeSnapshot } from './Snapshot';
-import { Response, UnauthorizedMessageBody } from './types';
+import { notFoundResponse, Response, UnauthorizedMessageBody } from './types';
 import { makeNotificationAttachmentDownloadMetadataResponse } from './NotificationAttachmentDownloadMetadataResponse';
 
 export type GetPaymentNotificationMetadataRecord = AuditRecord & {
@@ -19,7 +20,7 @@ export type GetPaymentNotificationMetadataRecord = AuditRecord & {
   output:
     | Response<200, NotificationAttachmentDownloadMetadataResponse>
     | Response<403, UnauthorizedMessageBody>
-    | Response<404>;
+    | Response<404, Problem>;
 };
 
 export const isGetPaymentNotificationMetadataRecord = (
@@ -31,11 +32,8 @@ export const isGetPaymentNotificationMetadataRecord = (
 const getNotificationPaymentAttachment =
   (attachmentName: string) =>
   (payment: NotificationPaymentInfo): O.Option<NotificationPaymentAttachment> => {
+    // eslint-disable-next-line sonarjs/no-small-switch
     switch (attachmentName) {
-      case 'F24_FLAT':
-        return O.fromNullable(payment.f24flatRate);
-      case 'F24_STANDARD':
-        return O.fromNullable(payment.f24standard);
       case 'PAGOPA':
         return O.fromNullable(payment.pagoPaForm);
       default:
@@ -61,7 +59,7 @@ export const makeGetPaymentNotificationMetadataRecord =
           RA.findLastMap(getNotificationPaymentAttachment(input.attachmentName)),
           O.map(makeNotificationAttachmentDownloadMetadataResponse(env)),
           O.map((paymentAttachment) => ({ statusCode: 200 as const, returned: paymentAttachment })),
-          O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
+          O.getOrElseW(() => notFoundResponse('PN_DELIVERY_FILEINFONOTFOUND'))
         )
       ),
       E.toUnion

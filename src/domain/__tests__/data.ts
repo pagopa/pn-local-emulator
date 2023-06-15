@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
-import { NotificationFeePolicyEnum, PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
-import { NewStatusEnum, TimelineEventCategoryEnum } from '../../generated/streams/ProgressResponseElement';
+import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
@@ -30,6 +29,8 @@ import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { noticeCode } from '../../generated/pnapi/noticeCode';
 import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
+import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
+import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 
 export const apiKey = {
   valid: 'key-value',
@@ -299,19 +300,24 @@ export const checkNotificationStatusRecordWithIdempotenceToken: CheckNotificatio
 
 // CreateEventStreamRecord ////////////////////////////////////////////////////
 
-const streamCreationRequest = {
+const createEventStatusStreamBody = {
   title: 'Stream Title',
+  eventType: EventTypeEnum.STATUS,
 };
 
-export const createEventStreamResponse = {
+export const createEventStatusStreamResponse = {
   statusCode: 200 as const,
-  returned: { ...streamCreationRequest, streamId: streamId.valid, activationDate: aDate },
+  returned: {
+    ...createEventStatusStreamBody,
+    streamId: streamId.valid,
+    activationDate: aDate,
+  },
 };
 
 export const createEventStreamRecord: CreateEventStreamRecord = {
   type: 'CreateEventStreamRecord',
-  input: { apiKey: apiKey.valid, body: streamCreationRequest },
-  output: createEventStreamResponse,
+  input: { apiKey: apiKey.valid, body: createEventStatusStreamBody },
+  output: createEventStatusStreamResponse,
   loggedAt: aDate,
 };
 
@@ -321,6 +327,13 @@ export const createTimelineEventStreamRecord: CreateEventStreamRecord = {
     ...createEventStreamRecord.input,
     body: { ...createEventStreamRecord.input.body, eventType: EventTypeEnum.TIMELINE },
   },
+  output: {
+    ...createEventStatusStreamResponse,
+    returned: {
+      ...createEventStatusStreamResponse.returned,
+      eventType: EventTypeEnum.TIMELINE,
+    },
+  },
 };
 
 // ListEventStreamRecord ////////////////////////////////////////////////////
@@ -328,7 +341,7 @@ export const createTimelineEventStreamRecord: CreateEventStreamRecord = {
 export const listEventStreamRecord: ListEventStreamRecord = {
   type: 'ListEventStreamRecord',
   input: { apiKey: apiKey.valid },
-  output: { statusCode: 200, returned: [createEventStreamResponse.returned] },
+  output: { statusCode: 200, returned: [createEventStatusStreamResponse.returned] },
   loggedAt: aDate,
 };
 
@@ -338,7 +351,7 @@ export const acceptedEvent = {
   eventId: '1',
   timestamp: aDate,
   notificationRequestId: notificationId.valid,
-  newStatus: NewStatusEnum.ACCEPTED,
+  newStatus: NotificationStatusEnum.ACCEPTED,
   iun: aIun.valid,
 };
 
@@ -346,7 +359,7 @@ export const inValidationEvent = {
   eventId: '1',
   timestamp: aDate,
   notificationRequestId: notificationId.valid,
-  newStatus: NewStatusEnum.IN_VALIDATION,
+  newStatus: NotificationStatusEnum.IN_VALIDATION,
 };
 
 export const consumeEventStreamResponse = {
@@ -355,6 +368,8 @@ export const consumeEventStreamResponse = {
   returned: [
     {
       eventId: '0',
+      analogCost: 325,
+      channel: 'B2B',
       timestamp: aDate,
       notificationRequestId: notificationId.valid,
     },
@@ -382,8 +397,8 @@ export const consumeEventStreamRecordDelivered = {
     ...consumeEventStreamResponse,
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
-      newStatus: NewStatusEnum.ACCEPTED,
-      timelineEventCategory: TimelineEventCategoryEnum.REQUEST_ACCEPTED,
+      newStatus: NotificationStatusEnum.ACCEPTED,
+      timelineEventCategory: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
       iun: aIun.valid,
     })),
   },
@@ -500,8 +515,7 @@ export const getNotificationPriceRecord: GetNotificationPriceRecord = {
     statusCode: 200,
     returned: {
       iun: aIun.valid,
-      amount: '100',
-      effectiveDate: aDate,
+      amount: 100,
     },
   },
   loggedAt: aDate,

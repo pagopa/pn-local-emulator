@@ -5,17 +5,21 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
 import { LegalFactCategory } from '../generated/pnapi/LegalFactCategory';
 import { LegalFactDownloadMetadataResponse } from '../generated/pnapi/LegalFactDownloadMetadataResponse';
+import { Problem } from '../generated/pnapi/Problem';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { computeSnapshot } from './Snapshot';
-import { Response, UnauthorizedMessageBody } from './types';
+import { notFoundResponse, Response, UnauthorizedMessageBody } from './types';
 import { makePnDownloadDocumentURL } from './PnDownloadDocumentURL';
 
 export type LegalFactDownloadMetadataRecord = AuditRecord & {
   type: 'LegalFactDownloadMetadataRecord';
   input: { apiKey: string; legalFactType: LegalFactCategory; legalFactId: string; iun: IUN };
-  output: Response<200, LegalFactDownloadMetadataResponse> | Response<403, UnauthorizedMessageBody> | Response<404>;
+  output:
+    | Response<200, LegalFactDownloadMetadataResponse>
+    | Response<403, UnauthorizedMessageBody>
+    | Response<404, Problem>;
 };
 
 export const isLegalFactDownloadMetadataRecord = (record: Record): O.Option<LegalFactDownloadMetadataRecord> =>
@@ -42,7 +46,7 @@ export const makeLegalFactDownloadMetadataRecord =
           RA.filterMap(O.fromEither),
           RA.findLast((notification) => notification.iun === input.iun),
           O.map((_) => ({ statusCode: 200 as const, returned: makeLegalFactDownloadMetadataResponse(env) })),
-          O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
+          O.getOrElseW(() => notFoundResponse('PN_DELIVERY_FILEINFONOTFOUND'))
         )
       ),
       E.toUnion

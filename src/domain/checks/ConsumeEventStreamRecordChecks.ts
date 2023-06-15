@@ -5,9 +5,9 @@ import * as R from 'fp-ts/Reader';
 import * as P from 'fp-ts/Predicate';
 import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecord';
 import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecord';
-import { NewStatusEnum } from '../../generated/streams/ProgressResponseElement';
 import { Record } from '../Repository';
 import { DomainEnv } from '../DomainEnv';
+import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 import { existsCreateEventStreamRecordWhitStreamId } from './CreateEventStreamRecordChecks';
 
 export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
@@ -27,7 +27,7 @@ export const requestWithStreamIdProvidedHasBeenMadeC = pipe(
 export const hasNewStatusPropertySetToAcceptedC = flow(
   RA.filterMap(ConsumeEventStreamRecord.isConsumeEventStreamRecord),
   ConsumeEventStreamRecord.getProgressResponseList,
-  RA.exists(({ newStatus }) => newStatus === NewStatusEnum.ACCEPTED)
+  RA.exists(({ newStatus }) => newStatus === NotificationStatusEnum.ACCEPTED)
 );
 
 export const hasIunPopulatedC = flow(
