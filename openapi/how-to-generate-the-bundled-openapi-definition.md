@@ -24,7 +24,8 @@
 ```
 6. Replace the reference of errors from `#/components/schemas/schemas-ProblemError` to `#/components/schemas/ProblemError`
 7. Remove `schemas-ProblemError`.
-8. Done
+8. On `NotificationDocument.docIdx` replace `pattern: ^\d+$` with `pattern: ^\\d+$` due to [string pattern definition bug](https://github.com/pagopa/openapi-codegen-ts/tree/v13.0.1#about-string-pattern-definition).
+9. Done
 
 ```
 # Run the following command form ./openapi
