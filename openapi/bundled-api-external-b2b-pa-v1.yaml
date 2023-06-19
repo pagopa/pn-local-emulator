@@ -1647,7 +1647,7 @@ components:
               utilizzabili in un nome file.
           docIdx:
             maxLength: 3
-            pattern: ^\d+$
+            pattern: ^\\d+$
             type: string
             description: Indice del documento partendo da 0.
     NotificationFeePolicy:
