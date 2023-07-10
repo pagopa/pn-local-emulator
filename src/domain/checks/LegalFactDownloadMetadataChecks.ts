@@ -42,7 +42,12 @@ export const getLegalFactDownloadMetadataRecord = pipe(
   R.apS('getNotificationDetailRecordList', RA.filterMap(isGetNotificationDetailRecord)),
   R.map(({ legalFactDownloadMetadataRecordList, getNotificationDetailRecordList }) =>
     pipe(
-      legalFactDownloadMetadataRecordList,
+      pipe(
+        legalFactDownloadMetadataRecordList,
+        RA.filter((item) =>
+          pipe(getNotificationDetailRecordList, RA.some(matchesLegalFactDownloadMetadataRecordC(item)))
+        )
+      ),
       pipe(
         RA.isNonEmpty,
         P.and(
