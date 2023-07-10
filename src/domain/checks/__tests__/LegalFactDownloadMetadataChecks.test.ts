@@ -22,8 +22,11 @@ describe('LegalFactDownloadMetadataChecks', () => {
       check([
         {
           ...data.getLegalFactDownloadMetadataRecord,
-          input: { ...data.getLegalFactDownloadMetadataRecord.input, legalFactId: 'custom-legal-fact-id' }
-        }, data.getLegalFactDownloadMetadataRecord, data.getNotificationDetailRecordAcceptedWithTimeline])
+          input: { ...data.getLegalFactDownloadMetadataRecord.input, legalFactId: 'custom-legal-fact-id' },
+        },
+        data.getLegalFactDownloadMetadataRecord,
+        data.getNotificationDetailRecordAcceptedWithTimeline,
+      ])
     ).toStrictEqual(true);
 
     expect(
