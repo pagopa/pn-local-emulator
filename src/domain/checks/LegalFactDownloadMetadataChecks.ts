@@ -48,17 +48,7 @@ export const getLegalFactDownloadMetadataRecord = pipe(
           pipe(getNotificationDetailRecordList, RA.some(matchesLegalFactDownloadMetadataRecordC(item)))
         )
       ),
-      pipe(
-        RA.isNonEmpty,
-        P.and(
-          RA.every((legalFactDownloadMetadataRecord) =>
-            pipe(
-              getNotificationDetailRecordList,
-              RA.exists(matchesLegalFactDownloadMetadataRecordC(legalFactDownloadMetadataRecord))
-            )
-          )
-        )
-      )
+      RA.isNonEmpty
     )
   )
 );
