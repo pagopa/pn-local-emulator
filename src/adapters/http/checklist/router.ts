@@ -17,8 +17,7 @@ const handler =
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          // FIXME: Once we discover how to generate recursive structures
-          (result) => T.of(res.status(200).send(result))
+          (result) => T.of(res.status(200).send({ version: env.npm_package_version, result }))
         )
       )
     );
