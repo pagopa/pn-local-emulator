@@ -12,5 +12,8 @@
         "functional/no-let": "off"
       }
     }
-  ]
+  ],
+  "rules": {
+    "prettier/prettier": ["off", { "singleQuote": true }]
+  }
 }
