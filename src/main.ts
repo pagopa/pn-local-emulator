@@ -28,6 +28,7 @@ pipe(
       uuidGenerator: () => crypto.randomUUID(),
       recordRepository: inMemory.makeRecordRepository(logger)([]),
       uploadToS3URL: config.server.uploadToS3URL,
+      npm_package_version: config.npm_package_version,
     };
 
     /* initialize all the driving adapters (e.g.: HTTP API ) */

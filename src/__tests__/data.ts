@@ -6,6 +6,7 @@ export const envs: NodeJS.ProcessEnv = {
 };
 
 export const config: Config = {
+  npm_package_version: envs['npm_package_version'] as string,
   server: {
     hostname: envs['HOSTNAME'] as string,
     port: Number(envs['PORT']),
