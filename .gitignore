@@ -417,3 +417,6 @@ $RECYCLE.BIN/
 
 # Ignore the generated stuff
 src/generated/*
+
+# VSCode configs
+.vscode
