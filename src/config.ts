@@ -6,7 +6,6 @@ import { pipe } from 'fp-ts/lib/function';
 import { LogLevelName } from './logger';
 
 export type Config = {
-  npm_package_version: string;
   server: {
     port: number;
     hostname: string;
@@ -29,7 +28,6 @@ const EnvCodec = t.type({
     t.literal('trace'),
     t.literal('warn'),
   ]),
-  npm_package_version: t.string,
 });
 
 export const parseConfig = (envs: Record<string, undefined | string>): E.Either<string, Config> =>
@@ -38,7 +36,6 @@ export const parseConfig = (envs: Record<string, undefined | string>): E.Either<
     E.bimap(
       (errors) => PR.failure(errors).join('\n'),
       (envs) => ({
-        npm_package_version: envs.npm_package_version,
         server: {
           port: envs.PORT,
           hostname: envs.HOSTNAME,
