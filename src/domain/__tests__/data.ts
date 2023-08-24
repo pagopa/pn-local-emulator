@@ -105,7 +105,6 @@ export const makeTestSystemEnv = (
   logger: Logger = makeLogger()
 ): SystemEnv => {
   return {
-    npm_package_version: config.npm_package_version,
     uploadToS3URL: config.server.uploadToS3URL,
     downloadDocumentURL: config.server.downloadDocumentURL,
     sampleStaticPdfFileName: 'sample.pdf',

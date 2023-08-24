@@ -13,7 +13,6 @@ export type DomainEnv = {
   uploadToS3URL: URL;
   retryAfterMs: number;
   notificationPrice: number;
-  npm_package_version: string;
   // generators
   iunGenerator: IO<IUN>;
   dateGenerator: IO<Date>;

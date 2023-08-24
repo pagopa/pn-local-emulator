@@ -9,6 +9,9 @@ import { evaluateReport } from '../../../domain/reportengine/reportengine';
 import { report } from '../../../domain/checks/report';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJSON = require("../package.json");
+
 const handler =
   (env: SystemEnv): Handler =>
   (_, res) =>
@@ -17,7 +20,7 @@ const handler =
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (result) => T.of(res.status(200).send({ version: env.npm_package_version, result }))
+          (result) => T.of(res.status(200).send({ version: packageJSON.version, result }))
         )
       )
     );
