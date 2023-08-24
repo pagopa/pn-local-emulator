@@ -50,7 +50,7 @@ export const makeGetNotificationPriceRecord =
               iun,
               amount: env.notificationPrice,
               refinementDate: env.dateGenerator(),
-              notificationViewDate: env.dateGenerator(),    
+              notificationViewDate: env.dateGenerator(),
             },
           })
         )
