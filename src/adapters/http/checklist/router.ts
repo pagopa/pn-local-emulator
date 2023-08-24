@@ -10,7 +10,7 @@ import { report } from '../../../domain/checks/report';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const packageJSON = require("../package.json");
+const packageJSON = require('../../../../package.json');
 
 const handler =
   (env: SystemEnv): Handler =>
