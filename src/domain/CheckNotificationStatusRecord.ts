@@ -6,14 +6,12 @@ import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRequestStatusResponse } from '../generated/pnapi/NewNotificationRequestStatusResponse';
 import { SystemEnv } from '../useCases/SystemEnv';
+import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 import { authorizeApiKey } from './authorize';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { computeSnapshot } from './Snapshot';
-import { makeLogger } from '../logger';
-import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 
-const logger = makeLogger();
 
 const VALID_CAPS = [
   "00010",
@@ -4240,6 +4238,7 @@ export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckN
 
 export const makeCheckNotificationStatusRecord =
   (env: SystemEnv) =>
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   (input: CheckNotificationStatusRecord['input']) =>
   (records: ReadonlyArray<Record>): CheckNotificationStatusRecord => ({
     type: 'CheckNotificationStatusRecord',
@@ -4250,17 +4249,6 @@ export const makeCheckNotificationStatusRecord =
       E.foldW(identity, () =>
       pipe(
           computeSnapshot(env)(records),
-          // If an error occurse, we skip the WAITING status an go to ACCEPTED, to transform it then to REFUSED 
-          // O.map(
-          //   E.fold(
-          //     (nr) => {
-          //       while(true){
-
-          //       }
-          //     },
-          //     (n) => n
-          //   )
-          // ),         
           RA.findFirst(
             flow(E.toUnion, (notificationRequest) =>
               'notificationRequestId' in input.body
@@ -4315,12 +4303,9 @@ export const makeCheckNotificationStatusRecord =
                   const matchFound = RA.reduce(false,(corresponds, recordRaw)=>{
                     const recordFull = recordRaw as Record; 
                     
-                    logger.info(recordFull.type);
                     //  Scroll throw the documents of a record in memory
                     if( recordFull.type === 'UploadToS3Record'){
                       const record = recordFull.output.returned as number;
-                      logger.info("record: ", record);
-                      logger.info(docResp.ref.versionToken);
                       const correspondsHere = (record.toString() === docResp.ref.versionToken);
                         
                       return corresponds || correspondsHere;
@@ -4328,8 +4313,6 @@ export const makeCheckNotificationStatusRecord =
                     return corresponds;
                   })(records);
 
-                  logger.info("Is metch found");
-                  logger.info(matchFound);
                   if(!matchFound){
                     const pastErrors = (respAccr.errors)? respAccr.errors : [];
                     return t.exact(NewNotificationRequestStatusResponse).encode({
