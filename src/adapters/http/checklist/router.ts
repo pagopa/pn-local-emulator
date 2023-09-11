@@ -9,7 +9,7 @@ import { evaluateReport } from '../../../domain/reportengine/reportengine';
 import { report } from '../../../domain/checks/report';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 
-const appVersion = '0.14.8';
+const appVersion = "0.14.9";
 
 const handler =
   (env: SystemEnv): Handler =>

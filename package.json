@@ -1,6 +1,6 @@
 {
   "name": "pn-local-validator",
-  "version": "0.14.8",
+  "version": "0.14.9",
   "description": "A system that emulates some features of Piattaforma Notifiche platform.",
   "main": "dist/main.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
+    "@jest-mock/express": "^2.0.2",
     "@pagopa/ts-commons": "^10.13.0",
     "express": "^4.18.2",
     "fp-ts": "^2.13.1",
