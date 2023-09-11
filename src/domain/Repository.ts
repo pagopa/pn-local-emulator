@@ -14,6 +14,7 @@ import { LegalFactDownloadMetadataRecord } from './LegalFactDownloadMetadataReco
 import { DownloadRecord } from './DownloadRecord';
 import { DeleteStreamRecord } from './DeleteStreamRecord';
 import { GetEventStreamByIdRecord } from './GetEventStreamByIdRecord';
+import { RequestResponseRecord } from './RequestResponseRecord';
 import { UpdateStreamRecord } from './UpdateStreamRecord';
 
 export type AuditRecord = {
@@ -36,6 +37,7 @@ export type Record =
   | DownloadRecord
   | DeleteStreamRecord
   | GetEventStreamByIdRecord
+  | RequestResponseRecord
   | UpdateStreamRecord;
 
 export type RecordRepository = {

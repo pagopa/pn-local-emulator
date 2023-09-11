@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express from 'express';
 import * as t from 'io-ts';
 import * as T from 'fp-ts/Task';
@@ -7,6 +8,8 @@ import { isObject } from '@pagopa/ts-commons/lib/types';
 import * as Problem from './Problem';
 
 export type Handler = (req: express.Request, res: express.Response) => t.Validation<T.Task<express.Response>>;
+
+export type MiddlewareHandler = (req: express.Request, res: express.Response, next: any) => any;
 
 export const toExpressHandler =
   (handler: Handler): express.Handler =>

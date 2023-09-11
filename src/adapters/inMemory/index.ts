@@ -22,7 +22,11 @@ export const makeRecordRepository =
     return {
       insert: (element) => {
         store = [...store, element];
-        logger.debug(`Record item: ${JSON.stringify(element)}`);
+        if (element.type !== 'RequestResponseRecord') {
+          logger.debug(`Record item: ${JSON.stringify(element)}`);
+        } else {
+          logger.debug(`A RequestResponseRecord was recorded. In order to avoid performance issues it is not shown here.`);
+        }
         return TE.of(element);
       },
       list: () => TE.of(store),

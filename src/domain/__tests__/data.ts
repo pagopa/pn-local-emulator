@@ -31,6 +31,7 @@ import { noticeCode } from '../../generated/pnapi/noticeCode';
 import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
+import { RequestResponseRecord } from '../RequestResponseRecord';
 
 export const apiKey = {
   valid: 'key-value',
@@ -96,6 +97,10 @@ export const aRetryAfterMs = 1000;
 export const aNotificationPrice = 100;
 
 export const aNoticeCode: noticeCode = unsafeCoerce('302000100000019421');
+
+export const aCurl = "aCurl";
+
+export const aJson = "aCurl";
 
 export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
@@ -520,3 +525,15 @@ export const getNotificationPriceRecord: GetNotificationPriceRecord = {
   },
   loggedAt: aDate,
 };
+
+// RequestResponseRecord ////////////////////////////////////////////////////
+export const requestResponseRecordWithoutReturned = {
+  type: 'RequestResponseRecord',
+  input: {
+    apiKey: apiKey.valid,
+    requestCurl: aCurl,
+    responseJson: aJson        
+  },
+  output: { statusCode: 200, returned: [] },
+  loggedAt: aDate     
+} as RequestResponseRecord;
