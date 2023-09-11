@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable functional/no-let */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable functional/immutable-data */
+
 import * as http from 'http';
 import express from 'express';
 import { Config } from '../../config';
@@ -19,10 +24,36 @@ import { makeListEventStreamRouter } from './listEventStream/router';
 import { makeGetNotificationPriceRouter } from './getNotificationPrice/router';
 import { makeDeleteEventStreamRouter } from './deleteEventStream/router';
 import { makeGetEventStreamByIdRouter } from './getStreamById/router';
+import { middleware } from './requestsLogger/middleware';
+import { makeListRequestResponseRouter } from './getRequestResponse/router';
+
+export let capturedResponse: string;
+import { makeUpdateEventStreamRouter } from './updateEventStream/router';
 
 export const makeApplication = (env: SystemEnv): express.Application => {
   const app = express();
   app.use(express.json());
+
+  app.use(makeListRequestResponseRouter(env));
+  app.use(function (req, res, next) {
+    const originalSend = res.send;
+    const originalRes = res;
+
+    // Override res.send to capture response content
+    // @ts-ignore
+    res.send = function (...args: any[]) {
+      const responseContent = args[0];
+      capturedResponse = responseContent;
+      // Call the original res.send
+      originalSend.apply(originalRes, args as [any]);
+    };
+
+    res.on('finish', function () {
+      middleware(env)(req, res, next);
+    });
+    next();
+  });
+
   // create all routers and return the application
   app.use(makePreLoadRouter(env));
   app.use(makeUploadToS3Router(env));
@@ -39,7 +70,9 @@ export const makeApplication = (env: SystemEnv): express.Application => {
   app.use(makeGetNotificationPriceRouter(env));
   app.use(makeDownloadDocumentRouter(env));
   app.use(makeDeleteEventStreamRouter(env));
+  app.use(makeUpdateEventStreamRouter(env));
   app.use(makeGetEventStreamByIdRouter(env));
+
   return app;
 };
 
