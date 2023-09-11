@@ -14,6 +14,7 @@ import { LegalFactDownloadMetadataRecord } from './LegalFactDownloadMetadataReco
 import { DownloadRecord } from './DownloadRecord';
 import { DeleteStreamRecord } from './DeleteStreamRecord';
 import { GetEventStreamByIdRecord } from './GetEventStreamByIdRecord';
+import { UpdateStreamRecord } from './UpdateStreamRecord';
 
 export type AuditRecord = {
   loggedAt: Date;
@@ -34,9 +35,15 @@ export type Record =
   | LegalFactDownloadMetadataRecord
   | DownloadRecord
   | DeleteStreamRecord
-  | GetEventStreamByIdRecord;
+  | GetEventStreamByIdRecord
+  | UpdateStreamRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;
   list: () => TE.TaskEither<Error, ReadonlyArray<Record>>;
+  removeStreamRecord: (deleteEventStreamRecord: DeleteStreamRecord) => TE.TaskEither<Error, ReadonlyArray<Record>>;
+  updateStreamRecord: (updateEventStreamRecord: CreateEventStreamRecord) => TE.TaskEither<Error, ReadonlyArray<Record>>;
+  updateStreamRecordReturningOnlyTheOneUpdatedStream: (
+    updateEventStreamRecord: CreateEventStreamRecord
+  ) => TE.TaskEither<Error, Record>;
 };

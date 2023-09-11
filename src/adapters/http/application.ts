@@ -19,6 +19,7 @@ import { makeListEventStreamRouter } from './listEventStream/router';
 import { makeGetNotificationPriceRouter } from './getNotificationPrice/router';
 import { makeDeleteEventStreamRouter } from './deleteEventStream/router';
 import { makeGetEventStreamByIdRouter } from './getStreamById/router';
+import { makeUpdateEventStreamRouter } from './updateEventStream/router';
 
 export const makeApplication = (env: SystemEnv): express.Application => {
   const app = express();
@@ -39,6 +40,7 @@ export const makeApplication = (env: SystemEnv): express.Application => {
   app.use(makeGetNotificationPriceRouter(env));
   app.use(makeDownloadDocumentRouter(env));
   app.use(makeDeleteEventStreamRouter(env));
+  app.use(makeUpdateEventStreamRouter(env));
   app.use(makeGetEventStreamByIdRouter(env));
   return app;
 };

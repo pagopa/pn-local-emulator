@@ -1,6 +1,9 @@
+// DeleteStreamRecord.ts
+
 import { pipe } from 'fp-ts/function';
+import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import { AuditRecord } from './Repository';
+import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { authorizeApiKey } from './authorize';
@@ -18,8 +21,14 @@ export const makeDeleteStreamRecord =
     input,
     output: pipe(
       authorizeApiKey(input.apiKey),
-      E.map(() => ({ statusCode: 204 as const, returned: undefined })),
+      E.map(() => ({
+        statusCode: 204 as const,
+        returned: undefined,
+      })),
       E.toUnion
     ),
     loggedAt: env.dateGenerator(),
   });
+
+export const isDeleteStreamRecord = (record: Record): O.Option<DeleteStreamRecord> =>
+  record.type === 'DeleteStreamRecord' ? O.some(record) : O.none;

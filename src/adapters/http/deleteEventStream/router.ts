@@ -1,11 +1,11 @@
-import { constant, flow, pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import * as Apply from 'fp-ts/Apply';
 import * as E from 'fp-ts/Either';
 import * as t from 'io-ts';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import express from 'express';
-import { persistRecord } from '../../../useCases/PersistRecord';
+import { deleteStreamRecord } from '../../../useCases/PersistRecord';
 import { Handler, toExpressHandler } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeDeleteStreamRecord } from '../../../domain/DeleteStreamRecord';
@@ -19,12 +19,11 @@ const handler =
         apiKey: t.string.decode(req.headers['x-api-key']),
         streamId: t.string.decode(req.params.streamId),
       }),
-      E.map(flow(makeDeleteStreamRecord(env), constant, persistRecord(env))),
-      // Create response
+      E.map(flow(makeDeleteStreamRecord(env), deleteStreamRecord(env))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
+          (_) => T.of(res.status(204).send())
         )
       )
     );
