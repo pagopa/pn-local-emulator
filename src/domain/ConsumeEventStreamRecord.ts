@@ -35,7 +35,7 @@ const makeProgressResponse = (timestamp: Date) =>
     )
   );
 
-const makeProgressResponseElementFromNotification =
+export const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
   (notification: Notification): ReadonlyArray<ProgressResponseElement> =>
     pipe(
@@ -45,7 +45,7 @@ const makeProgressResponseElementFromNotification =
         iun: notification.iun,
         newStatus: notification.notificationStatus,
         timelineEventCategory: category,
-        legalfactIds: legalFactsIds?.map(({ category }) => category),
+        legalFactsIds: legalFactsIds?.map((lf) => lf.key.replaceAll('safestorage://', '')) || [], // Modify the legalFactsIds directly
         recipientIndex: pipe(
           details && 'recIndex' in details ? details.recIndex : undefined,
           NonNegativeInteger.decode,
