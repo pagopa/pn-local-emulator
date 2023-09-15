@@ -11,6 +11,7 @@ import { TimelineElementCategoryEnum } from '../generated/pnapi/TimelineElementC
 import { NotificationStatusHistory } from '../generated/pnapi/NotificationStatusHistory';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { ResponseStatusEnum } from '../generated/pnapi/ResponseStatus';
+import { IUNGeneratorByIndex } from '../adapters/randexp/IUNGenerator';
 import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 
@@ -71,7 +72,7 @@ const makeTimelineListPEC =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: `safestorage://PN_NOTIFICATION_ATTACHMENTS-${env.iunGenerator()}`,
+            key: `safestorage://PN_NOTIFICATION_ATTACHMENTS-${IUNGeneratorByIndex(iun, 1)}`,
             category: LegalFactCategoryEnum.PEC_RECEIPT,
           },
         ],
@@ -91,7 +92,7 @@ const makeTimelineListPEC =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: `safestorage://PN_LEGAL_FACTS-0002-${env.iunGenerator()}`,
+            key: `safestorage://PN_LEGAL_FACTS-0002-${IUNGeneratorByIndex(iun, 2)}`,
             category: LegalFactCategoryEnum.PEC_RECEIPT,
           },
         ],
@@ -110,7 +111,7 @@ const makeTimelineListPEC =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: `safestorage://PN_LEGAL_FACTS-0001-${env.iunGenerator()}`,
+            key: `safestorage://PN_LEGAL_FACTS-0001-${IUNGeneratorByIndex(iun, 3)}`,
             category: LegalFactCategoryEnum.DIGITAL_DELIVERY,
           },
         ],
@@ -144,7 +145,7 @@ const makeTimelineListPEC =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: `safestorage://PN_LEGAL_FACTS-0002-${env.iunGenerator()}`,
+            key: `safestorage://PN_LEGAL_FACTS-0002-${IUNGeneratorByIndex(iun, 4)}`,
             category: LegalFactCategoryEnum.RECIPIENT_ACCESS,
           },
         ],
@@ -164,7 +165,7 @@ export const makeTimelineList =
         timestamp: env.dateGenerator(),
         legalFactsIds: [
           {
-            key: `safestorage://PN_LEGAL_FACTS-0002-${env.iunGenerator()}`,
+            key: `safestorage://PN_LEGAL_FACTS-0002-${IUNGeneratorByIndex(notification.iun, 0)}`,
             category: LegalFactCategoryEnum.SENDER_ACK,
           },
         ],
@@ -173,7 +174,7 @@ export const makeTimelineList =
       ...pipe(notification.recipients, RA.chainWithIndex(makeTimelineListPEC(env)(notification.iun))),
     ];
 
-const makeNotificationStatusHistory =
+export const makeNotificationStatusHistory =
   (env: DomainEnv) =>
   (notificationStatus: NotificationStatusEnum, timeline: ReadonlyArray<TimelineElement>): NotificationStatusHistory =>
     [

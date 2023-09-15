@@ -8,17 +8,16 @@ import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { RequestResponse } from './RequestResponse';
 
-
 export type RequestResponseRecord = AuditRecord & {
-    type: 'RequestResponseRecord';
-    input: { apiKey: string; requestCurl: string; responseJson: string };
-    output: Response<200, RequestResponse> | Response<403, UnauthorizedMessageBody>;
+  type: 'RequestResponseRecord';
+  input: { apiKey: string; requestCurl: string; responseJson: string };
+  output: Response<200, RequestResponse> | Response<403, UnauthorizedMessageBody>;
 };
 
 export const isRequestResponseRecord = (record: Record): O.Option<RequestResponseRecord> =>
   record.type === 'RequestResponseRecord' ? O.some(record) : O.none;
 
-  export const makeRequestResponseRecord =
+export const makeRequestResponseRecord =
   (env: DomainEnv) =>
   (input: RequestResponseRecord['input']) =>
   (records: ReadonlyArray<Record>): RequestResponseRecord => ({
@@ -33,8 +32,8 @@ export const isRequestResponseRecord = (record: Record): O.Option<RequestRespons
           RA.filterMap(isRequestResponseRecord),
           RA.map((record) => ({
             requestCurl: record.input.requestCurl,
-            responseJson: record.input.responseJson
-          })),
+            responseJson: record.input.responseJson,
+          }))
         ),
       })),
       E.toUnion

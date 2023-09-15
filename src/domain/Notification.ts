@@ -20,7 +20,7 @@ import { updateTimeline } from './TimelineElement';
 
 export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
 
-const mkNotification = (env: DomainEnv, notificationRequest: NotificationRequest, iun: IUN) => ({
+export const mkNotification = (env: DomainEnv, notificationRequest: NotificationRequest, iun: IUN) => ({
   notificationRequestId: notificationRequest.notificationRequestId,
   ...makeFullSentNotification(env)(notificationRequest)(iun),
 });
