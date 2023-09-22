@@ -4334,10 +4334,6 @@ export const makeCheckNotificationStatusRecord =
                           if (recordFull2.type === 'UploadToS3Record'){
                             traceWithValue(`${recordFull2}`);
                             const uploadRecord = recordRaw2 as UploadToS3Record;
-                            // URLS
-                            logger.info(url);
-                            logger.info(uploadRecord.input.url);
-                            logger.info(url.includes(uploadRecord.input.url));
 
                             // Version Tokens
                             const uploadVersionToken = uploadRecord.output.returned.toString();
