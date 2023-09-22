@@ -4331,9 +4331,12 @@ export const makeCheckNotificationStatusRecord =
                             // Version Tokens
                             const uploadVersionToken = uploadRecord.output.returned.toString();
                             // eslint-disable-next-line sonarjs/prefer-single-boolean-return
-                            return (
-                              url.includes(uploadRecord.input.url) && docResp.ref.versionToken === uploadVersionToken
-                            );
+                            if (
+                              url.includes(uploadRecord.input.url) &&
+                              docResp.ref.versionToken === uploadVersionToken
+                            ) {
+                              return true;
+                            }
                           }
                           return hasToken;
                         })(records);
