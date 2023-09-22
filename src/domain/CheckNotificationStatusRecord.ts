@@ -4310,7 +4310,6 @@ export const makeCheckNotificationStatusRecord =
                 const docResp = docRespRaw as NotificationDocument;
 
                 const key = docResp.ref.key;
-                logger.info(docResp.ref.versionToken);
 
                 // Scroll throw the records saved in memory
                 const matchFound = RA.reduce(false, (corresponds, recordRaw) => {
@@ -4319,13 +4318,10 @@ export const makeCheckNotificationStatusRecord =
                   //  Scroll throw the documents of a record in memory to get the URL
                   if (recordFull.type === 'PreLoadRecord'){
                     const preloadRecords = recordFull.output.returned as PreLoadResponse[];
-                    logger.info(preloadRecords);
 
                     const hasTokenOnePreload = RA.reduce(false, (hasTokenOnePreload, preloadRecordRaw) => {
                       const preloadRecord = preloadRecordRaw as PreLoadResponse;
                       const preloadKey: string = preloadRecord.key as string;
-                      logger.info(key);
-                      logger.info(preloadKey);
                       if(preloadRecord.url && key === preloadKey){
                         const url = preloadRecord.url;
 
@@ -4345,11 +4341,11 @@ export const makeCheckNotificationStatusRecord =
 
                             // Version Tokens
                             const uploadVersionToken = uploadRecord.output.returned.toString();
-                            logger.info(`x-amz-version-id         ${docResp.ref.versionToken}`);
-                            logger.info(`Notifica version token:  ${uploadVersionToken}`);
-                            if(url.includes(uploadRecord.input.url) && docResp.ref.versionToken === uploadVersionToken){
-                              logger.info("FOUND !!!!!!!!!!!!!!!!!!");
+                            // eslint-disable-next-line sonarjs/prefer-single-boolean-return
+                            if(url.includes(uploadRecord.input.url) && docResp.ref.versionToken === uploadVersionToken) {
                               return true;
+                            } else {
+                              return false;
                             }
                           }
                           return hasToken;
