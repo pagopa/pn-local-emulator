@@ -15,12 +15,6 @@ import { Response, UnauthorizedMessageBody } from './types';
 import { computeSnapshot } from './Snapshot';
 import { UploadToS3Record } from './UploadToS3Record';
 
-const logger = new Logger();
-
-// const VALID_CAPS2 = {
-//   "00010": true,
-// };
-
 const VALID_CAPS = {
   '00010': true,
   '00012': true,
