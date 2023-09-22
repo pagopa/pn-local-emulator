@@ -4,7 +4,6 @@ import * as t from 'io-ts';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { Logger } from 'tslog';
 import { NewNotificationRequestStatusResponse } from '../generated/pnapi/NewNotificationRequestStatusResponse';
 import { SystemEnv } from '../useCases/SystemEnv';
 import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
