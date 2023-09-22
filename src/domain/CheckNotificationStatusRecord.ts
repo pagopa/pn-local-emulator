@@ -4,7 +4,6 @@ import * as t from 'io-ts';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { Logger } from 'tslog';
 import { NewNotificationRequestStatusResponse } from '../generated/pnapi/NewNotificationRequestStatusResponse';
 import { SystemEnv } from '../useCases/SystemEnv';
 import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
@@ -14,12 +13,6 @@ import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { computeSnapshot } from './Snapshot';
 import { UploadToS3Record } from './UploadToS3Record';
-
-const logger = new Logger();
-
-// const VALID_CAPS2 = {
-//   "00010": true,
-// };
 
 const VALID_CAPS = {
   '00010': true,
@@ -4310,58 +4303,47 @@ export const makeCheckNotificationStatusRecord =
                 const docResp = docRespRaw as NotificationDocument;
 
                 const key = docResp.ref.key;
-                logger.info(docResp.ref.versionToken);
 
                 // Scroll throw the records saved in memory
                 const matchFound = RA.reduce(false, (corresponds, recordRaw) => {
                   const recordFull = recordRaw as Record;
 
                   //  Scroll throw the documents of a record in memory to get the URL
-                  if (recordFull.type === 'PreLoadRecord'){
+                  if (recordFull.type === 'PreLoadRecord') {
                     const preloadRecords = recordFull.output.returned as PreLoadResponse[];
-                    logger.info(preloadRecords);
 
                     const hasTokenOnePreload = RA.reduce(false, (hasTokenOnePreload, preloadRecordRaw) => {
                       const preloadRecord = preloadRecordRaw as PreLoadResponse;
                       const preloadKey: string = preloadRecord.key as string;
-                      logger.info(key);
-                      logger.info(preloadKey);
-                      if(preloadRecord.url && key === preloadKey){
+                      if (preloadRecord.url && key === preloadKey) {
                         const url = preloadRecord.url;
 
                         // Scroll uploaded records
                         traceWithValue(`Url uploaded ${url}`);
-                        const hasEqualVersionToken =  RA.reduce(false, (hasToken, recordRaw2) => {
+                        const hasEqualVersionToken = RA.reduce(false, (hasToken, recordRaw2) => {
                           const recordFull2 = recordRaw2 as Record;
 
                           // Check if the URL mach
-                          if (recordFull2.type === 'UploadToS3Record'){
+                          if (recordFull2.type === 'UploadToS3Record') {
                             traceWithValue(`${recordFull2}`);
                             const uploadRecord = recordRaw2 as UploadToS3Record;
-                            // URLS
-                            logger.info(url);
-                            logger.info(uploadRecord.input.url);
-                            logger.info(url.includes(uploadRecord.input.url));
 
                             // Version Tokens
                             const uploadVersionToken = uploadRecord.output.returned.toString();
-                            logger.info(`x-amz-version-id         ${docResp.ref.versionToken}`);
-                            logger.info(`Notifica version token:  ${uploadVersionToken}`);
-                            if(url.includes(uploadRecord.input.url) && docResp.ref.versionToken === uploadVersionToken){
-                              logger.info("FOUND !!!!!!!!!!!!!!!!!!");
-                              return true;
-                            }
+                            // eslint-disable-next-line sonarjs/prefer-single-boolean-return
+                            return (
+                              url.includes(uploadRecord.input.url) && docResp.ref.versionToken === uploadVersionToken
+                            );
                           }
                           return hasToken;
                         })(records);
-  
+
                         return hasTokenOnePreload || hasEqualVersionToken;
-  
                       }
-                      
+
                       return hasTokenOnePreload;
                     })(preloadRecords);
-                    
+
                     return corresponds || hasTokenOnePreload;
                   }
                   return corresponds;
