@@ -14,9 +14,6 @@ module.exports = {
   "modulePathIgnorePatterns": [
     "./__tests__/data.ts"
   ],
-  "collectCoverageFrom": [
-    "**/src/**/*.ts"
-  ],
   "coveragePathIgnorePatterns": [
     "<rootDir>/src/generated/",
   ],
