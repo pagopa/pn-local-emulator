@@ -15,7 +15,7 @@ const hasCalledDownloadEndpointForLegalFactC = pipe(
   R.map(({ downloadRecordList, legalFactDownloadMetadataRecordList }) =>
     pipe(
       legalFactDownloadMetadataRecordList,
-      RA.every(DownloadRecordChecks.metadataRecordMatchesDownloadRecordC(downloadRecordList))
+      RA.some(DownloadRecordChecks.metadataRecordMatchesDownloadRecordC(downloadRecordList))
     )
   )
 );
