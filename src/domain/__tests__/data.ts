@@ -98,9 +98,9 @@ export const aNotificationPrice = 100;
 
 export const aNoticeCode: noticeCode = unsafeCoerce('302000100000019421');
 
-export const aCurl = "aCurl";
+export const aCurl = 'aCurl';
 
-export const aJson = "aCurl";
+export const aJson = 'aCurl';
 
 export const makeTestSystemEnv = (
   createNotificationRequestRecords: ReadonlyArray<NewNotificationRecord> = [],
@@ -526,14 +526,28 @@ export const getNotificationPriceRecord: GetNotificationPriceRecord = {
   loggedAt: aDate,
 };
 
+// UploadToS3Record ////////////////////////////////////////////////
+export const getUploadToS3Record: UploadToS3Record = {
+  type: 'UploadToS3Record',
+  input: {
+    url: aUrl,
+    key: 'test',
+    checksumAlg: undefined,
+    secret: 'test',
+    checksum: 'test',
+    computedSha256: 'test',
+  },
+  output: { statusCode: 200, returned: 0 },
+  loggedAt: aDate,
+};
 // RequestResponseRecord ////////////////////////////////////////////////////
 export const requestResponseRecordWithoutReturned = {
   type: 'RequestResponseRecord',
   input: {
     apiKey: apiKey.valid,
     requestCurl: aCurl,
-    responseJson: aJson        
+    responseJson: aJson,
   },
   output: { statusCode: 200, returned: [] },
-  loggedAt: aDate     
+  loggedAt: aDate,
 } as RequestResponseRecord;

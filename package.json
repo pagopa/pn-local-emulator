@@ -16,7 +16,7 @@
     "prettify": "prettier --write \"./**/*.ts\"",
     "start": "npm run compile && node -r dotenv/config dist/main.js dotenv_config_path=.env.default",
     "test": "DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i",
-    "test_windows": "cross-env DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i --coverage",
+    "testWindows": "cross-env DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i --coverage",
     "prepare": "husky install"
   },
   "keywords": [],
