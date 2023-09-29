@@ -17,7 +17,7 @@ import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeUploadToS3Record } from '../../../domain/UploadToS3Record';
 import { persistRecord } from '../../../useCases/PersistRecord';
 
-const computeSha256 = (bytes: Buffer) => crypto.createHash('sha256').update(bytes).digest('base64');
+export const computeSha256 = (bytes: Buffer) => crypto.createHash('sha256').update(bytes).digest('base64');
 
 const handler =
   (env: SystemEnv): Handler =>

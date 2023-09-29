@@ -1,6 +1,6 @@
 {
   "name": "pn-local-validator",
-  "version": "0.14.11",
+  "version": "2.0.0",
   "description": "A system that emulates some features of Piattaforma Notifiche platform.",
   "main": "dist/main.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "prettify": "prettier --write \"./**/*.ts\"",
     "start": "npm run compile && node -r dotenv/config dist/main.js dotenv_config_path=.env.default",
     "test": "DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i",
-    "test_windows": "cross-env DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i --coverage",
+    "testWindows": "cross-env DOTENV_CONFIG_PATH=./.env.default jest --setupFiles dotenv/config -i --coverage",
     "prepare": "husky install"
   },
   "keywords": [],

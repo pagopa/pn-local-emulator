@@ -1,13 +1,13 @@
 import express from 'express';
 import supertest from 'supertest';
-import { makeChecklistRouter } from '../router';
+import { makeCreateEventStreamRouter } from '../router';
 import { SystemEnv } from '../../../../useCases/SystemEnv';
 import { makeTestSystemEnv } from '../../../../domain/__tests__/data';
 
 const mockEnv: SystemEnv = makeTestSystemEnv();
 
-jest.mock('../../../../../src/domain/CheckNotificationStatusRecord', () => ({
-  makeCheckNotificationStatusRecord: jest.fn(() => (mockEnv: SystemEnv) => {
+jest.mock('../../../../../src/domain/CreateEventStreamRecord', () => ({
+  makeCreateEventStreamRecord: jest.fn(() => (mockEnv: SystemEnv) => {
     return {
       output: {
         statusCode: 200,
@@ -21,17 +21,17 @@ jest.mock('../../../../../src/useCases/PersistRecord', () => ({
   persistRecord: jest.fn(),
 }));
 
-describe('Checklist Result Router', () => {
+describe('Create Event Stream Router', () => {
   const app = express();
   app.use(express.json());
-  const router = makeChecklistRouter(mockEnv);
+  const router = makeCreateEventStreamRouter(mockEnv);
   app.use('/api', router);
 
-  it('should return a 200 response with some data', async () => {
-    const response = await supertest(app).get('/api/checklistresult').query({
-      notificationRequestId: '123',
-    });
+  it('should return a 400 response with some data', async () => {
+    const response = await supertest(app)
+      .post('/api/delivery-progresses/streams')
+      .send({});
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(400);
   });
 });
