@@ -13,8 +13,6 @@ import { AuditRecord, Record } from './Repository';
 import { computeSnapshot } from './Snapshot';
 import { notFoundResponse, Response, UnauthorizedMessageBody } from './types';
 import { makePnDownloadDocumentURL } from './PnDownloadDocumentURL';
-import { LegalFactsId } from '../generated/pnapi/LegalFactsId';
-import { makeLogger } from '../logger';
 
 export type LegalFactDownloadMetadataRecord = AuditRecord & {
   type: 'LegalFactDownloadMetadataRecord';
@@ -34,8 +32,6 @@ export const makeLegalFactDownloadMetadataResponse = (env: DomainEnv): LegalFact
   url: makePnDownloadDocumentURL(env),
 });
 
-const log = makeLogger();
-
 export const makeLegalFactDownloadMetadataRecord =
   (env: DomainEnv) =>
   (input: LegalFactDownloadMetadataRecord['input']) =>
@@ -49,19 +45,19 @@ export const makeLegalFactDownloadMetadataRecord =
         pipe(
           computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
-          RA.findLast((notification) => notification.iun === input.iun &&
-          notification.timeline.some((timelineElement: any) => {
-            log.info(`Comparing timelineElement: ${timelineElement}. Arr: ${timelineElement.legalFactsIds}`);
-            if (timelineElement.legalFactsIds) {
-              
-              return timelineElement.legalFactsIds.some((legalFact: any) => {
-                const legalFactKeyWithoutPrefix = legalFact.key.replace('safestorage://', '');
-                log.info(`Comparing legalFact: ${legalFactKeyWithoutPrefix} with: ${input.legalFactId}`);
-                return legalFactKeyWithoutPrefix === input.legalFactId;
-            });
-            }
-            return false;
-          })),
+          RA.findLast(
+            (notification) =>
+              notification.iun === input.iun &&
+              notification.timeline.some((timelineElement: any) => {
+                if (timelineElement.legalFactsIds) {
+                  return timelineElement.legalFactsIds.some((legalFact: any) => {
+                    const legalFactKeyWithoutPrefix = legalFact.key.replace('safestorage://', '');
+                    return legalFactKeyWithoutPrefix === input.legalFactId;
+                  });
+                }
+                return false;
+              })
+          ),
           O.map((_) => ({ statusCode: 200 as const, returned: makeLegalFactDownloadMetadataResponse(env) })),
           O.getOrElseW(() => notFoundResponse('PN_DELIVERY_FILEINFONOTFOUND'))
         )
