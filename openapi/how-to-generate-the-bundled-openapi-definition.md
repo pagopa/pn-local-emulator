@@ -35,5 +35,5 @@ cd openapi
 curl https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.35/swagger-codegen-cli-3.0.35.jar -O
 
 # 2.
-java -jar swagger-codegen-cli-3.0.35.jar generate -l openapi-yaml -i https://raw.githubusercontent.com/pagopa/pn-delivery/main/docs/openapi/api-external-b2b-pa-bundle.yaml -o . -DoutputFile=bundled-api-external-b2b-pa-v2.yaml
+java -jar swagger-codegen-cli-3.0.35.jar generate -l openapi-yaml -i https://raw.githubusercontent.com/pagopa/pn-delivery/develop/docs/openapi/api-external-b2b-pa-bundle.yaml -o . -DoutputFile=bundled-api-external-b2b-pa-v2-1.yaml
 ```
