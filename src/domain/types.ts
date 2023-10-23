@@ -10,12 +10,12 @@ export type UnauthorizedMessageBody = {
 };
 
 export type HttpErrorMessageBody = {
-  status: number,
-  title: string,
-  errors: never[],
-  detail: string,
-  timestamp: Date,
-  traceId: string
+  status: number;
+  title: string;
+  errors: never[];
+  detail: string;
+  timestamp: Date;
+  traceId: string;
 };
 
 export type Response<A extends StatusCode, B = void> = {
