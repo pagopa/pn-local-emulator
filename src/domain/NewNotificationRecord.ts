@@ -1,13 +1,11 @@
-import { flow, identity, pipe } from 'fp-ts/lib/function';
+import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { NewNotificationRequest } from '../generated/pnapi/NewNotificationRequest';
 import { NewNotificationResponse } from '../generated/pnapi/NewNotificationResponse';
 import { DomainEnv } from './DomainEnv';
 import { Record, AuditRecord } from './Repository';
-import { HttpErrorMessageBody, Response, UnauthorizedMessageBody } from './types';
-import { Problem } from '../generated/pnapi/Problem';
-import { ProblemError } from '../generated/pnapi/ProblemError';
+import { HttpErrorMessageBody, Response } from './types';
 
 export type NewNotificationRecord = AuditRecord & {
   type: 'NewNotificationRecord';
@@ -74,22 +72,18 @@ export const makeNewNotificationRecord =
 
   const authorizeApiKey = (apiKey: string): boolean => apiKey === 'key-value';
 
-  const generateErrorResponse = (httpStatusCode: number, httpTitle: string, httpMessage: string) : HttpErrorMessageBody => { 
-    return {
-      status: httpStatusCode,
-      title: httpTitle,
-      errors: [],
-      detail: httpMessage,
-      timestamp: new Date(),
-      traceId:
-        'Self=1-631b10db-2c591f3f79954187229939e5;Root=1-631b11db-39caf6636f4ed15618461d95;Parent=6e2ef00e703981ac;Sampled=1',
-    }
-  };
-
-  const generateSuccessfulResponse = (env: DomainEnv, input: NewNotificationRecord['input']) => {
-    return {
+  const generateErrorResponse = (httpStatusCode: number, httpTitle: string, httpMessage: string): HttpErrorMessageBody => ({
+    status: httpStatusCode,
+    title: httpTitle,
+    errors: [],
+    detail: httpMessage,
+    timestamp: new Date(),
+    traceId:
+      'Self=1-631b10db-2c591f3f79954187229939e5;Root=1-631b11db-39caf6636f4ed15618461d95;Parent=6e2ef00e703981ac;Sampled=1',
+  });
+  
+  const generateSuccessfulResponse = (env: DomainEnv, input: NewNotificationRecord['input']) => ({
       idempotenceToken: input.body.idempotenceToken,
       paProtocolNumber: input.body.paProtocolNumber,
       notificationRequestId: env.iunGenerator(),
-    };
-  };
+  });
