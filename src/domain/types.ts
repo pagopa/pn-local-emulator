@@ -2,11 +2,20 @@ import { unsafeCoerce } from 'fp-ts/lib/function';
 import { Problem } from '../generated/pnapi/Problem';
 import { ProblemError } from '../generated/pnapi/ProblemError';
 
-export type StatusCode = 200 | 202 | 204 | 403 | 404 | 419 | 500;
+export type StatusCode = 200 | 202 | 204 | 400 | 403 | 404 | 419 | 500;
 
 // TODO: This should be generated from the OpenAPI spec
 export type UnauthorizedMessageBody = {
   message: string;
+};
+
+export type HttpErrorMessageBody = {
+  status: number,
+  title: string,
+  errors: never[],
+  detail: string,
+  timestamp: Date,
+  traceId: string
 };
 
 export type Response<A extends StatusCode, B = void> = {
