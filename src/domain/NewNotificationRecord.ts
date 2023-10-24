@@ -1,12 +1,11 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import { NewNotificationRequest } from '../generated/pnapi/NewNotificationRequest';
 import { NewNotificationResponse } from '../generated/pnapi/NewNotificationResponse';
+import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
 import { DomainEnv } from './DomainEnv';
 import { Record, AuditRecord } from './Repository';
 import { HttpErrorMessageBody, Response } from './types';
-import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
 
 export type NewNotificationRecord = AuditRecord & {
   type: 'NewNotificationRecord';
