@@ -5,7 +5,7 @@ import * as data from '../../__tests__/data';
 const ex2 = [data.preLoadRecord, data.preLoadRecord, data.uploadToS3Record, data.uploadToS3Record];
 const ex3 = [...ex2, data.newNotificationRecord];
 const ex4 = [...ex2, data.mkNewNotificationRecord([data.aDocument0], [data.aRecipient])];
-const ex5 = [...ex2, data.mkNewNotificationRecord([data.aDocument0], [{ ...data.aRecipient, payment: undefined }])];
+const ex5 = [...ex2, data.mkNewNotificationRecord([data.aDocument0], [{ ...data.aRecipient, payments: undefined }])];
 const ex6 = [
   ...ex2,
   data.mkNewNotificationRecord(
@@ -13,8 +13,8 @@ const ex6 = [
     [
       {
         ...data.aRecipient,
-        payment: data.aRecipient.payment
-          ? { ...data.aRecipient.payment, creditorTaxId: data.newNotificationRecord.input.body.senderTaxId }
+        payments: data.aRecipient.payments
+          ? { ...data.aRecipient.payments }
           : undefined,
       },
     ]

@@ -145,17 +145,13 @@ export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0]
     zip: '',
     municipality: '',
   },
-  payment: {
-    creditorTaxId: unsafeCoerce('77777777777'),
-    noticeCode: aNoticeCode,
-    pagoPaForm: {
-      digests: {
-        sha256: aSha256,
-      },
-      contentType: 'application/pdf',
-      ref: anAttachmentRef,
-    },
-  },
+  payments: [{
+    pagoPa: {
+      noticeCode: aNoticeCode,
+      creditorTaxId: unsafeCoerce('77777777777'),
+      applyCost: true
+    }
+  }],
 };
 
 export const aSecret = 'a-secret';

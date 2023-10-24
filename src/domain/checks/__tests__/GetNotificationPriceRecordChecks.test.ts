@@ -12,8 +12,8 @@ const ex3 = [
     [
       {
         ...data.aRecipient,
-        payment: data.aRecipient.payment
-          ? { ...data.aRecipient.payment, creditorTaxId: data.newNotificationRecord.input.body.senderTaxId }
+        payments: data.aRecipient.payments
+          ? { ...data.aRecipient.payments }
           : undefined,
       },
     ]
