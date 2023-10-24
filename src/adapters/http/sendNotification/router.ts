@@ -33,7 +33,7 @@ const handler =
 export const makeSendNotificationRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.post('/delivery/requests', toExpressHandler(handler(env)));
+  router.post('/delivery/v2.1/requests', toExpressHandler(handler(env)));
 
   return router;
 };

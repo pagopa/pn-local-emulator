@@ -6,10 +6,11 @@ import { NewNotificationResponse } from '../generated/pnapi/NewNotificationRespo
 import { DomainEnv } from './DomainEnv';
 import { Record, AuditRecord } from './Repository';
 import { HttpErrorMessageBody, Response } from './types';
+import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
 
 export type NewNotificationRecord = AuditRecord & {
   type: 'NewNotificationRecord';
-  input: { apiKey: string; body: NewNotificationRequest };
+  input: { apiKey: string; body: NewNotificationRequestV21 };
   output: Response<202, NewNotificationResponse> | Response<403, HttpErrorMessageBody> | Response<400, HttpErrorMessageBody>;
 };
 
@@ -37,14 +38,22 @@ export const makeNewNotificationRecord =
       input.body.notificationFeePolicy === 'FLAT_RATE',
       isFlatRate => {
         if (isFlatRate) {
-          return input.body.recipients.some(recipient => recipient.applyCost)
+          return input.body.recipients.some(
+              singleRecipient => singleRecipient.payments?.some(singlePayment => singlePayment.f24?.applyCost)
+            ) && input.body.recipients.some(
+              singleRecipient => singleRecipient.payments?.some(singlePayment => singlePayment.pagoPa?.applyCost)
+            )
             ? E.left({
                 statusCode: 400,
                 returned: generateErrorResponse(400, "Bad Request", "Invalid request: FLAT_RATE notification cannot have recipients with applyCost set to true"),
               })
             : E.right(generateSuccessfulResponse(env, input));
         } else if (input.body.notificationFeePolicy === 'DELIVERY_MODE') {
-          return input.body.recipients.every(recipient => recipient.applyCost === false)
+          return input.body.recipients.some(
+            singleRecipient => singleRecipient.payments?.every(singlePayment => singlePayment.f24?.applyCost === false)
+          ) && input.body.recipients.some(
+            singleRecipient => singleRecipient.payments?.every(singlePayment => singlePayment.pagoPa?.applyCost === false)
+          )
             ? E.left({
                 statusCode: 400,
                 returned: generateErrorResponse(400, "Bad Request", "Invalid request: DELIVERY_MODE notification have no recipients with applyCost set to true"),

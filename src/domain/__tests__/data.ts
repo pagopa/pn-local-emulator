@@ -136,7 +136,6 @@ export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0]
   recipientType: RecipientTypeEnum.PF,
   denomination: unsafeCoerce('denomination'),
   taxId: unsafeCoerce('aTaxId'),
-  applyCost: false || true,
   digitalDomicile: {
     type: TypeEnum.PEC,
     address: 'hello@thisismypec.pec',
