@@ -6,8 +6,8 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { isNewNotificationRecord } from '../NewNotificationRecord';
 import { isUploadToS3Record } from '../UploadToS3Record';
 import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
-import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
 import { NotificationPayments } from '../../generated/pnapi/NotificationPayments';
+import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
 
 // TODO: This check is replicated on almost each record type, we can
 // improve it and create just one check
