@@ -26,13 +26,13 @@ export const atLeastOneGetNotificationPriceRecordMatchingPreviousNotificationReq
               RA.exists(
                 ({ input: { paTaxId, noticeCode }, output }) =>
                   // Check if there is at least one payment that matches the criteria
-                  (payments as NotificationPayments).some((payment) => {
-                    return t.boolean.is(payment.pagoPa?.creditorTaxId) &&
-                      payment.pagoPa?.creditorTaxId === paTaxId &&
-                      payment.pagoPa?.creditorTaxId === record.input.body.senderTaxId &&
-                      payment.pagoPa.noticeCode === noticeCode &&
-                      output.statusCode === 200;
-                  })
+                  (payments as NotificationPayments).some((payment) =>
+                    t.boolean.is(payment.pagoPa?.creditorTaxId) &&
+                    payment.pagoPa?.creditorTaxId === paTaxId &&
+                    payment.pagoPa?.creditorTaxId === record.input.body.senderTaxId &&
+                    payment.pagoPa.noticeCode === noticeCode &&
+                    output.statusCode === 200
+                  )
               )
             )
           )
