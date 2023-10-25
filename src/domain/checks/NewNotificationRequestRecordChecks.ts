@@ -97,7 +97,7 @@ export const atLeastOneValidPagoPaFormC = pipe(
   R.Do,
   R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
   R.apS('newNotificationRecordList', RA.filterMap(isNewNotificationRecord)),
-  R.map(({ uploadToS3RecordList, newNotificationRecordList }) =>
+  R.map(({ newNotificationRecordList }) =>
     pipe(
       newNotificationRecordList,
       RA.exists((record) =>
