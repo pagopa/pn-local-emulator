@@ -32,7 +32,6 @@ import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineEleme
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 import { RequestResponseRecord } from '../RequestResponseRecord';
-import { paTaxId } from '../../generated/pnapi/paTaxId';
 
 export const apiKey = {
   valid: 'key-value',
