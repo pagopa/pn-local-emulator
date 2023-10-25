@@ -105,8 +105,14 @@ export const atLeastOneValidPagoPaFormC = pipe(
           record.input.body.recipients,
           RA.every((recipient) =>
             pipe(
-              O.fromNullable(recipient.payment?.pagoPaForm),
-              O.exists(matchAtLeastOneUploadToS3Record(uploadToS3RecordList))
+              recipient.payments as NotificationPayments,
+              RA.exists((payment) =>
+                pipe(
+                  payment?.pagoPa?.attachment || payment.f24?.metadataAttachment,
+                  O.fromNullable,
+                  O.isSome
+                )
+              )
             )
           )
         )
@@ -114,6 +120,7 @@ export const atLeastOneValidPagoPaFormC = pipe(
     )
   )
 );
+
 
 export const atLeastOneRequestWithValidDocumentsC = pipe(
   R.Do,

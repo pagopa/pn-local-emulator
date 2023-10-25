@@ -32,6 +32,7 @@ import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineEleme
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 import { RequestResponseRecord } from '../RequestResponseRecord';
+import { paTaxId } from '../../generated/pnapi/paTaxId';
 
 export const apiKey = {
   valid: 'key-value',
@@ -149,7 +150,32 @@ export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0]
     pagoPa: {
       noticeCode: aNoticeCode,
       creditorTaxId: unsafeCoerce('77777777777'),
-      applyCost: true
+      applyCost: false,
+      attachment: {
+        digests: {
+          sha256: "WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg="
+        },
+        contentType: "application/pdf",
+        ref: {
+          key: "ac458KYk-NtPFPBiT4Rs0bzPhL9LmScPb8iBj44CsLkY6uoliy6.zzw.4o0cs176Wleuz7NG6p",
+          versionToken: "Zaz;h.P0\"VTAHO)s5;\\^]@!8o<dy5)-?7WR_bV8Bz.IJ6-;y[Av5r(XijBydr7M#g6`B,Q<wT\\zv#l/`.{C[vkW\\h=-"
+        }
+      }
+    },
+    f24: {
+      title: "Titolo",
+      applyCost: false,
+      metadataAttachment: {
+        digests: {
+          sha256: "WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg="
+        },
+        contentType: "application/pdf",
+        ref: {
+          key: "ac458KYk-NtPFPBiT4Rs0bzPhL9LmScPb8iBj44CsLkY6uoliy6.zzw.4o0cs176Wleuz7NG6p",
+          versionToken: "Zaz;h.P0\"VTAHO)s5;\\^]@!8o<dy5)-?7WR_bV8Bz.IJ6-;y[Av5r(XijBydr7M#g6`B,Q<wT\\zv#l/`.{C[vkW\\h=-"
+        }
+
+      }
     }
   }],
 };

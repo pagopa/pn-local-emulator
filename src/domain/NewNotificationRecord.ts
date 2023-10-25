@@ -38,9 +38,9 @@ export const makeNewNotificationRecord =
       isFlatRate => {
         if (isFlatRate) {
           return input.body.recipients.some(
-              singleRecipient => singleRecipient.payments?.some(singlePayment => singlePayment.f24?.applyCost)
-            ) && input.body.recipients.some(
-              singleRecipient => singleRecipient.payments?.some(singlePayment => singlePayment.pagoPa?.applyCost)
+              singleRecipient => singleRecipient.payments?.some(singlePayment => singlePayment.f24?.applyCost === true)
+            ) || input.body.recipients.some(
+              singleRecipient => singleRecipient.payments?.some(singlePayment => singlePayment.pagoPa?.applyCost === true)
             )
             ? E.left({
                 statusCode: 400,
