@@ -18,6 +18,8 @@ export type GetNotificationPriceRecord = AuditRecord & {
 export const isGetNotificationPrice = (record: Record) =>
   record.type === 'GetNotificationPriceRecord' ? O.some(record) : O.none;
 
+
+  // TODO
 const findNotification = (request: GetNotificationPriceRecord['input'], snapshot: Snapshot) =>
   pipe(
     snapshot,
