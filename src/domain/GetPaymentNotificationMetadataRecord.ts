@@ -5,15 +5,14 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
 import { NotificationAttachmentDownloadMetadataResponse } from '../generated/pnapi/NotificationAttachmentDownloadMetadataResponse';
 import { NotificationPaymentAttachment } from '../generated/pnapi/NotificationPaymentAttachment';
-import { NotificationPaymentInfo } from '../generated/pnapi/NotificationPaymentInfo';
 import { Problem } from '../generated/pnapi/Problem';
+import { NotificationPaymentItem } from '../generated/pnapi/NotificationPaymentItem';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { computeSnapshot } from './Snapshot';
 import { notFoundResponse, Response, UnauthorizedMessageBody } from './types';
 import { makeNotificationAttachmentDownloadMetadataResponse } from './NotificationAttachmentDownloadMetadataResponse';
-import { NotificationPaymentItem } from '../generated/pnapi/NotificationPaymentItem';
 
 export type GetPaymentNotificationMetadataRecord = AuditRecord & {
   type: 'GetPaymentNotificationMetadataRecord';
