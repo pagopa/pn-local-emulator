@@ -4,7 +4,6 @@ import * as t from 'io-ts';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NewNotificationRequestStatusResponse } from '../generated/pnapi/NewNotificationRequestStatusResponse';
 import { SystemEnv } from '../useCases/SystemEnv';
 import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 import { PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
@@ -13,6 +12,10 @@ import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { computeSnapshot } from './Snapshot';
 import { UploadToS3Record } from './UploadToS3Record';
+import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
+import { Notification } from '../../src/domain/Notification';
+import { NewNotificationRequestStatusResponseV21 } from '../generated/pnapi/NewNotificationRequestStatusResponseV21';
+import { NewNotificationRequestStatusResponse } from '../generated/pnapi/NewNotificationRequestStatusResponse';
 
 const VALID_CAPS = {
   '00010': true,
@@ -4232,8 +4235,8 @@ export type CheckNotificationStatusRecord = AuditRecord & {
     body: { paProtocolNumber: string; idempotenceToken?: string } | { notificationRequestId: string };
   };
   output:
-    | Response<200, NewNotificationRequestStatusResponse>
-    | Response<500, NewNotificationRequestStatusResponse>
+    | Response<200, NewNotificationRequestStatusResponseV21>
+    | Response<500, NewNotificationRequestStatusResponseV21>
     | Response<403, UnauthorizedMessageBody>
     | Response<404>;
 };
@@ -4257,7 +4260,7 @@ export const makeCheckNotificationStatusRecord =
           RA.findFirst(
             flow(E.toUnion, (notificationRequest) =>
               'notificationRequestId' in input.body
-                ? notificationRequest.notificationRequestId === input.body.notificationRequestId
+                ? (notificationRequest as Notification).notificationRequestId === input.body.notificationRequestId
                 : notificationRequest.paProtocolNumber === input.body.paProtocolNumber &&
                   notificationRequest.idempotenceToken === input.body.idempotenceToken
             )
@@ -4267,7 +4270,7 @@ export const makeCheckNotificationStatusRecord =
             E.fold(
               (nr) => ({ ...nr, notificationRequestStatus: 'WAITING' }),
               (n) =>
-                t.exact(NewNotificationRequestStatusResponse).encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
+                t.exact(NewNotificationRequestStatusResponseV21).encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
             )
           ),
           trace(`List: ${env.recordRepository.list()}`),
@@ -4275,11 +4278,11 @@ export const makeCheckNotificationStatusRecord =
             pipe(
               response.recipients,
               RA.reduce(response, function (res, invalidRec) {
-                const newRes = t.exact(NewNotificationRequestStatusResponse).encode(res);
+                const newRes = t.exact(NewNotificationRequestStatusResponseV21).encode(res as NewNotificationRequestStatusResponseV21);
                 const pastErrors = newRes.errors ? newRes.errors : [];
                 if (!VALID_CAPS[invalidRec.physicalAddress.zip as keyof typeof VALID_CAPS]) {
-                  return t.exact(NewNotificationRequestStatusResponse).encode({
-                    ...res,
+                  return t.exact(NewNotificationRequestStatusResponseV21).encode({
+                    ...res as NewNotificationRequestStatusResponseV21,
                     notificationRequestStatus: 'REFUSED',
                     errors: [
                       ...pastErrors,
@@ -4299,7 +4302,7 @@ export const makeCheckNotificationStatusRecord =
               response.documents,
               // Scroll throw the documents of the responce
               RA.reduce(response, (respAccrRaw, docRespRaw) => {
-                const respAccr = t.exact(NewNotificationRequestStatusResponse).encode(respAccrRaw);
+                const respAccr = t.exact(NewNotificationRequestStatusResponseV21).encode(respAccrRaw as NewNotificationRequestStatusResponseV21);
                 const docResp = docRespRaw as NotificationDocument;
 
                 const key = docResp.ref.key;
@@ -4376,11 +4379,11 @@ export const makeCheckNotificationStatusRecord =
             response.notificationRequestStatus === 'REFUSED'
               ? {
                   statusCode: 500 as const,
-                  returned: { ...response, retryAfter: env.retryAfterMs / 1000 },
+                  returned: { ...response, retryAfter: env.retryAfterMs / 1000, notificationRequestId: (input.body as { notificationRequestId: string }).notificationRequestId },
                 }
               : {
                   statusCode: 200 as const,
-                  returned: { ...response, retryAfter: env.retryAfterMs / 1000 },
+                  returned: { ...response, retryAfter: env.retryAfterMs / 1000, notificationRequestId: (input.body as { notificationRequestId: string }).notificationRequestId },
                 }
           ),
           O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))

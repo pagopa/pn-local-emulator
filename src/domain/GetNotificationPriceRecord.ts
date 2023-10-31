@@ -8,6 +8,8 @@ import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody, unauthorizedResponse } from './types';
 import { computeSnapshot, Snapshot } from './Snapshot';
+import { NotificationRecipientV21 } from '../generated/pnapi/NotificationRecipientV21';
+import { NotificationPaymentItem } from '../generated/pnapi/NotificationPaymentItem';
 
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';
@@ -19,18 +21,28 @@ export const isGetNotificationPrice = (record: Record) =>
   record.type === 'GetNotificationPriceRecord' ? O.some(record) : O.none;
 
 
-  // TODO: denny
-const findNotification = (request: GetNotificationPriceRecord['input'], snapshot: Snapshot) =>
+
+  const findNotification = (request: GetNotificationPriceRecord['input'], snapshot: Snapshot) =>
   pipe(
     snapshot,
     RA.filterMap(O.FromEither.fromEither),
     RA.findLast(({ recipients }) =>
-      pipe(
-        recipients,
-        RA.exists(
-          ({ payment }) => payment?.creditorTaxId === request.paTaxId && payment?.noticeCode === request.noticeCode
-        )
-      )
+      RA.every((recipient: NotificationRecipientV21) => {
+        const payments = recipient.payments || [];
+
+        return RA.exists((payment) => {
+          const pagoPa = (payment as NotificationPaymentItem)?.pagoPa;
+          if (pagoPa && pagoPa.noticeCode === request.noticeCode && pagoPa.creditorTaxId === request.paTaxId) {
+            return true;
+          } else {
+            const f24 = (payment as NotificationPaymentItem)?.f24;
+            if (f24) {
+              return true;
+            }
+          }
+          return false;
+        })(payments);
+      })(recipients)
     )
   );
 

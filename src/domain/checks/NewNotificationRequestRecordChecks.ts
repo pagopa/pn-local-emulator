@@ -5,7 +5,7 @@ import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { isNewNotificationRecord } from '../NewNotificationRecord';
 import { isUploadToS3Record } from '../UploadToS3Record';
-import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
+import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV21';
 import { NotificationPayments } from '../../generated/pnapi/NotificationPayments';
 import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
 

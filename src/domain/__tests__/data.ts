@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
-import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
+import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV21';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';

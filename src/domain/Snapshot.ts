@@ -10,8 +10,9 @@ import { makeNotification, Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 import { isGetNotificationDetailRecord } from './GetNotificationDetailRecord';
 import { Record } from './Repository';
+import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
 
-export type Snapshot = ReadonlyArray<E.Either<NotificationRequest, Notification>>;
+export type Snapshot = ReadonlyArray<E.Either<NewNotificationRequestV21, Notification>>;
 
 export const computeSnapshot = (env: DomainEnv): R.Reader<ReadonlyArray<Record>, Snapshot> =>
   pipe(

@@ -1,16 +1,16 @@
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NewNotificationRequest } from '../generated/pnapi/NewNotificationRequest';
 import { NewNotificationResponse } from '../generated/pnapi/NewNotificationResponse';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { NewNotificationRecord } from './NewNotificationRecord';
+import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
 
 /**
  * Represent the resource created before the Notification itself, a NotificationRequest
  * can possibly become a Notification
  */
-export type NotificationRequest = NewNotificationRequest & NewNotificationResponse;
+export type NotificationRequest = NewNotificationRequestV21 & NewNotificationResponse;
 
 const fillDocIdx = (documents: NotificationRequest['documents']) =>
   pipe(
