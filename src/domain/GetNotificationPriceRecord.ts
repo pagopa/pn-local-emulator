@@ -3,13 +3,13 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NotificationPriceResponse } from '../generated/pnapi/NotificationPriceResponse';
+import { NotificationRecipientV21 } from '../generated/pnapi/NotificationRecipientV21';
+import { NotificationPaymentItem } from '../generated/pnapi/NotificationPaymentItem';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody, unauthorizedResponse } from './types';
 import { computeSnapshot, Snapshot } from './Snapshot';
-import { NotificationRecipientV21 } from '../generated/pnapi/NotificationRecipientV21';
-import { NotificationPaymentItem } from '../generated/pnapi/NotificationPaymentItem';
 
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/array-type */
+
 import { flow, pipe, identity } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { ProgressResponse } from '../generated/streams/ProgressResponse';
@@ -11,7 +12,7 @@ import { Notification } from './Notification';
 import { Record, AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
-import { Snapshot, computeSnapshot } from './Snapshot';
+import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
