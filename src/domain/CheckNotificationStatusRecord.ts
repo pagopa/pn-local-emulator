@@ -30,7 +30,6 @@ export type CheckNotificationStatusRecord = AuditRecord & {
     | Response<404>;
 };
 
-const log = makeLogger();
 export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckNotificationStatusRecord> => 
   record.type === 'CheckNotificationStatusRecord' ? O.some(record) : O.none;
 
