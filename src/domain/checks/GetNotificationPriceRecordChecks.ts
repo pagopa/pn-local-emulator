@@ -1,4 +1,3 @@
-import * as t from "io-ts";
 import { flow, pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as R from 'fp-ts/Reader';

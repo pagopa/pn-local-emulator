@@ -8,7 +8,6 @@ import { isUploadToS3Record } from '../UploadToS3Record';
 import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV21';
 import { NotificationPayments } from '../../generated/pnapi/NotificationPayments';
 import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
-import { uploadToS3Record } from '../__tests__/data';
 
 // TODO: This check is replicated on almost each record type, we can
 // improve it and create just one check

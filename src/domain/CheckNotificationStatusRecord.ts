@@ -9,13 +9,13 @@ import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 import { PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
 import { NewNotificationRequestStatusResponseV21 } from '../generated/pnapi/NewNotificationRequestStatusResponseV21';
 import { Notification } from '../../src/domain/Notification';
+import { makeLogger } from '../logger';
 import { VALID_CAPS } from './validCaps';
 import { authorizeApiKey } from './authorize';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { computeSnapshot } from './Snapshot';
 import { UploadToS3Record } from './UploadToS3Record';
-import { makeLogger } from '../logger';
 
 export type CheckNotificationStatusRecord = AuditRecord & {
   type: 'CheckNotificationStatusRecord';
@@ -31,10 +31,8 @@ export type CheckNotificationStatusRecord = AuditRecord & {
 };
 
 const log = makeLogger();
-export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckNotificationStatusRecord> => {
-  log.info("HEREE");
-  return record.type === 'CheckNotificationStatusRecord' ? O.some(record) : O.none;
-}
+export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckNotificationStatusRecord> => 
+  record.type === 'CheckNotificationStatusRecord' ? O.some(record) : O.none;
 
 export const makeCheckNotificationStatusRecord =
   (env: SystemEnv) =>

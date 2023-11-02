@@ -2,6 +2,7 @@ import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as R from 'fp-ts/Reader';
+import { traceWithValue } from 'fp-ts-std/Debug';
 import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
 import { isCheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { isConsumeEventStreamRecord } from './ConsumeEventStreamRecord';
@@ -11,7 +12,6 @@ import { makeNotification, Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 import { isGetNotificationDetailRecord } from './GetNotificationDetailRecord';
 import { Record } from './Repository';
-import { traceWithValue } from 'fp-ts-std/Debug';
 
 export type Snapshot = ReadonlyArray<E.Either<NewNotificationRequestV21, Notification>>;
 
