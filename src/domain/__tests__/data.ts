@@ -28,7 +28,6 @@ import { DownloadRecord } from '../DownloadRecord';
 import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { noticeCode } from '../../generated/pnapi/noticeCode';
-import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 import { RequestResponseRecord } from '../RequestResponseRecord';
@@ -425,7 +424,7 @@ export const consumeEventStreamRecordDelivered = {
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
       newStatus: NotificationStatusEnum.ACCEPTED,
-      timelineEventCategory: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+      timelineEventCategory: TimelineElementCategoryV20Enum.REQUEST_ACCEPTED,
       iun: aIun.valid,
     })),
   },
