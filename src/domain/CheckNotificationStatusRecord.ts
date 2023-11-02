@@ -63,7 +63,7 @@ export const makeCheckNotificationStatusRecord =
           O.map((response) =>
             pipe(
               response.recipients,
-              RA.reduce(response, function (res, invalidRec: any) {
+              RA.reduce(response, function (res, invalidRec) {
                 const newRes = t.exact(NewNotificationRequestStatusResponseV21).encode(res as NewNotificationRequestStatusResponseV21);
                 const pastErrors = newRes.errors ? newRes.errors : [];
                 if (!VALID_CAPS[invalidRec.physicalAddress.zip as keyof typeof VALID_CAPS]) {
