@@ -159,7 +159,7 @@ export const makeCheckNotificationStatusRecord =
             )
           ),
 
-          O.map((response: any) =>
+          O.map((response) =>
             response.notificationRequestStatus === 'REFUSED'
               ? {
                   statusCode: 500 as const,

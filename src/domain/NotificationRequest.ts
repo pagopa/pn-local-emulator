@@ -15,7 +15,7 @@ export type NotificationRequest = NewNotificationRequestV21 & NewNotificationRes
 const fillDocIdx = (documents: NotificationRequest['documents']) =>
   pipe(
     documents,
-    RA.mapWithIndex((i, doc: any) => ({ ...doc, docIdx: doc.docIdx || i.toString() }))
+    RA.mapWithIndex((i, doc) => ({ ...doc, docIdx: doc.docIdx || i.toString() }))
   );
 
 /**
