@@ -14,8 +14,6 @@ import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
-import { TimelineElementCategory } from '../generated/streams/TimelineElementCategory';
-import { TimelineElementCategoryV20, TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';

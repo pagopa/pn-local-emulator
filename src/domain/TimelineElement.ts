@@ -7,14 +7,12 @@ import { IUN } from '../generated/pnapi/IUN';
 import { LegalFactCategoryEnum } from '../generated/pnapi/LegalFactCategory';
 import { NotificationRecipient } from '../generated/pnapi/NotificationRecipient';
 import { TimelineElementV20 } from '../generated/pnapi/TimelineElementV20';
-import { TimelineElementCategoryEnum } from '../generated/pnapi/TimelineElementCategory';
 import { NotificationStatusHistory } from '../generated/pnapi/NotificationStatusHistory';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
-import { ResponseStatusEnum } from '../generated/pnapi/ResponseStatus';
 import { IUNGeneratorByIndex } from '../adapters/randexp/IUNGenerator';
+import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
-import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 
 const makeTimelineListPEC =
   (env: DomainEnv) =>

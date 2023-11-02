@@ -4,6 +4,7 @@ import * as s from 'fp-ts/string';
 import * as M from 'fp-ts/Monoid';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { traceWithValue } from 'fp-ts-std/Debug';
 import { IUN } from '../generated/pnapi/IUN';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
@@ -17,7 +18,6 @@ import {
 } from './GetNotificationDetailRecord';
 import { DomainEnv } from './DomainEnv';
 import { updateTimeline } from './TimelineElement';
-import { traceWithValue } from 'fp-ts-std/Debug';
 
 export type Notification = FullSentNotificationV21 & Pick<NotificationRequest, 'notificationRequestId'>;
 
