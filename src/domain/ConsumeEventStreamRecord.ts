@@ -42,7 +42,7 @@ export const makeProgressResponseElementFromNotification =
   (notification: Notification): ReadonlyArray<ProgressResponseElement> =>
     pipe(
       notification.timeline,
-      RA.map(({ category, legalFactsIds, details }) => ({
+      RA.map(({ /*category, */ legalFactsIds, details }) => ({
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
         newStatus: notification.notificationStatus,
