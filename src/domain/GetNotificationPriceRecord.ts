@@ -34,12 +34,14 @@ export const isGetNotificationPrice = (record: Record) =>
           const pagoPa = (payment as NotificationPaymentItem)?.pagoPa;
           if (pagoPa && pagoPa.noticeCode === request.noticeCode && pagoPa.creditorTaxId === request.paTaxId) {
             return true;
-          } else {
+          } /* 
+          this will probably be needed in the future
+          else {
             const f24 = (payment as NotificationPaymentItem)?.f24;
             if (f24) {
               return true;
             }
-          }
+          } */
           return false;
         })(payments);
       })(recipients)

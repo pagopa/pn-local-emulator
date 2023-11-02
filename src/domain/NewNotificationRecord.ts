@@ -5,12 +5,12 @@ import { NewNotificationResponse } from '../generated/pnapi/NewNotificationRespo
 import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
 import { DomainEnv } from './DomainEnv';
 import { Record, AuditRecord } from './Repository';
-import { HttpErrorMessageBody, Response } from './types';
+import { HttpErrorMessageBody, Response, UnauthorizedMessageBody } from './types';
 
 export type NewNotificationRecord = AuditRecord & {
   type: 'NewNotificationRecord';
   input: { apiKey: string; body: NewNotificationRequestV21 };
-  output: Response<202, NewNotificationResponse> | Response<403, HttpErrorMessageBody> | Response<400, HttpErrorMessageBody>;
+  output: Response<202, NewNotificationResponse> | Response<403, UnauthorizedMessageBody> | Response<400, HttpErrorMessageBody>;
 };
 
 export const isNewNotificationRecord = (record: Record): O.Option<NewNotificationRecord> =>
@@ -28,7 +28,7 @@ export const makeNewNotificationRecord =
         loggedAt: env.dateGenerator(),
         output: {
           statusCode: 403,
-          returned: generateErrorResponse(403, "Forbidden", "API key authorization failed"),
+          returned: { message: "Forbidden API key authorization failed" }
         }
       };
     }
@@ -59,7 +59,7 @@ export const makeNewNotificationRecord =
               })
             : E.right(generateSuccessfulResponse(env, input));
         } else {
-          return E.right(generateSuccessfulResponse(env, input));
+          return E.left(generateErrorResponse(400, "Bad Request", "Invalid notification fee policy"));
         }
       }
     );

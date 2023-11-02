@@ -15,6 +15,7 @@ import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { computeSnapshot } from './Snapshot';
 import { UploadToS3Record } from './UploadToS3Record';
+import { makeLogger } from '../logger';
 
 export type CheckNotificationStatusRecord = AuditRecord & {
   type: 'CheckNotificationStatusRecord';
@@ -29,8 +30,11 @@ export type CheckNotificationStatusRecord = AuditRecord & {
     | Response<404>;
 };
 
-export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckNotificationStatusRecord> =>
-  record.type === 'CheckNotificationStatusRecord' ? O.some(record) : O.none;
+const log = makeLogger();
+export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckNotificationStatusRecord> => {
+  log.info("HEREE");
+  return record.type === 'CheckNotificationStatusRecord' ? O.some(record) : O.none;
+}
 
 export const makeCheckNotificationStatusRecord =
   (env: SystemEnv) =>
@@ -45,6 +49,7 @@ export const makeCheckNotificationStatusRecord =
       E.foldW(identity, () =>
         pipe(
           computeSnapshot(env)(records),
+          traceWithValue('Debug #1: '),
           RA.findFirst(
             flow(E.toUnion, (notificationRequest) =>
               'notificationRequestId' in input.body
@@ -53,7 +58,7 @@ export const makeCheckNotificationStatusRecord =
                   notificationRequest.idempotenceToken === input.body.idempotenceToken
             )
           ),
-          traceWithValue('Debug: '),
+          traceWithValue('Debug #2: '),
           O.map(
             E.fold(
               (nr) => ({ ...nr, notificationRequestStatus: 'WAITING' }),

@@ -8,6 +8,7 @@ import { isUploadToS3Record } from '../UploadToS3Record';
 import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV21';
 import { NotificationPayments } from '../../generated/pnapi/NotificationPayments';
 import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
+import { uploadToS3Record } from '../__tests__/data';
 
 // TODO: This check is replicated on almost each record type, we can
 // improve it and create just one check
@@ -93,11 +94,13 @@ export const atLeastOneValidNoticeCodeC = RA.exists(
   )
 );
 
+
+// todo denny
 export const atLeastOneValidPagoPaFormC = pipe(
   R.Do,
   R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
   R.apS('newNotificationRecordList', RA.filterMap(isNewNotificationRecord)),
-  R.map(({ newNotificationRecordList }) =>
+  R.map(({ uploadToS3RecordList, newNotificationRecordList }) =>
     pipe(
       newNotificationRecordList,
       RA.exists((record) =>
@@ -110,14 +113,14 @@ export const atLeastOneValidPagoPaFormC = pipe(
                 pipe(
                   payment?.pagoPa?.attachment || payment.f24?.metadataAttachment,
                   O.fromNullable,
-                  O.isSome
+                  O.exists(matchAtLeastOneUploadToS3Record(uploadToS3RecordList))
                 )
-              )
+              ),
             )
-          )
+          ),
         )
-      )
-    )
+      ),
+    ),
   )
 );
 
