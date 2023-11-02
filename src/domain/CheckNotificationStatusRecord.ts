@@ -9,7 +9,6 @@ import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 import { PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
 import { NewNotificationRequestStatusResponseV21 } from '../generated/pnapi/NewNotificationRequestStatusResponseV21';
 import { Notification } from '../../src/domain/Notification';
-import { makeLogger } from '../logger';
 import { VALID_CAPS } from './validCaps';
 import { authorizeApiKey } from './authorize';
 import { AuditRecord, Record } from './Repository';
