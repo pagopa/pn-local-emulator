@@ -32,6 +32,7 @@ import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineEleme
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 import { RequestResponseRecord } from '../RequestResponseRecord';
+import { TimelineElementCategoryV20Enum } from '../../generated/pnapi/TimelineElementCategoryV20';
 
 export const apiKey = {
   valid: 'key-value',
@@ -455,7 +456,7 @@ const acceptedNotificationWithTimeline = {
           category: aLegalFactType,
         },
       ],
-      category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+      category: TimelineElementCategoryV20Enum.REQUEST_ACCEPTED,
     },
   ],
 };

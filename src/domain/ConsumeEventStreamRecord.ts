@@ -14,6 +14,8 @@ import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
+import { TimelineElementCategory } from '../generated/streams/TimelineElementCategory';
+import { TimelineElementCategoryV20, TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';
@@ -46,7 +48,8 @@ export const makeProgressResponseElementFromNotification =
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
         newStatus: notification.notificationStatus,
-        timelineEventCategory: category,
+        // todo: denny
+        // timelineEventCategory: category,
         legalFactsIds: legalFactsIds?.map((lf) => lf.key.replaceAll('safestorage://', '')) || [], // Modify the legalFactsIds directly
         recipientIndex: pipe(
           details && 'recIndex' in details ? details.recIndex : undefined,
