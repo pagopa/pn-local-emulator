@@ -1,8 +1,8 @@
-import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NewNotificationResponse } from '../generated/pnapi/NewNotificationResponse';
+import { pipe } from 'fp-ts/lib/function';
 import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
+import { NewNotificationResponse } from '../generated/pnapi/NewNotificationResponse';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { NewNotificationRecord } from './NewNotificationRecord';
 
@@ -15,7 +15,7 @@ export type NotificationRequest = NewNotificationRequestV21 & NewNotificationRes
 const fillDocIdx = (documents: NotificationRequest['documents']) =>
   pipe(
     documents,
-    RA.mapWithIndex((i, doc) => ({ ...doc, docIdx: doc.docIdx || i.toString() }))
+    RA.mapWithIndex((i, doc: any) => ({ ...doc, docIdx: doc.docIdx || i.toString() }))
   );
 
 /**

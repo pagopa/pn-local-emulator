@@ -1,20 +1,20 @@
-import { traceWithValue, trace } from 'fp-ts-std/Debug';
-import { identity, pipe, flow } from 'fp-ts/function';
-import * as t from 'io-ts';
-import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
+import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { SystemEnv } from '../useCases/SystemEnv';
+import { flow, identity, pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
+import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
+import { NewNotificationRequestStatusResponseV21 } from '../generated/pnapi/NewNotificationRequestStatusResponseV21';
 import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 import { PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
-import { NewNotificationRequestStatusResponseV21 } from '../generated/pnapi/NewNotificationRequestStatusResponseV21';
-import { Notification } from '../../src/domain/Notification';
-import { VALID_CAPS } from './validCaps';
-import { authorizeApiKey } from './authorize';
+import { SystemEnv } from '../useCases/SystemEnv';
+import { NotificationRequest } from './NotificationRequest';
 import { AuditRecord, Record } from './Repository';
-import { Response, UnauthorizedMessageBody } from './types';
 import { computeSnapshot } from './Snapshot';
 import { UploadToS3Record } from './UploadToS3Record';
+import { authorizeApiKey } from './authorize';
+import { Response, UnauthorizedMessageBody } from './types';
+import { VALID_CAPS } from './validCaps';
 
 export type CheckNotificationStatusRecord = AuditRecord & {
   type: 'CheckNotificationStatusRecord';
@@ -45,16 +45,14 @@ export const makeCheckNotificationStatusRecord =
       E.foldW(identity, () =>
         pipe(
           computeSnapshot(env)(records),
-          traceWithValue('Debug #1: '),
           RA.findFirst(
             flow(E.toUnion, (notificationRequest) =>
               'notificationRequestId' in input.body
-                ? (notificationRequest as Notification).notificationRequestId === input.body.notificationRequestId
+                ? (notificationRequest as FullSentNotificationV21 & Pick<NotificationRequest, 'notificationRequestId'>).notificationRequestId === input.body.notificationRequestId
                 : notificationRequest.paProtocolNumber === input.body.paProtocolNumber &&
                   notificationRequest.idempotenceToken === input.body.idempotenceToken
             )
           ),
-          traceWithValue('Debug #2: '),
           O.map(
             E.fold(
               (nr) => ({ ...nr, notificationRequestStatus: 'WAITING' }),
@@ -62,11 +60,10 @@ export const makeCheckNotificationStatusRecord =
                 t.exact(NewNotificationRequestStatusResponseV21).encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
             )
           ),
-          trace(`List: ${env.recordRepository.list()}`),
           O.map((response) =>
             pipe(
               response.recipients,
-              RA.reduce(response, function (res, invalidRec) {
+              RA.reduce(response, function (res, invalidRec: any) {
                 const newRes = t.exact(NewNotificationRequestStatusResponseV21).encode(res as NewNotificationRequestStatusResponseV21);
                 const pastErrors = newRes.errors ? newRes.errors : [];
                 if (!VALID_CAPS[invalidRec.physicalAddress.zip as keyof typeof VALID_CAPS]) {
@@ -111,13 +108,11 @@ export const makeCheckNotificationStatusRecord =
                         const url = preloadRecord.url;
 
                         // Scroll uploaded records
-                        traceWithValue(`Url uploaded ${url}`);
                         const hasEqualVersionToken = RA.reduce(false, (hasToken, recordRaw2) => {
                           const recordFull2 = recordRaw2 as Record;
 
                           // Check if the URL mach
                           if (recordFull2.type === 'UploadToS3Record') {
-                            traceWithValue(`${recordFull2}`);
                             const uploadRecord = recordRaw2 as UploadToS3Record;
 
                             // Version Tokens
@@ -164,15 +159,15 @@ export const makeCheckNotificationStatusRecord =
             )
           ),
 
-          O.map((response) =>
+          O.map((response: any) =>
             response.notificationRequestStatus === 'REFUSED'
               ? {
                   statusCode: 500 as const,
-                  returned: { ...response, retryAfter: env.retryAfterMs / 1000, notificationRequestId: (input.body as { notificationRequestId: string }).notificationRequestId },
+                  returned: { ...response, retryAfter: env.retryAfterMs / 1000},
                 }
               : {
                   statusCode: 200 as const,
-                  returned: { ...response, retryAfter: env.retryAfterMs / 1000, notificationRequestId: (input.body as { notificationRequestId: string }).notificationRequestId },
+                  returned: { ...response, retryAfter: env.retryAfterMs / 1000},
                 }
           ),
           O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
