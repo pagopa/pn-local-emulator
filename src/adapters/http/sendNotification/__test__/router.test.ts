@@ -10,13 +10,13 @@ describe("sendNotification router", () => {
     const router = makeSendNotificationRouter(data.makeTestSystemEnv());
     app.use(router);
 
-    it("With empty body response should be 404", async () => {
+    it("With empty body response should be 400", async () => {
         const response = await supertest(app)
                         .post('/delivery/v2.1/requests')
                         .set('x-api-key', data.apiKey.valid)
                         .send();
 
-        expect(response.statusCode).toStrictEqual(404);
+        expect(response.statusCode).toStrictEqual(400);
     });
 
 });
