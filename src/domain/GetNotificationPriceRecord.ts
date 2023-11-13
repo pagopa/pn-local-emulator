@@ -1,4 +1,5 @@
 /* eslint-disable sonarjs/prefer-single-boolean-return */
+/* eslint-disable functional/no-let */
 
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
@@ -12,6 +13,7 @@ import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody, unauthorizedResponse } from './types';
 import { computeSnapshot, Snapshot } from './Snapshot';
+import { Notification } from './Notification';
 
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';
@@ -29,7 +31,7 @@ export const isGetNotificationPrice = (record: Record) =>
     snapshot,
     RA.filterMap(O.FromEither.fromEither),
     RA.findLast(({ recipients }) =>
-      RA.every((recipient: NotificationRecipientV21) => {
+      RA.some((recipient: NotificationRecipientV21) => {
         const payments = recipient.payments || [];
 
         return RA.exists((payment) => {
@@ -62,11 +64,11 @@ export const makeGetNotificationPriceRecord =
       E.map(
         O.foldW(
           () => unauthorizedResponse,
-          ({ iun }) => ({
+          (notification) => ({
             statusCode: 200 as const,
             returned: {
-              iun,
-              amount: env.notificationPrice,
+              iun: notification.iun,
+              amount: getNotificationAmountBasedOnNotification(notification),
               refinementDate: env.dateGenerator(),
               notificationViewDate: env.dateGenerator(),
             },
@@ -77,3 +79,32 @@ export const makeGetNotificationPriceRecord =
     ),
     loggedAt: env.dateGenerator(),
   });
+
+  const getNotificationAmountBasedOnNotification = (notification: Notification): number => {
+    let amountToReturn: number = 0;
+    if (notification.notificationFeePolicy === 'FLAT_RATE') {
+      return amountToReturn;
+    }
+
+    if (notification.notificationFeePolicy === 'DELIVERY_MODE') {
+      notification.recipients.some(singleRecipient => {
+        singleRecipient.payments?.some(singlePayment => {
+          if (singlePayment.pagoPa?.applyCost === true || singlePayment.f24?.applyCost === true) {
+            const notificationPaFee: number = notification.paFee ? notification.paFee : 0;
+            const localAmountToReturn: number = 100 + notificationPaFee;
+            if (singleRecipient.digitalDomicile?.type === 'PEC') {
+              amountToReturn = localAmountToReturn;
+              return true;
+            } else {
+              // 200 è un valore fisso per indicare il costo della spedizione cartacea
+              amountToReturn = localAmountToReturn + 200;
+              return true;
+            }
+          }
+        });
+      });
+    }
+
+    return amountToReturn;
+  };
+  

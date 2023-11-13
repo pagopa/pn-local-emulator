@@ -2177,6 +2177,8 @@ components:
           description: "tipo di indirizzo PEC, REM, SERCQ, ..."
           enum:
           - PEC
+          - REM
+          - SERCQ
         address:
           maxLength: 320
           pattern: "^([a-zA-Z0-9]+(?:[.\\-_][a-zA-Z0-9]+){0,10}@[a-zA-Z0-9]+(?:[.-][a-zA-Z0-9]+){0,10}(?:\\\

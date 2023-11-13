@@ -1,12 +1,12 @@
 {
   "name": "pn-local-validator",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A system that emulates some features of Piattaforma Notifiche platform.",
   "main": "dist/main.js",
   "scripts": {
     "generate": "npm run generate:pnstream && npm run generate:api && npm run generate:pnapi",
     "generate:pnapi": "shx rm -rf ./src/generated/pnapi && shx mkdir -p ./src/generated/pnapi && gen-api-models --api-spec ./openapi/bundled-api-external-b2b-pa-v2-1.yaml --no-strict --out-dir ./src/generated/pnapi --request-types --response-decoders",
-    "generate:pnstream": "shx rm -rf ./src/generated/streams && shx mkdir -p ./src/generated/streams && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pn-delivery-push/e70b59d6ff5f8ef70878c80ec87ab2a324beae5c/docs/openapi/api-external-b2b-webhook-bundle.yaml --no-strict --out-dir ./src/generated/streams",
+    "generate:pnstream": "shx rm -rf ./src/generated/streams && shx mkdir -p ./src/generated/streams && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pn-delivery-push/55a6e90b7055cb3704e2480cf15fdfa194315421/docs/openapi/api-external-b2b-webhook-bundle.yaml --no-strict --out-dir ./src/generated/streams",
     "generate:api": "shx rm -rf ./src/generated/api && shx mkdir -p ./src/generated/api && gen-api-models --api-spec ./openapi/internal.yaml --no-strict --out-dir ./src/generated/api",
     "clean": "tsc --build --clean",
     "postcompile": "shx cp -R ./src/adapters/http/download/exampledocuments ./dist/adapters/http/download/exampledocuments",
