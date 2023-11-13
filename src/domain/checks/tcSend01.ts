@@ -26,7 +26,7 @@ export const tcSend01 = Group({
       'Have you filled the following properties for every payment?': Group({
         'Have you filled the property creditorTaxId?': NewNotificationRequestRecordChecks.atLeastOneValidCreditorTaxIdC,
         'Have you filled the property noticeCode?': NewNotificationRequestRecordChecks.atLeastOneValidNoticeCodeC,
-        'Have you filled the property pagoPaForm with the references of a file previously uploaded?':
+        'Have you filled the property pagoPa with the references of a file previously uploaded?':
           NewNotificationRequestRecordChecks.atLeastOneValidPagoPaFormC,
       }),
     }),

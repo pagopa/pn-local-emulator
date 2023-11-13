@@ -1,24 +1,24 @@
-import { pipe, flow } from 'fp-ts/function';
-import * as n from 'fp-ts/number';
-import * as s from 'fp-ts/string';
 import * as M from 'fp-ts/Monoid';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { flow, pipe } from 'fp-ts/function';
+import * as n from 'fp-ts/number';
+import * as s from 'fp-ts/string';
+import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { IUN } from '../generated/pnapi/IUN';
-import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponse, getProgressResponseList } from './ConsumeEventStreamRecord';
-import { makeNotificationRequestFromFind, NotificationRequest } from './NotificationRequest';
+import { DomainEnv } from './DomainEnv';
 import {
   GetNotificationDetailRecord,
   isGetNotificationDetailRecord,
   makeFullSentNotification,
 } from './GetNotificationDetailRecord';
-import { DomainEnv } from './DomainEnv';
+import { NotificationRequest, makeNotificationRequestFromFind } from './NotificationRequest';
 import { updateTimeline } from './TimelineElement';
 
-export type Notification = FullSentNotification & Pick<NotificationRequest, 'notificationRequestId'>;
+export type Notification = FullSentNotificationV21 & Pick<NotificationRequest, 'notificationRequestId'>;
 
 export const mkNotification = (env: DomainEnv, notificationRequest: NotificationRequest, iun: IUN) => ({
   notificationRequestId: notificationRequest.notificationRequestId,
@@ -53,6 +53,7 @@ const countFromFind = (notificationRequestId: string) =>
 const countFromConsume = (notificationRequestId: string) =>
   flow(
     RA.filterMap(getProgressResponse),
+    
     // for each page remove duplicated notificationRequestId
     RA.map(
       flow(
@@ -93,7 +94,10 @@ export const makeNotification =
   (notificationRequest: NotificationRequest): O.Option<Notification> =>
     pipe(
       // get iun from find records
-      pipe(findNotificationRequestRecord, RA.findLastMap(getIunFromFind(notificationRequest))),
+      pipe(
+        findNotificationRequestRecord, 
+        RA.findLastMap(getIunFromFind(notificationRequest)),
+        ),
       // get iun from consume records
       O.alt(() => pipe(consumeEventStreamRecord, RA.findLastMap(getIunFromConsume(notificationRequest)))),
       // create Notification from iun if any

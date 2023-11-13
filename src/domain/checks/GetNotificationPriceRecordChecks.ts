@@ -4,8 +4,10 @@ import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { isGetNotificationPrice } from '../GetNotificationPriceRecord';
 import { isNewNotificationRecord } from '../NewNotificationRecord';
+import { NotificationPayments } from "../../generated/pnapi/NotificationPayments";
 
 export const atLeastOneGetNotificationPriceRecordC = RA.exists(flow(isGetNotificationPrice, O.isSome));
+
 
 export const atLeastOneGetNotificationPriceRecordMatchingPreviousNotificationRequest = pipe(
   R.Do,
@@ -17,17 +19,18 @@ export const atLeastOneGetNotificationPriceRecordMatchingPreviousNotificationReq
       RA.exists((record) =>
         pipe(
           record.input.body.recipients,
-          RA.exists(({ payment }) =>
+          RA.exists(({ payments}) =>
             pipe(
               getNotificationPriceRecordList,
               RA.exists(
                 ({ input: { paTaxId, noticeCode }, output }) =>
-                  payment?.creditorTaxId === paTaxId &&
-                  payment?.creditorTaxId === record.input.body.senderTaxId &&
-                  payment.noticeCode === noticeCode &&
-                  // Without this check, the system accepts requests
-                  // that result in an unauthorized response.
-                  output.statusCode === 200
+                  // Check if there is at least one payment that matches the criteria
+                  (payments as NotificationPayments).some((payment) =>
+                    payment.pagoPa?.creditorTaxId === paTaxId &&
+                    payment.pagoPa?.creditorTaxId === record.input.body.senderTaxId &&
+                    payment.pagoPa?.noticeCode === noticeCode &&
+                    output.statusCode === 200
+                  )
               )
             )
           )

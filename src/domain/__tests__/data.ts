@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
-import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
+import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV21';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
@@ -28,10 +28,10 @@ import { DownloadRecord } from '../DownloadRecord';
 import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { noticeCode } from '../../generated/pnapi/noticeCode';
-import { TimelineElementCategoryEnum } from '../../generated/pnapi/TimelineElementCategory';
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
 import { RequestResponseRecord } from '../RequestResponseRecord';
+import { TimelineElementCategoryV20Enum } from '../../generated/pnapi/TimelineElementCategoryV20';
 
 export const apiKey = {
   valid: 'key-value',
@@ -145,17 +145,38 @@ export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0]
     zip: '',
     municipality: '',
   },
-  payment: {
-    creditorTaxId: unsafeCoerce('77777777777'),
-    noticeCode: aNoticeCode,
-    pagoPaForm: {
-      digests: {
-        sha256: aSha256,
-      },
-      contentType: 'application/pdf',
-      ref: anAttachmentRef,
+  payments: [{
+    pagoPa: {
+      noticeCode: aNoticeCode,
+      creditorTaxId: unsafeCoerce('77777777777'),
+      applyCost: false,
+      attachment: {
+        digests: {
+          sha256: "WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg="
+        },
+        contentType: "application/pdf",
+        ref: {
+          key: "ac458KYk-NtPFPBiT4Rs0bzPhL9LmScPb8iBj44CsLkY6uoliy6.zzw.4o0cs176Wleuz7NG6p",
+          versionToken: "Zaz;h.P0\"VTAHO)s5;\\^]@!8o<dy5)-?7WR_bV8Bz.IJ6-;y[Av5r(XijBydr7M#g6`B,Q<wT\\zv#l/`.{C[vkW\\h=-"
+        }
+      }
     },
-  },
+    f24: {
+      title: "Titolo",
+      applyCost: false,
+      metadataAttachment: {
+        digests: {
+          sha256: "WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg="
+        },
+        contentType: "application/pdf",
+        ref: {
+          key: "ac458KYk-NtPFPBiT4Rs0bzPhL9LmScPb8iBj44CsLkY6uoliy6.zzw.4o0cs176Wleuz7NG6p",
+          versionToken: "Zaz;h.P0\"VTAHO)s5;\\^]@!8o<dy5)-?7WR_bV8Bz.IJ6-;y[Av5r(XijBydr7M#g6`B,Q<wT\\zv#l/`.{C[vkW\\h=-"
+        }
+
+      }
+    }
+  }],
 };
 
 export const aSecret = 'a-secret';
@@ -403,7 +424,7 @@ export const consumeEventStreamRecordDelivered = {
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
       newStatus: NotificationStatusEnum.ACCEPTED,
-      timelineEventCategory: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+      timelineEventCategory: TimelineElementCategoryV20Enum.REQUEST_ACCEPTED,
       iun: aIun.valid,
     })),
   },
@@ -434,7 +455,7 @@ const acceptedNotificationWithTimeline = {
           category: aLegalFactType,
         },
       ],
-      category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+      category: TimelineElementCategoryV20Enum.REQUEST_ACCEPTED,
     },
   ],
 };

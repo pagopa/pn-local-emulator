@@ -29,7 +29,7 @@ describe('Notification Status Router', () => {
 
   it('should return a 400 response with some data', async () => {
     const response = await supertest(app)
-      .get('/api/delivery/requests')
+      .get('/api/delivery/v2.1/requests')
       .query({
         notificationRequestId: '123',
       });
