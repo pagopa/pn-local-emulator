@@ -16,6 +16,7 @@ import { DeleteStreamRecord } from './DeleteStreamRecord';
 import { GetEventStreamByIdRecord } from './GetEventStreamByIdRecord';
 import { RequestResponseRecord } from './RequestResponseRecord';
 import { UpdateStreamRecord } from './UpdateStreamRecord';
+import { DeleteNotificationRecord } from './DeleteNotificationRecord';
 
 export type AuditRecord = {
   loggedAt: Date;
@@ -38,7 +39,8 @@ export type Record =
   | DeleteStreamRecord
   | GetEventStreamByIdRecord
   | RequestResponseRecord
-  | UpdateStreamRecord;
+  | UpdateStreamRecord
+  | DeleteNotificationRecord;
 
 export type RecordRepository = {
   insert: <A extends Record>(input: A) => TE.TaskEither<Error, A>;
@@ -48,4 +50,5 @@ export type RecordRepository = {
   updateStreamRecordReturningOnlyTheOneUpdatedStream: (
     updateEventStreamRecord: CreateEventStreamRecord
   ) => TE.TaskEither<Error, Record>;
+  removeNotificationRecord: (deleteNotificationRecord: DeleteNotificationRecord) => TE.TaskEither<Error, ReadonlyArray<Record>>;
 };

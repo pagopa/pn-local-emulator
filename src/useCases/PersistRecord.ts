@@ -4,6 +4,7 @@ import { Record } from '../domain/Repository';
 import { DeleteStreamRecord } from '../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord } from '../domain/CreateEventStreamRecord';
 import { SystemEnv } from './SystemEnv';
+import { DeleteNotificationRecord } from '../domain/DeleteNotificationRecord';
 
 export const persistRecord =
   (env: SystemEnv) =>
@@ -19,3 +20,6 @@ export const updateStreamRecord = (env: SystemEnv) => (recordToUpdate: CreateEve
 export const updateStreamRecordReturningOnlyTheOneUpdatedStream =
   (env: SystemEnv) => (recordToUpdate: CreateEventStreamRecord) =>
     pipe(env.recordRepository.updateStreamRecordReturningOnlyTheOneUpdatedStream(recordToUpdate));
+
+export const deleteNotificationRecord = (env: SystemEnv) => (recordToRemove: DeleteNotificationRecord) =>
+  pipe(env.recordRepository.removeNotificationRecord(recordToRemove));
