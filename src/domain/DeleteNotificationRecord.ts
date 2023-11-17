@@ -3,11 +3,11 @@
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
+import { IUN } from '../generated/pnapi/IUN';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { authorizeApiKey } from './authorize';
-import { IUN } from '../generated/pnapi/IUN';
 
 export type DeleteNotificationRecord = AuditRecord & {
   type: 'DeleteNotificationRecord';
