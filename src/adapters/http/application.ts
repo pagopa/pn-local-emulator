@@ -29,6 +29,7 @@ import { makeListRequestResponseRouter } from './getRequestResponse/router';
 
 export let capturedResponse: string;
 import { makeUpdateEventStreamRouter } from './updateEventStream/router';
+import { makeDeleteNotificationRouter } from './deleteNotification/router';
 
 export const makeApplication = (env: SystemEnv): express.Application => {
   const app = express();
@@ -72,6 +73,7 @@ export const makeApplication = (env: SystemEnv): express.Application => {
   app.use(makeDeleteEventStreamRouter(env));
   app.use(makeUpdateEventStreamRouter(env));
   app.use(makeGetEventStreamByIdRouter(env));
+  app.use(makeDeleteNotificationRouter(env));
 
   return app;
 };
