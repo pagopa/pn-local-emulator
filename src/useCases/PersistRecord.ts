@@ -3,6 +3,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { Record } from '../domain/Repository';
 import { DeleteStreamRecord } from '../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord } from '../domain/CreateEventStreamRecord';
+import { DeleteNotificationRecord } from '../domain/DeleteNotificationRecord';
 import { SystemEnv } from './SystemEnv';
 
 export const persistRecord =
@@ -19,3 +20,6 @@ export const updateStreamRecord = (env: SystemEnv) => (recordToUpdate: CreateEve
 export const updateStreamRecordReturningOnlyTheOneUpdatedStream =
   (env: SystemEnv) => (recordToUpdate: CreateEventStreamRecord) =>
     pipe(env.recordRepository.updateStreamRecordReturningOnlyTheOneUpdatedStream(recordToUpdate));
+
+export const deleteNotificationRecord = (env: SystemEnv) => (recordToRemove: DeleteNotificationRecord) =>
+  pipe(env.recordRepository.removeNotificationRecord(recordToRemove));
