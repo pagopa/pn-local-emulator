@@ -11,7 +11,7 @@ import { Handler, toExpressHandler, removeNullValues } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { persistRecord } from '../../../useCases/PersistRecord';
 import { makeNewNotificationRecord } from '../../../domain/NewNotificationRecord';
-import { NewNotificationRequest } from '../../../generated/pnapi/NewNotificationRequest';
+import { NewNotificationRequestV21 } from '../../../generated/pnapi/NewNotificationRequestV21';
 
 const handler =
   (env: SystemEnv): Handler =>
@@ -19,7 +19,7 @@ const handler =
     pipe(
       Apply.sequenceS(E.Apply)({
         apiKey: t.string.decode(req.headers['x-api-key']),
-        body: NewNotificationRequest.decode(removeNullValues(req.body)),
+        body: NewNotificationRequestV21.decode(removeNullValues(req.body)),
       }),
       E.map(flow(makeNewNotificationRecord(env), constant, persistRecord(env))),
       E.map(
@@ -33,7 +33,7 @@ const handler =
 export const makeSendNotificationRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.post('/delivery/requests', toExpressHandler(handler(env)));
+  router.post('/delivery/v2.1/requests', toExpressHandler(handler(env)));
 
   return router;
 };
