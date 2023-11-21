@@ -100,7 +100,6 @@ const makeTimelineListPEC =
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
           digitalAddressSource: DigitalAddressSourceEnum.SPECIAL,
-          // 2DO: denny
           // responseStatus: ResponseStatusEnum.OK,
           notificationDate: env.dateGenerator(),
           sendingReceipts: [{}],
