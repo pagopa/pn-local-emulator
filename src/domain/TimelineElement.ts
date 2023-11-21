@@ -2,29 +2,28 @@ import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { DigitalAddressSourceEnum } from '../generated/pnapi/DigitalAddressSource';
-import { FullSentNotification } from '../generated/pnapi/FullSentNotification';
+import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { IUN } from '../generated/pnapi/IUN';
 import { LegalFactCategoryEnum } from '../generated/pnapi/LegalFactCategory';
 import { NotificationRecipient } from '../generated/pnapi/NotificationRecipient';
-import { TimelineElement } from '../generated/pnapi/TimelineElement';
-import { TimelineElementCategoryEnum } from '../generated/pnapi/TimelineElementCategory';
+import { TimelineElementV20 } from '../generated/pnapi/TimelineElementV20';
 import { NotificationStatusHistory } from '../generated/pnapi/NotificationStatusHistory';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
-import { ResponseStatusEnum } from '../generated/pnapi/ResponseStatus';
 import { IUNGeneratorByIndex } from '../adapters/randexp/IUNGenerator';
+import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 
 const makeTimelineListPEC =
   (env: DomainEnv) =>
   (iun: IUN) =>
-  (index: number, recipient: NotificationRecipient): ReadonlyArray<TimelineElement> =>
+  (index: number, recipient: NotificationRecipient): ReadonlyArray<TimelineElementV20> =>
     [
       {
         elementId: `${iun}_aar_gen_${index}`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryEnum.AAR_GENERATION,
+        category: TimelineElementCategoryV20Enum.AAR_GENERATION,
         details: {
           recIndex: index,
           numberOfPages: 1,
@@ -35,7 +34,7 @@ const makeTimelineListPEC =
         elementId: `${iun}_get_address_${index}_source_PLATFORM_attempt_0`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryEnum.GET_ADDRESS,
+        category: TimelineElementCategoryV20Enum.GET_ADDRESS,
         details: {
           recIndex: index,
           digitalAddressSource: DigitalAddressSourceEnum.PLATFORM,
@@ -47,7 +46,7 @@ const makeTimelineListPEC =
         elementId: `${iun}_get_address_${index}_source_SPECIAL_attempt_0`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryEnum.GET_ADDRESS,
+        category: TimelineElementCategoryV20Enum.GET_ADDRESS,
         details: {
           recIndex: index,
           digitalAddressSource: DigitalAddressSourceEnum.SPECIAL,
@@ -59,7 +58,7 @@ const makeTimelineListPEC =
         elementId: `${iun}_send_digital_domicile_${index}_source_SPECIAL_attempt_0`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryEnum.SEND_DIGITAL_DOMICILE,
+        category: TimelineElementCategoryV20Enum.SEND_DIGITAL_DOMICILE,
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
@@ -76,7 +75,7 @@ const makeTimelineListPEC =
             category: LegalFactCategoryEnum.PEC_RECEIPT,
           },
         ],
-        category: TimelineElementCategoryEnum.SEND_DIGITAL_PROGRESS,
+        category: TimelineElementCategoryV20Enum.SEND_DIGITAL_PROGRESS,
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
@@ -96,12 +95,13 @@ const makeTimelineListPEC =
             category: LegalFactCategoryEnum.PEC_RECEIPT,
           },
         ],
-        category: TimelineElementCategoryEnum.SEND_DIGITAL_FEEDBACK,
+        category: TimelineElementCategoryV20Enum.SEND_DIGITAL_FEEDBACK,
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
           digitalAddressSource: DigitalAddressSourceEnum.SPECIAL,
-          responseStatus: ResponseStatusEnum.OK,
+          // 2DO: denny
+          // responseStatus: ResponseStatusEnum.OK,
           notificationDate: env.dateGenerator(),
           sendingReceipts: [{}],
         },
@@ -115,7 +115,7 @@ const makeTimelineListPEC =
             category: LegalFactCategoryEnum.DIGITAL_DELIVERY,
           },
         ],
-        category: TimelineElementCategoryEnum.DIGITAL_SUCCESS_WORKFLOW,
+        category: TimelineElementCategoryV20Enum.DIGITAL_SUCCESS_WORKFLOW,
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
@@ -125,7 +125,7 @@ const makeTimelineListPEC =
         elementId: `${iun}_schedule_refinement_workflow_${index}`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryEnum.SCHEDULE_REFINEMENT,
+        category: TimelineElementCategoryV20Enum.SCHEDULE_REFINEMENT,
         details: {
           recIndex: index,
         },
@@ -134,7 +134,7 @@ const makeTimelineListPEC =
         elementId: `${iun}_refinement_${index}`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryEnum.REFINEMENT,
+        category: TimelineElementCategoryV20Enum.REFINEMENT,
         details: {
           recIndex: index,
           notificationCost: 100,
@@ -149,7 +149,7 @@ const makeTimelineListPEC =
             category: LegalFactCategoryEnum.RECIPIENT_ACCESS,
           },
         ],
-        category: TimelineElementCategoryEnum.NOTIFICATION_VIEWED,
+        category: TimelineElementCategoryV20Enum.NOTIFICATION_VIEWED,
         details: {
           recIndex: index,
         },
@@ -158,7 +158,7 @@ const makeTimelineListPEC =
 
 export const makeTimelineList =
   (env: DomainEnv) =>
-  (notification: FullSentNotification): ReadonlyArray<TimelineElement> =>
+  (notification: FullSentNotificationV21): ReadonlyArray<TimelineElementV20> =>
     [
       {
         elementId: `${notification.iun}_request_accepted`,
@@ -169,14 +169,14 @@ export const makeTimelineList =
             category: LegalFactCategoryEnum.SENDER_ACK,
           },
         ],
-        category: TimelineElementCategoryEnum.REQUEST_ACCEPTED,
+        category: TimelineElementCategoryV20Enum.REQUEST_ACCEPTED,
       },
       ...pipe(notification.recipients, RA.chainWithIndex(makeTimelineListPEC(env)(notification.iun))),
     ];
 
 export const makeNotificationStatusHistory =
   (env: DomainEnv) =>
-  (notificationStatus: NotificationStatusEnum, timeline: ReadonlyArray<TimelineElement>): NotificationStatusHistory =>
+  (notificationStatus: NotificationStatusEnum, timeline: ReadonlyArray<TimelineElementV20>): NotificationStatusHistory =>
     [
       {
         status: notificationStatus,

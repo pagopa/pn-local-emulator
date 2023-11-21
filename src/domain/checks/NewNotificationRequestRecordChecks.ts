@@ -5,7 +5,8 @@ import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { isNewNotificationRecord } from '../NewNotificationRecord';
 import { isUploadToS3Record } from '../UploadToS3Record';
-import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequest';
+import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV21';
+import { NotificationPayments } from '../../generated/pnapi/NotificationPayments';
 import { matchAtLeastOneUploadToS3Record } from './UploadToS3RecordChecks';
 
 // TODO: This check is replicated on almost each record type, we can
@@ -63,11 +64,17 @@ export const atLeastOneValidCreditorTaxIdC = RA.exists(
     O.exists((record) =>
       pipe(
         record.input.body.recipients,
-        RA.every(({ payment }) => pipe(payment?.creditorTaxId, O.fromNullable, O.isSome))
+        RA.every(({ payments }) => // Update to 'payments'
+          pipe(
+            payments as NotificationPayments,
+            RA.every(payment => pipe(payment?.pagoPa?.creditorTaxId, O.fromNullable, O.isSome))
+          )
+        )
       )
     )
   )
 );
+
 
 export const atLeastOneValidNoticeCodeC = RA.exists(
   flow(
@@ -75,12 +82,19 @@ export const atLeastOneValidNoticeCodeC = RA.exists(
     O.exists((record) =>
       pipe(
         record.input.body.recipients,
-        RA.every(({ payment }) => pipe(payment?.noticeCode, O.fromNullable, O.isSome))
+        RA.every(( recipient ) => 
+          pipe(
+            recipient.payments,
+            O.fromNullable,
+            O.exists((payments) => payments.some(singlePayment => singlePayment.pagoPa?.noticeCode)))
+        )
       )
     )
   )
 );
 
+
+// todo denny
 export const atLeastOneValidPagoPaFormC = pipe(
   R.Do,
   R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),
@@ -93,15 +107,22 @@ export const atLeastOneValidPagoPaFormC = pipe(
           record.input.body.recipients,
           RA.every((recipient) =>
             pipe(
-              O.fromNullable(recipient.payment?.pagoPaForm),
-              O.exists(matchAtLeastOneUploadToS3Record(uploadToS3RecordList))
+              recipient.payments as NotificationPayments,
+              RA.exists((payment) =>
+                pipe(
+                  payment?.pagoPa?.attachment || payment.f24?.metadataAttachment,
+                  O.fromNullable,
+                  O.exists(matchAtLeastOneUploadToS3Record(uploadToS3RecordList))
+                )
+              ),
             )
-          )
+          ),
         )
-      )
-    )
+      ),
+    ),
   )
 );
+
 
 export const atLeastOneRequestWithValidDocumentsC = pipe(
   R.Do,
@@ -170,9 +191,9 @@ export const atLeastOneNotificationSameSenderAndCreatorC = RA.exists(
         record.input.body.recipients,
         RA.exists((recipient) =>
           pipe(
-            recipient.payment?.creditorTaxId,
+            recipient.payments,
             O.fromNullable,
-            O.exists((creditorTaxId) => creditorTaxId === record.input.body.senderTaxId)
+            O.exists((payments) => payments.some(singlePayment => singlePayment.pagoPa?.creditorTaxId === record.input.body.senderTaxId))
           )
         )
       )
