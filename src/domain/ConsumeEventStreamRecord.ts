@@ -14,6 +14,13 @@ import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
+import { record, string } from 'io-ts';
+import { CreateEventStreamRecord, isCreateEventStreamRecord } from './CreateEventStreamRecord';
+import { StreamMetadataResponse } from '../generated/streams/StreamMetadataResponse';
+import { makeLogger } from '../logger';
+import { Stream } from 'stream';
+import { EventTypeEnum } from '../generated/streams/StreamCreationRequest';
+import { create } from 'domain';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';
@@ -66,25 +73,46 @@ const makeProgressResponseElementFromNotificationRequest =
     analogCost: 325,
   });
 
+const log = makeLogger();
 export const makeConsumeEventStreamRecord =
   (env: DomainEnv) =>
   (input: ConsumeEventStreamRecord['input']) =>
-  (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => ({
-    type: 'ConsumeEventStreamRecord',
-    input,
-    output: pipe(
-      authorizeApiKey(input.apiKey),
-      E.foldW(identity, () =>
-        pipe(
-          computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[],
-          // create ProgressResponse
-          makeProgressResponse(env.dateGenerator()),
-          // override the eventId to create a simple cursor based pagination
-          RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
-          RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
-          (output) => ({ statusCode: 200 as const, headers: { 'retry-after': env.retryAfterMs }, returned: output })
+  (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => {
+    const createEventStreamRecord: CreateEventStreamRecord = records.filter(singleRecord => singleRecord.type === 'CreateEventStreamRecord' && ((singleRecord as CreateEventStreamRecord).output.returned as StreamMetadataResponse).streamId === input.streamId)[0] as CreateEventStreamRecord;
+    log.info("STREAM ID: " + (createEventStreamRecord.output.returned as StreamMetadataResponse).streamId);
+    const consumeEventStreamRecordCategories: readonly string[] | undefined = (createEventStreamRecord.output.returned as StreamMetadataResponse).filterValues;
+    consumeEventStreamRecordCategories?.forEach(singleCategory => log.info("CATEGORY: " + singleCategory));
+    log.info("#Categories: " + consumeEventStreamRecordCategories?.length);
+
+    return {
+      type: 'ConsumeEventStreamRecord',
+      input,
+      output: pipe(
+        authorizeApiKey(input.apiKey),
+        E.foldW(identity, () =>
+          pipe(
+            computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[],
+            // create ProgressResponse
+            makeProgressResponse(env.dateGenerator()),
+            // override the eventId to create a simple cursor based pagination
+            RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
+            RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
+            RA.filterMap((singleEvent) => {
+              if (consumeEventStreamRecordCategories?.length === 0) {
+                return (singleEvent.timelineEventCategory === "NOTIFICATION_CANCELLATION_REQUEST" || 
+                singleEvent.timelineEventCategory === "NOTIFICATION_CANCELLED" || 
+                singleEvent.timelineEventCategory === "PREPARE_ANALOG_DOMICILE_FAILURE") ? O.none : O.some(singleEvent);
+              }
+              
+              return consumeEventStreamRecordCategories?.some((singleCategory) => {
+                log.info("Comparing category from event: " + (singleEvent as ProgressResponseElement).timelineEventCategory + " with timeline category: " + singleCategory);
+                return singleCategory === singleEvent.timelineEventCategory;
+              }) ? O.some(singleEvent) : O.none
+            }),
+            (output) => ({ statusCode: 200 as const, headers: { 'retry-after': env.retryAfterMs }, returned: output })
+          )
         )
-      )
-    ),
-    loggedAt: env.dateGenerator(),
-  });
+      ),
+      loggedAt: env.dateGenerator(),
+    };
+  }
