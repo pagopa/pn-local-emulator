@@ -78,7 +78,7 @@ export const makeConsumeEventStreamRecord =
     log.info("STREAM ID: " + (createEventStreamRecord.output.returned as StreamMetadataResponse).streamId);
     const consumeEventStreamRecordCategories: readonly string[] | undefined = (createEventStreamRecord.output.returned as StreamMetadataResponse).filterValues;
     consumeEventStreamRecordCategories?.forEach(singleCategory => log.info("CATEGORY: " + singleCategory));
-    log.info("#Categories: " + consumeEventStreamRecordCategories?.length);
+    log.info("#Categories: ", consumeEventStreamRecordCategories?.length);
 
     return {
       type: 'ConsumeEventStreamRecord',
@@ -101,7 +101,7 @@ export const makeConsumeEventStreamRecord =
               }
               
               return consumeEventStreamRecordCategories?.some((singleCategory) => {
-                log.info("Comparing category from event: " + (singleEvent as ProgressResponseElement).timelineEventCategory + " with timeline category: " + singleCategory);
+                log.info("Comparing category from event: ", (singleEvent as ProgressResponseElement).timelineEventCategory, " with timeline category: ", singleCategory);
                 return singleCategory === singleEvent.timelineEventCategory;
               }) ? O.some(singleEvent) : O.none;
             }),
@@ -111,4 +111,4 @@ export const makeConsumeEventStreamRecord =
       ),
       loggedAt: env.dateGenerator(),
     };
-  }
+  };
