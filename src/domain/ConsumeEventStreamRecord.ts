@@ -7,6 +7,8 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
 import { ProgressResponse } from '../generated/streams/ProgressResponse';
 import { ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
+import { StreamMetadataResponse } from '../generated/streams/StreamMetadataResponse';
+import { makeLogger } from '../logger';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
 import { Record, AuditRecord } from './Repository';
@@ -14,13 +16,7 @@ import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
-import { record, string } from 'io-ts';
-import { CreateEventStreamRecord, isCreateEventStreamRecord } from './CreateEventStreamRecord';
-import { StreamMetadataResponse } from '../generated/streams/StreamMetadataResponse';
-import { makeLogger } from '../logger';
-import { Stream } from 'stream';
-import { EventTypeEnum } from '../generated/streams/StreamCreationRequest';
-import { create } from 'domain';
+import { CreateEventStreamRecord } from './CreateEventStreamRecord';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';
@@ -107,7 +103,7 @@ export const makeConsumeEventStreamRecord =
               return consumeEventStreamRecordCategories?.some((singleCategory) => {
                 log.info("Comparing category from event: " + (singleEvent as ProgressResponseElement).timelineEventCategory + " with timeline category: " + singleCategory);
                 return singleCategory === singleEvent.timelineEventCategory;
-              }) ? O.some(singleEvent) : O.none
+              }) ? O.some(singleEvent) : O.none;
             }),
             (output) => ({ statusCode: 200 as const, headers: { 'retry-after': env.retryAfterMs }, returned: output })
           )
