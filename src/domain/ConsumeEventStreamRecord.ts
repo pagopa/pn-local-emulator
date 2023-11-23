@@ -18,7 +18,6 @@ import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 import { CreateEventStreamRecord } from './CreateEventStreamRecord';
-import { TimelineElementV20 } from '../generated/pnapi/TimelineElementV20';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';
