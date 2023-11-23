@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/array-type */
+/* eslint-disable functional/no-let */
 
 import { flow, pipe, identity } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
@@ -17,6 +18,7 @@ import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 import { CreateEventStreamRecord } from './CreateEventStreamRecord';
+import { TimelineElementV20 } from '../generated/pnapi/TimelineElementV20';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';
@@ -40,6 +42,8 @@ const makeProgressResponse = (timestamp: Date) =>
     )
   );
 
+
+let notificationEventCounter: number = 0;
 export const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
   (notification: Notification): ReadonlyArray<ProgressResponseElement> =>
@@ -49,7 +53,7 @@ export const makeProgressResponseElementFromNotification =
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
         newStatus: notification.notificationStatus,
-        // timelineEventCategory: category,
+        timelineEventCategory: notification.timeline[notificationEventCounter++ % 11].category,
         legalFactsIds: legalFactsIds?.map((lf) => lf.key.replaceAll('safestorage://', '')) || [], // Modify the legalFactsIds directly
         recipientIndex: pipe(
           details && 'recIndex' in details ? details.recIndex : undefined,
