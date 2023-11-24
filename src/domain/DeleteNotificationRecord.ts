@@ -31,9 +31,9 @@ export const makeDeleteNotificationRecord =
             {
               code: "NOTIFICATION_CANCELLATION_ACCEPTED",
               level: "INFO",
-              detail: "Parameter not valid",
+              detail: "Notification cancellation accepted",
             },
-        ],}, // Replace "success" with an appropriate status value
+        ],},
       })),
       E.toUnion
     ),    
