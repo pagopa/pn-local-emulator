@@ -10,7 +10,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import { mkNotification } from '../Notification';
 import { NotificationRequest } from '../NotificationRequest';
-import { ProgressResponseElement } from '../../generated/streams/ProgressResponseElement';
+import { ProgressResponseElement } from '../../generated/pnapi/ProgressResponseElement';
 import { LegalFactsId } from '../../generated/pnapi/LegalFactsId';
 import { TimelineElement } from '../../generated/pnapi/TimelineElement';
 

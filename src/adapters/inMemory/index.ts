@@ -4,7 +4,7 @@ import { Record, RecordRepository } from '../../domain/Repository';
 import { Logger } from '../../logger';
 import { DeleteStreamRecord } from '../../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord, isCreateEventStreamRecord } from '../../domain/CreateEventStreamRecord';
-import { StreamMetadataResponse } from '../../generated/streams/StreamMetadataResponse';
+import { StreamMetadataResponse } from '../../generated/pnapi/StreamMetadataResponse';
 import { DeleteNotificationRecord } from '../../domain/DeleteNotificationRecord';
 import { CheckNotificationStatusRecord, isCheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRecord';
 import { NewNotificationRequestStatusResponse } from '../../generated/pnapi/NewNotificationRequestStatusResponse';

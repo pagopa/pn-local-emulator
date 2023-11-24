@@ -8,7 +8,7 @@ import * as Apply from 'fp-ts/Apply';
 import { constant, flow } from 'fp-ts/lib/function';
 import * as Problem from '../Problem';
 import { Handler, toExpressHandler } from '../Handler';
-import { StreamCreationRequest } from '../../../generated/streams/StreamCreationRequest';
+import { StreamCreationRequest } from '../../../generated/pnapi/StreamCreationRequest';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeCreateEventStreamRecord } from '../../../domain/CreateEventStreamRecord';
 import { persistRecord } from '../../../useCases/PersistRecord';

@@ -5,14 +5,15 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { IUN } from '../generated/pnapi/IUN';
 import { AuditRecord, Record } from './Repository';
-import { Response, UnauthorizedMessageBody } from './types';
+import { HttpErrorMessageBody, Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { authorizeApiKey } from './authorize';
+import { RequestStatus } from '../generated/pnapi/RequestStatus';
 
 export type DeleteNotificationRecord = AuditRecord & {
   type: 'DeleteNotificationRecord';
   input: { apiKey: string; iun: IUN };
-  output: Response<202> | Response<403, UnauthorizedMessageBody>;
+  output: Response<202, RequestStatus> | Response<403, UnauthorizedMessageBody> | Response<404, HttpErrorMessageBody>;
 };
 
 export const makeDeleteNotificationRecord =
@@ -24,10 +25,18 @@ export const makeDeleteNotificationRecord =
       authorizeApiKey(input.apiKey),
       E.map(() => ({
         statusCode: 202 as const,
-        returned: undefined,
+        returned: { 
+          status: "success",
+          details: [
+            {
+              code: "NOTIFICATION_CANCELLATION_ACCEPTED",
+              level: "INFO",
+              detail: "Parameter not valid",
+            },
+        ],}, // Replace "success" with an appropriate status value
       })),
       E.toUnion
-    ),
+    ),    
     loggedAt: env.dateGenerator(),
   });
 
