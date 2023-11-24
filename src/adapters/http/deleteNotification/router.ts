@@ -20,7 +20,7 @@ const handler =
         apiKey: t.string.decode(req.headers['x-api-key']),
         iun: IUN.decode(req.params.iun)
       }),
-      E.map(flow(makeDeleteNotificationRecord(env), constant, deleteNotificationRecord(env))),
+      E.map(flow(makeDeleteNotificationRecord(env), deleteNotificationRecord(env))),
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
