@@ -6,12 +6,12 @@ import * as E from 'fp-ts/Either';
 import { IUN } from '../generated/pnapi/IUN';
 import { RequestStatus } from '../generated/pnapi/RequestStatus';
 import { makeLogger } from '../logger';
+import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { AuditRecord, Record } from './Repository';
 import { HttpErrorMessageBody, Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { authorizeApiKey } from './authorize';
 import { GetNotificationDetailRecord } from './GetNotificationDetailRecord';
-import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { generateErrorResponse } from './NewNotificationRecord';
 
 export type DeleteNotificationRecord = AuditRecord & {
