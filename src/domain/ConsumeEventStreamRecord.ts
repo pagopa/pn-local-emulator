@@ -42,17 +42,18 @@ const makeProgressResponse = (timestamp: Date) =>
   );
 
 
-let notificationEventCounter: number = 0;
+
 export const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
-  (notification: Notification): ReadonlyArray<ProgressResponseElement> =>
-    pipe(
+  (notification: Notification): ReadonlyArray<ProgressResponseElement> => {
+    let notificationEventCounter: number = 0;
+    return pipe(
       notification.timeline,
-      RA.map(({ /* category, */ legalFactsIds, details }) => ({
+      RA.map(({ category, legalFactsIds, details }) => ({
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
         newStatus: notification.notificationStatus,
-        timelineEventCategory: notification.timeline[notificationEventCounter++ % 11].category,
+        timelineEventCategory: category,
         legalFactsIds: legalFactsIds?.map((lf) => lf.key.replaceAll('safestorage://', '')) || [], // Modify the legalFactsIds directly
         recipientIndex: pipe(
           details && 'recIndex' in details ? details.recIndex : undefined,
@@ -61,6 +62,7 @@ export const makeProgressResponseElementFromNotification =
         ),
       }))
     );
+  }
 
 const makeProgressResponseElementFromNotificationRequest =
   (timestamp: Date) =>
