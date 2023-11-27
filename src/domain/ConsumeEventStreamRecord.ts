@@ -45,9 +45,8 @@ const makeProgressResponse = (timestamp: Date) =>
 
 export const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
-  (notification: Notification): ReadonlyArray<ProgressResponseElement> => {
-    let notificationEventCounter: number = 0;
-    return pipe(
+  (notification: Notification): ReadonlyArray<ProgressResponseElement> => 
+    pipe(
       notification.timeline,
       RA.map(({ category, legalFactsIds, details }) => ({
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
@@ -62,7 +61,6 @@ export const makeProgressResponseElementFromNotification =
         ),
       }))
     );
-  }
 
 const makeProgressResponseElementFromNotificationRequest =
   (timestamp: Date) =>
