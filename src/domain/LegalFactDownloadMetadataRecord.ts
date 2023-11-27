@@ -1,22 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { pipe } from 'fp-ts/lib/function';
-import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
+import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { pipe } from 'fp-ts/lib/function';
 import { IUN } from '../generated/pnapi/IUN';
-import { LegalFactCategory } from '../generated/pnapi/LegalFactCategory';
 import { LegalFactDownloadMetadataResponse } from '../generated/pnapi/LegalFactDownloadMetadataResponse';
 import { Problem } from '../generated/pnapi/Problem';
-import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
+import { makePnDownloadDocumentURL } from './PnDownloadDocumentURL';
 import { AuditRecord, Record } from './Repository';
 import { computeSnapshot } from './Snapshot';
-import { notFoundResponse, Response, UnauthorizedMessageBody } from './types';
-import { makePnDownloadDocumentURL } from './PnDownloadDocumentURL';
+import { authorizeApiKey } from './authorize';
+import { Response, UnauthorizedMessageBody, notFoundResponse } from './types';
 
 export type LegalFactDownloadMetadataRecord = AuditRecord & {
   type: 'LegalFactDownloadMetadataRecord';
-  input: { apiKey: string; legalFactType: LegalFactCategory; legalFactId: string; iun: IUN };
+  input: { apiKey: string; legalFactId: string; iun: IUN };
   output:
     | Response<200, LegalFactDownloadMetadataResponse>
     | Response<403, UnauthorizedMessageBody>

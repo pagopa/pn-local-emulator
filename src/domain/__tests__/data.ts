@@ -509,7 +509,7 @@ export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadat
 
 export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord = {
   type: 'LegalFactDownloadMetadataRecord',
-  input: { apiKey: apiKey.valid, iun: aIun.valid, legalFactType: aLegalFactType, legalFactId: aLegalFactId },
+  input: { apiKey: apiKey.valid, iun: aIun.valid, legalFactId: aLegalFactId },
   output: {
     statusCode: 200,
     returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),
