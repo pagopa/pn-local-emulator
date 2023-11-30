@@ -75,16 +75,10 @@ export const makeRecordRepository =
           return TE.of(createEvenStreamRecord);
         }
       },
-      removeNotificationRecord: (
-        deleteNotificationRecord: DeleteNotificationRecord
-      ): TE.TaskEither<Error, ReadonlyArray<Record>> => {
-        // Filter out DeleteStreamRecord with matching streamId
-        const filteredStore = store.filter((record) =>
-          filterByIun(deleteNotificationRecord.input.iun, record)
-        );
-
-        store = filteredStore;
-        return TE.of(store);
+      removeNotificationRecord:(element) => {
+        store = [...store, element];
+        
+        return TE.of(element);
       },
     };
   };

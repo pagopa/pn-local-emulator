@@ -24,7 +24,7 @@ const log = makeLogger();
 export const makeDeleteNotificationRecord =
   (env: DomainEnv) =>
   (input: DeleteNotificationRecord['input']) =>
-  (records: ReadonlyArray<Record>): DeleteNotificationRecord => {  
+  (records: ReadonlyArray<Record>): DeleteNotificationRecord => { 
     const isRequestAuthorized = authorizeApiKey(input.apiKey);
 
     if (!isRequestAuthorized) {
