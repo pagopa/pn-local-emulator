@@ -5,8 +5,8 @@ import { Logger } from '../../logger';
 import { DeleteStreamRecord } from '../../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord, isCreateEventStreamRecord } from '../../domain/CreateEventStreamRecord';
 import { StreamMetadataResponse } from '../../generated/pnapi/StreamMetadataResponse';
-import { CheckNotificationStatusRecord, isCheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRecord';
-import { NewNotificationRequestStatusResponse } from '../../generated/pnapi/NewNotificationRequestStatusResponse';
+// import { CheckNotificationStatusRecord, isCheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRecord';
+// import { NewNotificationRequestStatusResponse } from '../../generated/pnapi/NewNotificationRequestStatusResponse';
 
 const filterByStreamId = (streamId: string, record: Record): boolean =>
   O.fold(
