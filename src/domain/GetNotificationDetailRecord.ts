@@ -67,13 +67,13 @@ export const makeGetNotificationDetailRecord =
           RA.filterMap(O.fromEither),
           RA.findFirstMap((notification) => {
             const getNotificationDetailRecord: GetNotificationDetailRecord = (records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
-            if (getNotificationDetailRecord != undefined) {
+            if (getNotificationDetailRecord !== undefined) {
               const deletedFullSentNotificationV21: FullSentNotificationV21 = getNotificationDetailRecord.output.returned as FullSentNotificationV21;
               if (notification.iun === deletedFullSentNotificationV21.iun && deletedFullSentNotificationV21.notificationStatus === NotificationStatusEnum.CANCELLED) {
                 notification.notificationStatus = NotificationStatusEnum.CANCELLED;
               }
             }
-            return notification.iun === input.iun ? O.some(exactFullSentNotification(notification)) : O.none
+            return notification.iun === input.iun ? O.some(exactFullSentNotification(notification)) : O.none;
           }),
           O.map((returned) => ({ statusCode: 200 as const, returned })),
           O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))

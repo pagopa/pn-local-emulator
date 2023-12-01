@@ -1,3 +1,5 @@
+/* eslint-disable functional/immutable-data */
+
 // DeleteNotificationRecord.ts
 
 import { pipe } from 'fp-ts/function';
@@ -39,7 +41,7 @@ export const makeDeleteNotificationRecord =
     }
 
     const getNotificationDetailRecord: GetNotificationDetailRecord = records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord;
-    if (getNotificationDetailRecord === undefined || getNotificationDetailRecord.input.iun != input.iun) {
+    if (getNotificationDetailRecord === undefined || getNotificationDetailRecord.input.iun !== input.iun) {
       return {
         type: 'DeleteNotificationRecord',
         input,

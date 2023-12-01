@@ -1,3 +1,5 @@
+/* eslint-disable functional/immutable-data */
+
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import { Record, RecordRepository } from '../../domain/Repository';
@@ -5,26 +7,15 @@ import { Logger } from '../../logger';
 import { DeleteStreamRecord } from '../../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord, isCreateEventStreamRecord } from '../../domain/CreateEventStreamRecord';
 import { StreamMetadataResponse } from '../../generated/pnapi/StreamMetadataResponse';
-import { DeleteNotificationRecord } from '../../domain/DeleteNotificationRecord';
 import { GetNotificationDetailRecord } from '../../domain/GetNotificationDetailRecord';
 import { FullSentNotificationV21 } from '../../generated/pnapi/FullSentNotificationV21';
 import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
-// import { CheckNotificationStatusRecord, isCheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRecord';
-// import { NewNotificationRequestStatusResponse } from '../../generated/pnapi/NewNotificationRequestStatusResponse';
-
 const filterByStreamId = (streamId: string, record: Record): boolean =>
   O.fold(
     () => true,
     (csr: CreateEventStreamRecord) => (csr.output.returned as StreamMetadataResponse).streamId !== streamId
   )(isCreateEventStreamRecord(record));
-/*
-const filterByIun = (iun: string, record: Record): boolean =>
-  O.fold(
-    () => true,
-    (csr: CheckNotificationStatusRecord) => (csr.output.returned as NewNotificationRequestStatusResponse).iun !== iun
-  )(isCheckNotificationStatusRecord(record));
 
-  */
 // TODO: Instead of mutable variable, try to use the State Monad (or STM)
 export const makeRecordRepository =
   (logger: Logger) =>
@@ -82,7 +73,7 @@ export const makeRecordRepository =
       removeNotificationRecord: (element) => {
         store = [...store, element];
         const getNotificationDetailRecord: GetNotificationDetailRecord = (store.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
-        if (getNotificationDetailRecord != undefined) {
+        if (getNotificationDetailRecord !== undefined) {
           (getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus = NotificationStatusEnum.CANCELLED;
         }
         return TE.of(element);

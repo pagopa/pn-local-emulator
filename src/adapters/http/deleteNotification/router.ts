@@ -5,7 +5,7 @@ import * as t from 'io-ts';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import express from 'express';
-import { deleteNotificationRecord, persistRecord } from '../../../useCases/PersistRecord';
+import { deleteNotificationRecord } from '../../../useCases/PersistRecord';
 import { Handler, toExpressHandler } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeDeleteNotificationRecord } from '../../../domain/DeleteNotificationRecord';
