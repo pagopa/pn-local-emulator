@@ -1,3 +1,5 @@
+/* eslint-disable functional/immutable-data */
+
 import * as t from 'io-ts';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
