@@ -5,6 +5,10 @@ import { Logger } from '../../logger';
 import { DeleteStreamRecord } from '../../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord, isCreateEventStreamRecord } from '../../domain/CreateEventStreamRecord';
 import { StreamMetadataResponse } from '../../generated/pnapi/StreamMetadataResponse';
+import { DeleteNotificationRecord } from '../../domain/DeleteNotificationRecord';
+import { GetNotificationDetailRecord } from '../../domain/GetNotificationDetailRecord';
+import { FullSentNotificationV21 } from '../../generated/pnapi/FullSentNotificationV21';
+import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
 // import { CheckNotificationStatusRecord, isCheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRecord';
 // import { NewNotificationRequestStatusResponse } from '../../generated/pnapi/NewNotificationRequestStatusResponse';
 
@@ -75,10 +79,13 @@ export const makeRecordRepository =
           return TE.of(createEvenStreamRecord);
         }
       },
-      removeNotificationRecord:(element) => {
+      removeNotificationRecord: (element) => {
         store = [...store, element];
-        
+        const getNotificationDetailRecord: GetNotificationDetailRecord = (store.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
+        if (getNotificationDetailRecord != undefined) {
+          (getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus = NotificationStatusEnum.CANCELLED;
+        }
         return TE.of(element);
-      },
+      } 
     };
   };

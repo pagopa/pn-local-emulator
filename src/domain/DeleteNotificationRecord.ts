@@ -5,7 +5,6 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { IUN } from '../generated/pnapi/IUN';
 import { RequestStatus } from '../generated/pnapi/RequestStatus';
-import { makeLogger } from '../logger';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { AuditRecord, Record } from './Repository';
 import { HttpErrorMessageBody, Response, UnauthorizedMessageBody } from './types';
@@ -13,6 +12,7 @@ import { DomainEnv } from './DomainEnv';
 import { authorizeApiKey } from './authorize';
 import { GetNotificationDetailRecord } from './GetNotificationDetailRecord';
 import { generateErrorResponse } from './NewNotificationRecord';
+import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 
 export type DeleteNotificationRecord = AuditRecord & {
   type: 'DeleteNotificationRecord';
@@ -20,7 +20,6 @@ export type DeleteNotificationRecord = AuditRecord & {
   output: Response<202, RequestStatus> | Response<403, UnauthorizedMessageBody> | Response<404, HttpErrorMessageBody>;
 };
 
-const log = makeLogger();
 export const makeDeleteNotificationRecord =
   (env: DomainEnv) =>
   (input: DeleteNotificationRecord['input']) =>
@@ -38,10 +37,9 @@ export const makeDeleteNotificationRecord =
         }
       };
     }
-    log.info("test");
 
     const getNotificationDetailRecord: GetNotificationDetailRecord = records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord;
-    if (getNotificationDetailRecord === undefined) {
+    if (getNotificationDetailRecord === undefined || getNotificationDetailRecord.input.iun != input.iun) {
       return {
         type: 'DeleteNotificationRecord',
         input,
@@ -58,6 +56,7 @@ export const makeDeleteNotificationRecord =
       isValidIun => {
         if (isValidIun) {
           if ((getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus === 'ACCEPTED') {
+            ((records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus = NotificationStatusEnum.CANCELLED;
             return E.right({
               status: "Notification cancellation success",
               details: [
@@ -90,7 +89,7 @@ export const makeDeleteNotificationRecord =
       loggedAt: env.dateGenerator(),
       output: E.foldW(
         (error) => error as Response<404, HttpErrorMessageBody>,
-        (success ) => ({
+        (success) => ({
           statusCode: 202,
           returned: success,
         }) as Response<202, RequestStatus>

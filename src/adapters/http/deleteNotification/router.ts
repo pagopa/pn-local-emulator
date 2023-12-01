@@ -5,7 +5,7 @@ import * as t from 'io-ts';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import express from 'express';
-import { deleteNotificationRecord } from '../../../useCases/PersistRecord';
+import { deleteNotificationRecord, persistRecord } from '../../../useCases/PersistRecord';
 import { Handler, toExpressHandler } from '../Handler';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { makeDeleteNotificationRecord } from '../../../domain/DeleteNotificationRecord';
@@ -24,7 +24,7 @@ const handler =
       E.map(
         TE.fold(
           (_) => T.of(res.status(500).send(Problem.fromNumber(500))),
-          (_) => T.of(res.status(202).send())
+          ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
         )
       )
     );
