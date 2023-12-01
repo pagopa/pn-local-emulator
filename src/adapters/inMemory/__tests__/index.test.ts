@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { makeLogger } from '../../../logger';
 import * as data from '../../../domain/__tests__/data';
 import { makeDeleteStreamRecord } from '../../../domain/DeleteStreamRecord';
-import { StreamMetadataResponse } from '../../../generated/streams/StreamMetadataResponse';
+import { StreamMetadataResponse } from '../../../generated/pnapi/StreamMetadataResponse';
 import { CreateEventStreamRecord } from '../../../domain/CreateEventStreamRecord';
 
 describe('Repository', () => {

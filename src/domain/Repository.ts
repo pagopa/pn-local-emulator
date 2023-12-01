@@ -50,5 +50,5 @@ export type RecordRepository = {
   updateStreamRecordReturningOnlyTheOneUpdatedStream: (
     updateEventStreamRecord: CreateEventStreamRecord
   ) => TE.TaskEither<Error, Record>;
-  removeNotificationRecord: (deleteNotificationRecord: DeleteNotificationRecord) => TE.TaskEither<Error, ReadonlyArray<Record>>;
+  removeNotificationRecord: <A extends Record>(input: A) => TE.TaskEither<Error, A>;
 };
