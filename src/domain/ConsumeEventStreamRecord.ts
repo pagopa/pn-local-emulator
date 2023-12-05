@@ -78,11 +78,8 @@ export const makeConsumeEventStreamRecord =
   (input: ConsumeEventStreamRecord['input']) =>
   (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => {
     const createEventStreamRecord: CreateEventStreamRecord = records.filter(singleRecord => singleRecord.type === 'CreateEventStreamRecord' && ((singleRecord as CreateEventStreamRecord).output.returned as StreamMetadataResponse).streamId === input.streamId)[0] as CreateEventStreamRecord;
-    log.info("STREAM ID: ", (createEventStreamRecord.output.returned as StreamMetadataResponse).streamId);
     const consumeEventStreamRecordCategories: readonly string[] | undefined = (createEventStreamRecord.output.returned as StreamMetadataResponse).filterValues;
     consumeEventStreamRecordCategories?.forEach(singleCategory => log.info("CATEGORY: " + singleCategory));
-    log.info("#Categories: ", consumeEventStreamRecordCategories?.length);
-
     return {
       type: 'ConsumeEventStreamRecord',
       input,
