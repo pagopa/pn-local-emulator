@@ -16,6 +16,12 @@ const filterByStreamId = (streamId: string, record: Record): boolean =>
     (csr: CreateEventStreamRecord) => (csr.output.returned as StreamMetadataResponse).streamId !== streamId
   )(isCreateEventStreamRecord(record));
 
+const filterByIun = (iun: string, record: Record): boolean =>
+  O.fold(
+    () => true,
+    (csr: CheckNotificationStatusRecord) => (csr.output.returned as NewNotificationRequestStatusResponse).iun !== iun
+  )(isCheckNotificationStatusRecord(record));
+
 // TODO: Instead of mutable variable, try to use the State Monad (or STM)
 export const makeRecordRepository =
   (logger: Logger) =>

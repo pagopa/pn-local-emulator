@@ -3,7 +3,6 @@ import * as TE from 'fp-ts/TaskEither';
 import { Record } from '../domain/Repository';
 import { DeleteStreamRecord } from '../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord } from '../domain/CreateEventStreamRecord';
-// import { DeleteNotificationRecord } from '../domain/DeleteNotificationRecord';
 import { SystemEnv } from './SystemEnv';
 
 export const persistRecord =
