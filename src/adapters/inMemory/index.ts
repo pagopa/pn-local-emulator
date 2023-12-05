@@ -10,6 +10,9 @@ import { StreamMetadataResponse } from '../../generated/pnapi/StreamMetadataResp
 import { GetNotificationDetailRecord } from '../../domain/GetNotificationDetailRecord';
 import { FullSentNotificationV21 } from '../../generated/pnapi/FullSentNotificationV21';
 import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
+import { CheckNotificationStatusRecord, isCheckNotificationStatusRecord } from '../../domain/CheckNotificationStatusRecord';
+import { NewNotificationRequestStatusResponse } from '../../generated/pnapi/NewNotificationRequestStatusResponse';
+
 const filterByStreamId = (streamId: string, record: Record): boolean =>
   O.fold(
     () => true,
