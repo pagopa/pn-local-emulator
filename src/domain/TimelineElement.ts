@@ -21,8 +21,8 @@ const log = makeLogger();
 const makeTimelineListPEC =
   (env: DomainEnv) =>
   (notification: FullSentNotificationV21) =>
-  (index: number, recipient: NotificationRecipient): ReadonlyArray<TimelineElementV20> => {
-    return notification.notificationStatus !== NotificationStatusEnum.CANCELLED ? [
+  (index: number, recipient: NotificationRecipient): ReadonlyArray<TimelineElementV20> =>
+    notification.notificationStatus !== NotificationStatusEnum.CANCELLED ? [
       {
         elementId: `${notification.iun}_aar_gen_${index}`,
         timestamp: env.dateGenerator(),
@@ -313,7 +313,6 @@ const makeTimelineListPEC =
         }
       }
     ];
-  };
 
 export const makeTimelineList =
   (env: DomainEnv) =>
