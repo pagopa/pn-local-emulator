@@ -101,10 +101,7 @@ export const makeConsumeEventStreamRecord =
                 singleEvent.timelineEventCategory === "PREPARE_ANALOG_DOMICILE_FAILURE") ? O.none : O.some(singleEvent);
               }
               
-              return consumeEventStreamRecordCategories?.some((singleCategory) => {
-                // log.info("Comparing category from event: ", (singleEvent as ProgressResponseElement).timelineEventCategory, " with timeline category: ", singleCategory);
-                return singleCategory === singleEvent.timelineEventCategory;
-              }) ? O.some(singleEvent) : O.none;
+              return consumeEventStreamRecordCategories?.some((singleCategory) => singleCategory === singleEvent.timelineEventCategory) ? O.some(singleEvent) : O.none;
             }),
             (output) => ({ statusCode: 200 as const, headers: { 'retry-after': env.retryAfterMs }, returned: output })
           )

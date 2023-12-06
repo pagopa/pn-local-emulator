@@ -12,11 +12,8 @@ import { NotificationStatusHistory } from '../generated/pnapi/NotificationStatus
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { IUNGeneratorByIndex } from '../adapters/randexp/IUNGenerator';
 import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
-import { makeLogger } from '../logger';
 import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
-
-const log = makeLogger();
 
 const makeTimelineListPEC =
   (env: DomainEnv) =>
@@ -352,12 +349,10 @@ export const makeNotificationStatusHistory =
 
 export const updateTimeline =
   (env: DomainEnv) =>
-  (notification: Notification, newNotificationStatus: NotificationStatusEnum): Notification => {
-    
-    return pipe(notification, makeTimelineList(env), (timelineList) => ({
+  (notification: Notification, newNotificationStatus: NotificationStatusEnum): Notification =>
+    pipe(notification, makeTimelineList(env), (timelineList) => ({
       ...notification,
       notificationStatus: newNotificationStatus,
       notificationStatusHistory: makeNotificationStatusHistory(env)(newNotificationStatus, timelineList),
       timeline: timelineList,
     }));
-  };
