@@ -8,7 +8,6 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
-import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';

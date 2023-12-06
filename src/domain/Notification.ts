@@ -10,6 +10,7 @@ import * as s from 'fp-ts/string';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { IUN } from '../generated/pnapi/IUN';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
+import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponse, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { DomainEnv } from './DomainEnv';
@@ -20,7 +21,6 @@ import {
 } from './GetNotificationDetailRecord';
 import { NotificationRequest, makeNotificationRequestFromFind } from './NotificationRequest';
 import { updateTimeline } from './TimelineElement';
-import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 
 export type Notification = FullSentNotificationV21 & Pick<NotificationRequest, 'notificationRequestId'>;
 
@@ -152,7 +152,7 @@ export const makeNotification =
                     notRefinedRecipientIndexes: [0]
                   }
                 }
-              ]
+              ];
               notification.notificationStatusHistory = [
                 ...notification.notificationStatusHistory,
                 {
