@@ -7,7 +7,7 @@ import * as ConsumeEventStreamRecord from '../ConsumeEventStreamRecord';
 import * as CreateEventStreamRecordRepository from '../CreateEventStreamRecord';
 import { Record } from '../Repository';
 import { DomainEnv } from '../DomainEnv';
-import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
+import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
 import { existsCreateEventStreamRecordWhitStreamId } from './CreateEventStreamRecordChecks';
 
 export const requestWithStreamIdProvidedHasBeenMadeC = pipe(

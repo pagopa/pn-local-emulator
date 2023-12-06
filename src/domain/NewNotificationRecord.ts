@@ -82,7 +82,7 @@ export const makeNewNotificationRecord =
 
   const authorizeApiKey = (apiKey: string): boolean => apiKey === 'key-value';
 
-  const generateErrorResponse = (httpStatusCode: number, httpTitle: string, httpMessage: string): HttpErrorMessageBody => ({
+  export const generateErrorResponse = (httpStatusCode: number, httpTitle: string, httpMessage: string): HttpErrorMessageBody => ({
     status: httpStatusCode,
     title: httpTitle,
     errors: [],

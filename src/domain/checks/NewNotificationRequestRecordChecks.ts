@@ -93,8 +93,6 @@ export const atLeastOneValidNoticeCodeC = RA.exists(
   )
 );
 
-
-// todo denny
 export const atLeastOneValidPagoPaFormC = pipe(
   R.Do,
   R.apS('uploadToS3RecordList', RA.filterMap(isUploadToS3Record)),

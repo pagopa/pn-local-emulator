@@ -6,7 +6,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { flow, pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
 import { makeUpdateStreamRecord } from '../../../domain/UpdateStreamRecord';
-import { StreamCreationRequest } from '../../../generated/streams/StreamCreationRequest';
+import { StreamCreationRequest } from '../../../generated/pnapi/StreamCreationRequest';
 import { updateStreamRecordReturningOnlyTheOneUpdatedStream } from '../../../useCases/PersistRecord';
 import { SystemEnv } from '../../../useCases/SystemEnv';
 import { Handler, toExpressHandler } from '../Handler';

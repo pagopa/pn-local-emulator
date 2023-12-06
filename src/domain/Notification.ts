@@ -1,3 +1,6 @@
+/* eslint-disable functional/immutable-data */
+/* eslint-disable sonarjs/cognitive-complexity */
+  
 import * as M from 'fp-ts/Monoid';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
@@ -7,6 +10,7 @@ import * as s from 'fp-ts/string';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { IUN } from '../generated/pnapi/IUN';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
+import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponse, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { DomainEnv } from './DomainEnv';
@@ -123,13 +127,48 @@ export const makeNotification =
             pipe(consumeEventStreamRecord, countFromConsume(notificationRequest.notificationRequestId)),
             pipe(getNotificationDetailRecord, countFromDetail(notification.iun)),
           ]),
-          (occurrences) =>
+          (occurrences) => {
+            if (getNotificationDetailRecord[0] as GetNotificationDetailRecord !== undefined && ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === NotificationStatusEnum.CANCELLED) {
+              notification.notificationStatus = NotificationStatusEnum.CANCELLED;
+              notification.cancelledIun = notification.iun;
+              notification.notificationStatusHistory = [
+                ...notification.notificationStatusHistory,
+                {
+                  status: NotificationStatusEnum.CANCELLED,
+                  activeFrom: env.dateGenerator(),
+                  relatedTimelineElements: [
+                    `NOTIFICATION_CANCELLED.IUN_${notification.iun}`
+                  ]
+                }
+              ];
+              notification.timeline = [ ...notification.timeline,
+              {
+                elementId: `NOTIFICATION_CANCELLATION_REQUEST.IUN_${notification.iun}`,
+                timestamp: env.dateGenerator(),
+                legalFactsIds: [],
+                category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLATION_REQUEST,
+                details: {
+                  cancellationRequestId: "90e3f130-cb23-4b6b-a0aa-858de7ffb3a0"
+                }
+              },
+              {
+                elementId: `NOTIFICATION_CANCELLED.IUN_${notification.iun}`,
+                timestamp: env.dateGenerator(),
+                legalFactsIds: [],
+                category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLED,
+                details: {
+                  notificationCost: 100,
+                  notRefinedRecipientIndexes: [0]
+                }
+              }];
+            }
             // update the notification according to the number of occurrencies
-            pipe(
+            return pipe(
               makeStatus(env, occurrences),
-              O.map((newStatus) => updateTimeline(env)(notification, newStatus)),
+              O.map((newStatus) => updateTimeline(env)(notification, ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === 'CANCELLED' ? NotificationStatusEnum.CANCELLED : newStatus)),
               O.getOrElse(() => notification)
-            )
+            );
+          }
         )
       )
     );

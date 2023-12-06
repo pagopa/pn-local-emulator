@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/array-type */
+/* eslint-disable functional/no-let */
 
 import { flow, pipe, identity } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NonNegativeInteger } from '@pagopa/ts-commons/lib/numbers';
-import { ProgressResponse } from '../generated/streams/ProgressResponse';
-import { ProgressResponseElement } from '../generated/streams/ProgressResponseElement';
+import { ProgressResponse } from '../generated/pnapi/ProgressResponse';
+import { ProgressResponseElement } from '../generated/pnapi/ProgressResponseElement';
+import { makeLogger } from '../logger';
+import { StreamMetadataResponse } from '../generated/pnapi/StreamMetadataResponse';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
 import { Record, AuditRecord } from './Repository';
@@ -14,6 +17,7 @@ import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
+import { CreateEventStreamRecord } from './CreateEventStreamRecord';
 
 export type ConsumeEventStreamRecord = AuditRecord & {
   type: 'ConsumeEventStreamRecord';
@@ -37,9 +41,11 @@ const makeProgressResponse = (timestamp: Date) =>
     )
   );
 
+
+
 export const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
-  (notification: Notification): ReadonlyArray<ProgressResponseElement> =>
+  (notification: Notification): ReadonlyArray<ProgressResponseElement> => 
     pipe(
       notification.timeline,
       RA.map(({ /* category, */ legalFactsIds, details }) => ({
@@ -67,25 +73,44 @@ const makeProgressResponseElementFromNotificationRequest =
     analogCost: 325,
   });
 
+const log = makeLogger();
 export const makeConsumeEventStreamRecord =
   (env: DomainEnv) =>
   (input: ConsumeEventStreamRecord['input']) =>
-  (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => ({
-    type: 'ConsumeEventStreamRecord',
-    input,
-    output: pipe(
-      authorizeApiKey(input.apiKey),
-      E.foldW(identity, () =>
-        pipe(
-          computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[],
-          // create ProgressResponse
-          makeProgressResponse(env.dateGenerator()),
-          // override the eventId to create a simple cursor based pagination
-          RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
-          RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
-          (output) => ({ statusCode: 200 as const, headers: { 'retry-after': env.retryAfterMs }, returned: output })
+  (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => {
+    const createEventStreamRecord: CreateEventStreamRecord = records.filter(singleRecord => singleRecord.type === 'CreateEventStreamRecord' && ((singleRecord as CreateEventStreamRecord).output.returned as StreamMetadataResponse).streamId === input.streamId)[0] as CreateEventStreamRecord;
+    const consumeEventStreamRecordCategories: readonly string[] | undefined = (createEventStreamRecord.output.returned as StreamMetadataResponse).filterValues;
+    // consumeEventStreamRecordCategories?.forEach(singleCategory => log.info("CATEGORY: " + singleCategory));
+    return {
+      type: 'ConsumeEventStreamRecord',
+      input,
+      output: pipe(
+        authorizeApiKey(input.apiKey),
+        E.foldW(identity, () =>
+          pipe(
+            computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[],
+            // create ProgressResponse
+            makeProgressResponse(env.dateGenerator()),
+            // override the eventId to create a simple cursor based pagination
+            RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString(), timelineEventCategory: elem.timelineEventCategory })),
+            RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
+            RA.filterMap((singleEvent) => {
+              log.info("Single Event category: ", singleEvent.timelineEventCategory);
+              if (consumeEventStreamRecordCategories?.length === 0) {
+                return (singleEvent.timelineEventCategory === "NOTIFICATION_CANCELLATION_REQUEST" || 
+                singleEvent.timelineEventCategory === "NOTIFICATION_CANCELLED" || 
+                singleEvent.timelineEventCategory === "PREPARE_ANALOG_DOMICILE_FAILURE") ? O.none : O.some(singleEvent);
+              }
+              
+              return consumeEventStreamRecordCategories?.some((singleCategory) => {
+                log.info("Comparing category from event: ", (singleEvent as ProgressResponseElement).timelineEventCategory, " with timeline category: ", singleCategory);
+                return singleCategory === singleEvent.timelineEventCategory;
+              }) ? O.some(singleEvent) : O.none;
+            }),
+            (output) => ({ statusCode: 200 as const, headers: { 'retry-after': env.retryAfterMs }, returned: output })
+          )
         )
-      )
-    ),
-    loggedAt: env.dateGenerator(),
-  });
+      ),
+      loggedAt: env.dateGenerator(),
+    };
+  };
