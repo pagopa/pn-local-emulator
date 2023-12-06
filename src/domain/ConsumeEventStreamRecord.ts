@@ -48,12 +48,11 @@ export const makeProgressResponseElementFromNotification =
   (notification: Notification): ReadonlyArray<ProgressResponseElement> => 
     pipe(
       notification.timeline,
-      RA.map(({ /* category, */ legalFactsIds, details }) => ({
+      RA.map(({ category, legalFactsIds, details }) => ({
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
         newStatus: notification.notificationStatus,
-        // todo: denny
-        // timelineEventCategory: category,
+        timelineEventCategory: category,
         legalFactsIds: legalFactsIds?.map((lf) => lf.key.replaceAll('safestorage://', '')) || [], // Modify the legalFactsIds directly
         recipientIndex: pipe(
           details && 'recIndex' in details ? details.recIndex : undefined,
@@ -103,7 +102,7 @@ export const makeConsumeEventStreamRecord =
               }
               
               return consumeEventStreamRecordCategories?.some((singleCategory) => {
-                log.info("Comparing category from event: ", (singleEvent as ProgressResponseElement).timelineEventCategory, " with timeline category: ", singleCategory);
+                // log.info("Comparing category from event: ", (singleEvent as ProgressResponseElement).timelineEventCategory, " with timeline category: ", singleCategory);
                 return singleCategory === singleEvent.timelineEventCategory;
               }) ? O.some(singleEvent) : O.none;
             }),

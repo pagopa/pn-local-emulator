@@ -9,7 +9,6 @@ import { IUN } from '../generated/pnapi/IUN';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
-import { makeLogger } from '../logger';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';
@@ -45,7 +44,6 @@ export const makeFullSentNotification =
       (notification) => updateTimeline(env)(notification, notification.notificationStatus)
     );
 
-const log = makeLogger();
 const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV21): FullSentNotificationV21 =>
   ({
   // Remove all the properties not defined by FullSentNotificationV21 type
@@ -96,7 +94,6 @@ export const makeGetNotificationDetailRecord =
             const getNotificationDetailRecord: GetNotificationDetailRecord = (records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
             if (getNotificationDetailRecord !== undefined) {
               const deletedFullSentNotificationV21: FullSentNotificationV21 = getNotificationDetailRecord.output.returned as FullSentNotificationV21;
-              log.info("INTERN: ", deletedFullSentNotificationV21.notificationStatus);
               if (notification.iun === deletedFullSentNotificationV21.iun && deletedFullSentNotificationV21.notificationStatus === NotificationStatusEnum.CANCELLED) {
                 notification.notificationStatus = NotificationStatusEnum.CANCELLED;
                 notification.cancelledIun = notification.iun;

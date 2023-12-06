@@ -353,7 +353,6 @@ export const makeNotificationStatusHistory =
 export const updateTimeline =
   (env: DomainEnv) =>
   (notification: Notification, newNotificationStatus: NotificationStatusEnum): Notification => {
-    log.info("NOTIFICATION STATUS  updateTimeline()", newNotificationStatus);
     
     return pipe(notification, makeTimelineList(env), (timelineList) => ({
       ...notification,
