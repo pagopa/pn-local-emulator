@@ -46,9 +46,8 @@ export const makeFullSentNotification =
     );
 
     const log = makeLogger();
-const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV21): FullSentNotificationV21 => {
-  log.info("STATO exactFullSentNotification: ", notification.notificationStatus);
-  return ({
+const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV21): FullSentNotificationV21 =>
+  ({
   // Remove all the properties not defined by FullSentNotificationV21 type
   ...t.exact(FullSentNotificationV21).encode(notification),
   // The encode of FullSentNotificationV21 converts Date to a string.
@@ -79,7 +78,6 @@ const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotific
     }
   ] : notification.timeline
 });
-};
 
 export const makeGetNotificationDetailRecord =
   (env: DomainEnv) =>

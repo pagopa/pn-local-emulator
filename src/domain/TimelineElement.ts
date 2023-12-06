@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
@@ -10,9 +12,9 @@ import { NotificationStatusHistory } from '../generated/pnapi/NotificationStatus
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { IUNGeneratorByIndex } from '../adapters/randexp/IUNGenerator';
 import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
+import { makeLogger } from '../logger';
 import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
-import { makeLogger } from '../logger';
 
 const log = makeLogger();
 
@@ -20,7 +22,6 @@ const makeTimelineListPEC =
   (env: DomainEnv) =>
   (notification: FullSentNotificationV21) =>
   (index: number, recipient: NotificationRecipient): ReadonlyArray<TimelineElementV20> => {
-    log.info("NOTIFICATION STATUS: ", notification.notificationStatus);
     return notification.notificationStatus !== NotificationStatusEnum.CANCELLED ? [
       {
         elementId: `${notification.iun}_aar_gen_${index}`,
@@ -361,4 +362,4 @@ export const updateTimeline =
       notificationStatusHistory: makeNotificationStatusHistory(env)(newNotificationStatus, timelineList),
       timeline: timelineList,
     }));
-  }
+  };

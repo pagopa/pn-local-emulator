@@ -3,14 +3,13 @@
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import { Record, RecordRepository } from '../../domain/Repository';
-import { Logger, makeLogger } from '../../logger';
+import { Logger } from '../../logger';
 import { DeleteStreamRecord } from '../../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord, isCreateEventStreamRecord } from '../../domain/CreateEventStreamRecord';
 import { StreamMetadataResponse } from '../../generated/pnapi/StreamMetadataResponse';
-import { GetNotificationDetailRecord, isGetNotificationDetailRecord } from '../../domain/GetNotificationDetailRecord';
+import { GetNotificationDetailRecord } from '../../domain/GetNotificationDetailRecord';
 import { FullSentNotificationV21 } from '../../generated/pnapi/FullSentNotificationV21';
 import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
-import { isRequestResponseRecord } from '../../domain/RequestResponseRecord';
 
 const filterByStreamId = (streamId: string, record: Record): boolean =>
   O.fold(
@@ -73,13 +72,7 @@ export const makeRecordRepository =
         }
       },
       removeNotificationRecord: (element) => {
-        const log = makeLogger();
         store = [...store, element];
-        store.forEach(singleElement => { 
-          if(!isRequestResponseRecord(singleElement)) {
-            log.info("ITEM STORE: ", singleElement);
-          }
-        });
         const getNotificationDetailRecord: GetNotificationDetailRecord = (store.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
         if (getNotificationDetailRecord !== undefined) {
           (getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus = NotificationStatusEnum.CANCELLED;
