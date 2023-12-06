@@ -1,3 +1,6 @@
+/* eslint-disable functional/immutable-data */
+/* eslint-disable sonarjs/cognitive-complexity */
+
 import * as M from 'fp-ts/Monoid';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
@@ -7,6 +10,7 @@ import * as s from 'fp-ts/string';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { IUN } from '../generated/pnapi/IUN';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
+import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponse, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { DomainEnv } from './DomainEnv';
@@ -17,8 +21,6 @@ import {
 } from './GetNotificationDetailRecord';
 import { NotificationRequest, makeNotificationRequestFromFind } from './NotificationRequest';
 import { updateTimeline } from './TimelineElement';
-import { makeLogger } from '../logger';
-import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 
 export type Notification = FullSentNotificationV21 & Pick<NotificationRequest, 'notificationRequestId'>;
 
@@ -126,7 +128,6 @@ export const makeNotification =
             pipe(getNotificationDetailRecord, countFromDetail(notification.iun)),
           ]),
           (occurrences) => {
-            const log = makeLogger();
             if (getNotificationDetailRecord[0] as GetNotificationDetailRecord !== undefined && ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === NotificationStatusEnum.CANCELLED) {
               notification.notificationStatus = NotificationStatusEnum.CANCELLED;
               notification.cancelledIun = notification.iun;
@@ -164,7 +165,7 @@ export const makeNotification =
             // update the notification according to the number of occurrencies
             return pipe(
               makeStatus(env, occurrences),
-              O.map((newStatus) => updateTimeline(env)(notification, ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus == 'CANCELLED' ? NotificationStatusEnum.CANCELLED : newStatus)),
+              O.map((newStatus) => updateTimeline(env)(notification, ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === 'CANCELLED' ? NotificationStatusEnum.CANCELLED : newStatus)),
               O.getOrElse(() => notification)
             );
           }

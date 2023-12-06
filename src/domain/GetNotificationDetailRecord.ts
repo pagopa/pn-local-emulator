@@ -9,6 +9,7 @@ import { IUN } from '../generated/pnapi/IUN';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
+import { makeLogger } from '../logger';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';
@@ -16,7 +17,6 @@ import { authorizeApiKey } from './authorize';
 import { computeSnapshot } from './Snapshot';
 import { DomainEnv } from './DomainEnv';
 import { updateTimeline } from './TimelineElement';
-import { makeLogger } from '../logger';
 
 export type GetNotificationDetailRecord = AuditRecord & {
   type: 'GetNotificationDetailRecord';

@@ -11,19 +11,12 @@ import { GetNotificationDetailRecord, isGetNotificationDetailRecord } from '../.
 import { FullSentNotificationV21 } from '../../generated/pnapi/FullSentNotificationV21';
 import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
 import { isRequestResponseRecord } from '../../domain/RequestResponseRecord';
-import { record } from 'io-ts';
 
 const filterByStreamId = (streamId: string, record: Record): boolean =>
   O.fold(
     () => true,
     (csr: CreateEventStreamRecord) => (csr.output.returned as StreamMetadataResponse).streamId !== streamId
   )(isCreateEventStreamRecord(record));
-
-const filterByIUN = (element: FullSentNotificationV21, record: Record): boolean =>
-  O.fold(
-    () => true,
-    (gndr: GetNotificationDetailRecord) => (gndr.output.returned as FullSentNotificationV21).iun !== element.iun
-  )(isGetNotificationDetailRecord(record));
 
 // TODO: Instead of mutable variable, try to use the State Monad (or STM)
 export const makeRecordRepository =

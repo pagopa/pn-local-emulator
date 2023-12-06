@@ -5,9 +5,9 @@
 import * as IO from 'fp-ts/IO';
 import RandExp from 'randexp';
 import { IUN } from '../../generated/pnapi/IUN';
-import { makeLogger } from '../../logger';
+// import { makeLogger } from '../../logger';
 
-const log = makeLogger();
+// const log = makeLogger();
 const legalFactsIdsMap: Map<IUN, Map<number, IUN>> = new Map();
 
 export const IUNGenerator: IO.IO<IUN> = () => {
