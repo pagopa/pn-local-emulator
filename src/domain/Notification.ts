@@ -20,6 +20,7 @@ import {
 } from './GetNotificationDetailRecord';
 import { NotificationRequest, makeNotificationRequestFromFind } from './NotificationRequest';
 import { updateTimeline } from './TimelineElement';
+import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 
 export type Notification = FullSentNotificationV21 & Pick<NotificationRequest, 'notificationRequestId'>;
 
@@ -130,6 +131,28 @@ export const makeNotification =
             if (getNotificationDetailRecord[0] as GetNotificationDetailRecord !== undefined && ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === NotificationStatusEnum.CANCELLED) {
               notification.notificationStatus = NotificationStatusEnum.CANCELLED;
               notification.cancelledIun = notification.iun;
+              notification.timeline = [
+                ...notification.timeline,
+                {
+                  elementId: `NOTIFICATION_CANCELLATION_REQUEST.IUN_${notification.iun}`,
+                  timestamp: env.dateGenerator(),
+                  legalFactsIds: [],
+                  category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLATION_REQUEST,
+                  details: {
+                    cancellationRequestId: "90e3f130-cb23-4b6b-a0aa-858de7ffb3a0"
+                  }
+                },
+                {
+                  elementId: `NOTIFICATION_CANCELLED.IUN_${notification.iun}`,
+                  timestamp: env.dateGenerator(),
+                  legalFactsIds: [],
+                  category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLED,
+                  details: {
+                    notificationCost: 100,
+                    notRefinedRecipientIndexes: [0]
+                  }
+                }
+              ]
               notification.notificationStatusHistory = [
                 ...notification.notificationStatusHistory,
                 {

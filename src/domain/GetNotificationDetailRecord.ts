@@ -53,28 +53,7 @@ const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotific
   notificationStatus: notification.notificationStatus,
   sentAt: notification.sentAt,
   notificationStatusHistory: notification.notificationStatusHistory,
-  timeline: notification.notificationStatus === NotificationStatusEnum.CANCELLED ? [
-    ...notification.timeline,
-    {
-      elementId: `NOTIFICATION_CANCELLATION_REQUEST.IUN_${notification.iun}`,
-      timestamp: env.dateGenerator(),
-      legalFactsIds: [],
-      category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLATION_REQUEST,
-      details: {
-        cancellationRequestId: "90e3f130-cb23-4b6b-a0aa-858de7ffb3a0"
-      }
-    },
-    {
-      elementId: `NOTIFICATION_CANCELLED.IUN_${notification.iun}`,
-      timestamp: env.dateGenerator(),
-      legalFactsIds: [],
-      category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLED,
-      details: {
-        notificationCost: 100,
-        notRefinedRecipientIndexes: [0]
-      }
-    }
-  ] : notification.timeline
+  timeline: notification.timeline
 });
 
 export const makeGetNotificationDetailRecord =
