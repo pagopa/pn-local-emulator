@@ -48,11 +48,11 @@ export const makeProgressResponseElementFromNotification =
   (notification: Notification): ReadonlyArray<ProgressResponseElement> => 
     pipe(
       notification.timeline,
-      RA.map(({ /* category, */ legalFactsIds, details }) => ({
+      RA.map(({ category, legalFactsIds, details }) => ({
         ...makeProgressResponseElementFromNotificationRequest(timestamp)(notification),
         iun: notification.iun,
         newStatus: notification.notificationStatus,
-        // timelineEventCategory: category,
+        timelineEventCategory: category,
         legalFactsIds: legalFactsIds?.map((lf) => lf.key.replaceAll('safestorage://', '')) || [], // Modify the legalFactsIds directly
         recipientIndex: pipe(
           details && 'recIndex' in details ? details.recIndex : undefined,
@@ -91,9 +91,10 @@ export const makeConsumeEventStreamRecord =
             // create ProgressResponse
             makeProgressResponse(env.dateGenerator()),
             // override the eventId to create a simple cursor based pagination
-            RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString() })),
+            RA.mapWithIndex((i, elem) => ({ ...elem, eventId: i.toString(), timelineEventCategory: elem.timelineEventCategory })),
             RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
             RA.filterMap((singleEvent) => {
+              log.info("Single Event category: ", singleEvent.timelineEventCategory);
               if (consumeEventStreamRecordCategories?.length === 0) {
                 return (singleEvent.timelineEventCategory === "NOTIFICATION_CANCELLATION_REQUEST" || 
                 singleEvent.timelineEventCategory === "NOTIFICATION_CANCELLED" || 

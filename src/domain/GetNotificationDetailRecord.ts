@@ -16,6 +16,7 @@ import { authorizeApiKey } from './authorize';
 import { computeSnapshot } from './Snapshot';
 import { DomainEnv } from './DomainEnv';
 import { updateTimeline } from './TimelineElement';
+import { makeLogger } from '../logger';
 
 export type GetNotificationDetailRecord = AuditRecord & {
   type: 'GetNotificationDetailRecord';
@@ -44,7 +45,10 @@ export const makeFullSentNotification =
       (notification) => updateTimeline(env)(notification, notification.notificationStatus)
     );
 
-const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV21): FullSentNotificationV21 => ({
+    const log = makeLogger();
+const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV21): FullSentNotificationV21 => {
+  log.info("STATO exactFullSentNotification: ", notification.notificationStatus);
+  return ({
   // Remove all the properties not defined by FullSentNotificationV21 type
   ...t.exact(FullSentNotificationV21).encode(notification),
   // The encode of FullSentNotificationV21 converts Date to a string.
@@ -75,6 +79,7 @@ const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotific
     }
   ] : notification.timeline
 });
+};
 
 export const makeGetNotificationDetailRecord =
   (env: DomainEnv) =>
@@ -93,6 +98,7 @@ export const makeGetNotificationDetailRecord =
             const getNotificationDetailRecord: GetNotificationDetailRecord = (records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
             if (getNotificationDetailRecord !== undefined) {
               const deletedFullSentNotificationV21: FullSentNotificationV21 = getNotificationDetailRecord.output.returned as FullSentNotificationV21;
+              log.info("INTERN: ", deletedFullSentNotificationV21.notificationStatus);
               if (notification.iun === deletedFullSentNotificationV21.iun && deletedFullSentNotificationV21.notificationStatus === NotificationStatusEnum.CANCELLED) {
                 notification.notificationStatus = NotificationStatusEnum.CANCELLED;
                 notification.cancelledIun = notification.iun;
