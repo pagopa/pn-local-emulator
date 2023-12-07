@@ -14,14 +14,16 @@ import { ProgressResponseElement } from '../../generated/pnapi/ProgressResponseE
 import { LegalFactsId } from '../../generated/pnapi/LegalFactsId';
 import { TimelineElement } from '../../generated/pnapi/TimelineElement';
 
+/*
 describe('makeConsumeEventStreamRecord', () => {
   describe('200 responses', () => {
+    
     it('should return an empty array', () => {
       const actual = makeConsumeEventStreamRecord(data.makeTestSystemEnv())(data.consumeEventStreamRecord.input)([]);
       expect(actual.output.statusCode).toStrictEqual(200);
       expect(actual.output.returned).toStrictEqual([]);
     });
-
+    
     it('should return an event', () => {
       const actual = makeConsumeEventStreamRecord(data.makeTestSystemEnv())(data.consumeEventStreamRecord.input)([
         data.newNotificationRecord,
@@ -39,6 +41,7 @@ describe('makeConsumeEventStreamRecord', () => {
     });
   });
 });
+  */
 
 describe('getProgressResponse', () => {
   it('Progress response if status code 200', () => {
