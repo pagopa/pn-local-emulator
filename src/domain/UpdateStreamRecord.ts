@@ -1,8 +1,8 @@
 import { identity, pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import { StreamCreationRequest } from '../generated/streams/StreamCreationRequest';
-import { StreamMetadataResponse } from '../generated/streams/StreamMetadataResponse';
+import { StreamCreationRequest } from '../generated/pnapi/StreamCreationRequest';
+import { StreamMetadataResponse } from '../generated/pnapi/StreamMetadataResponse';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';

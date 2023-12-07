@@ -11,7 +11,7 @@ import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNot
 import { GetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
-import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipient';
+import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipientV21';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
@@ -25,11 +25,11 @@ import { IUN } from '../../generated/pnapi/IUN';
 import { TypeEnum } from '../../generated/pnapi/NotificationDigitalAddress';
 import { makeNotificationAttachmentDownloadMetadataResponse } from '../NotificationAttachmentDownloadMetadataResponse';
 import { DownloadRecord } from '../DownloadRecord';
-import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
+import { EventTypeEnum } from '../../generated/pnapi/StreamCreationRequest';
 import { GetNotificationPriceRecord } from '../GetNotificationPriceRecord';
 import { noticeCode } from '../../generated/pnapi/noticeCode';
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
-import { NotificationStatusEnum } from '../../generated/streams/NotificationStatus';
+import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
 import { RequestResponseRecord } from '../RequestResponseRecord';
 import { TimelineElementCategoryV20Enum } from '../../generated/pnapi/TimelineElementCategoryV20';
 
@@ -509,7 +509,7 @@ export const getPaymentNotificationMetadataRecord: GetPaymentNotificationMetadat
 
 export const getLegalFactDownloadMetadataRecord: LegalFactDownloadMetadataRecord = {
   type: 'LegalFactDownloadMetadataRecord',
-  input: { apiKey: apiKey.valid, iun: aIun.valid, legalFactType: aLegalFactType, legalFactId: aLegalFactId },
+  input: { apiKey: apiKey.valid, iun: aIun.valid, legalFactId: aLegalFactId },
   output: {
     statusCode: 200,
     returned: makeLegalFactDownloadMetadataResponse(makeTestSystemEnv()),

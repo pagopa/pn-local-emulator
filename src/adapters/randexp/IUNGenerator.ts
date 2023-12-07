@@ -5,9 +5,9 @@
 import * as IO from 'fp-ts/IO';
 import RandExp from 'randexp';
 import { IUN } from '../../generated/pnapi/IUN';
-import { makeLogger } from '../../logger';
+// import { makeLogger } from '../../logger';
 
-const log = makeLogger();
+// const log = makeLogger();
 const legalFactsIdsMap: Map<IUN, Map<number, IUN>> = new Map();
 
 export const IUNGenerator: IO.IO<IUN> = () => {
@@ -16,8 +16,8 @@ export const IUNGenerator: IO.IO<IUN> = () => {
 };
 
 export const IUNGeneratorByIndex = (iunKey: IUN, index: number): IUN => {
-  log.info('Input IUN Key:', iunKey);
-  printLegalFactsIdsMap();
+  // log.info('Input IUN Key:', iunKey);
+  // printLegalFactsIdsMap();
 
   if (!legalFactsIdsMap.has(iunKey)) {
     legalFactsIdsMap.set(iunKey, new Map());
@@ -30,11 +30,11 @@ export const IUNGeneratorByIndex = (iunKey: IUN, index: number): IUN => {
     innerMap.set(index, iun);
     legalFactsIdsMap.set(iunKey, innerMap);
   }
-
-  printLegalFactsIdsMap();
+  // printLegalFactsIdsMap();
   return innerMap.get(index)!;
 };
 
+/*
 export const printLegalFactsIdsMap = () => {
   log.info('Contents of legalFactsIdsMap before:');
   for (const [parentIUN, innerMap] of legalFactsIdsMap.entries()) {
@@ -44,3 +44,4 @@ export const printLegalFactsIdsMap = () => {
     }
   }
 };
+*/

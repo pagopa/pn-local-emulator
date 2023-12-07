@@ -9,7 +9,6 @@ describe('makeLegalFactDownloadMetadataRecord', () => {
     it('Invalid & different ium', () => {
       const actual = makeLegalFactDownloadMetadataRecord(data.makeTestSystemEnv())({
         apiKey: data.apiKey.valid,
-        legalFactType: LegalFactCategoryEnum.ANALOG_DELIVERY,
         legalFactId: data.aLegalFactId,
         iun: data.aIun.invalid,
       })([
@@ -25,7 +24,6 @@ describe('makeLegalFactDownloadMetadataRecord', () => {
     it('Different legalFactId', () => {
       const actual = makeLegalFactDownloadMetadataRecord(data.makeTestSystemEnv())({
         apiKey: data.apiKey.valid,
-        legalFactType: LegalFactCategoryEnum.ANALOG_DELIVERY,
         legalFactId: 'testLegalFactId',
         iun: data.aIun.valid,
       })([

@@ -1,4 +1,4 @@
-import { EventTypeEnum } from '../../generated/streams/StreamCreationRequest';
+import { EventTypeEnum } from '../../generated/pnapi/StreamCreationRequest';
 import { UpdateStreamRecord, isUpdateStreamRecord, makeUpdateStreamRecord } from '../UpdateStreamRecord';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';

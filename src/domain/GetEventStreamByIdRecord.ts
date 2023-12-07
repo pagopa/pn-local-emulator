@@ -2,7 +2,7 @@ import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { StreamMetadataResponse } from '../generated/streams/StreamMetadataResponse';
+import { StreamMetadataResponse } from '../generated/pnapi/StreamMetadataResponse';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody, unauthorizedResponse } from './types';
 import { DomainEnv } from './DomainEnv';

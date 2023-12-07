@@ -1,8 +1,8 @@
 import express from 'express';
 import supertest from 'supertest';
-import { makeGetLegalFactDocumentRouter } from '../router';
-import { SystemEnv } from '../../../../useCases/SystemEnv';
 import { makeTestSystemEnv } from '../../../../domain/__tests__/data';
+import { SystemEnv } from '../../../../useCases/SystemEnv';
+import { makeGetLegalFactDocumentRouter } from '../router';
 
 const mockEnv: SystemEnv = makeTestSystemEnv();
 
@@ -30,7 +30,7 @@ describe('Get Legal Fact Document Router', () => {
 
   it('should return a 400 response with some data', async () => {
     const response = await supertest(app)
-      .get('/api/delivery-push/:iun/legal-facts/SENDER_ACK/1A')
+      .get('/api/delivery-push/:iun/legal-facts/1A')
       .query({
         notificationRequestId: '123',
       });
