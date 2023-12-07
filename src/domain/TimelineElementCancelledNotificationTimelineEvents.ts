@@ -23,7 +23,7 @@ export const makeTimeLineListPEC_CancelledNotification =
           generatedAarUrl: `safestorage://PN_AAR-0002-${env.iunGenerator()}`,
         },
       },
-
+      
       {
         elementId: `${notification.iun}_get_address_${index}_source_PLATFORM_attempt_0`,
         timestamp: env.dateGenerator(),
@@ -36,7 +36,6 @@ export const makeTimeLineListPEC_CancelledNotification =
           attemptDate: env.dateGenerator(),
         },
       },
-
       {
         elementId: `${notification.iun}_get_address_${index}_source_SPECIAL_attempt_0`,
         timestamp: env.dateGenerator(),
@@ -49,7 +48,6 @@ export const makeTimeLineListPEC_CancelledNotification =
           attemptDate: env.dateGenerator(),
         },
       },
-
       {
         elementId: `${notification.iun}_send_digital_domicile_${index}_source_SPECIAL_attempt_0`,
         timestamp: env.dateGenerator(),
@@ -62,7 +60,6 @@ export const makeTimeLineListPEC_CancelledNotification =
           retryNumber: 0,
         },
       },
-
       {
         elementId: `${notification.iun}_digital_delivering_progress_${index}_source_SPECIAL_attempt_0_progidx_1`,
         timestamp: env.dateGenerator(),
@@ -83,7 +80,6 @@ export const makeTimeLineListPEC_CancelledNotification =
           shouldRetry: false,
         },
       },
-
       {
         elementId: `${notification.iun}_send_digital_feedback_${index}_source_SPECIAL_attempt_0`,
         timestamp: env.dateGenerator(),
@@ -103,7 +99,6 @@ export const makeTimeLineListPEC_CancelledNotification =
           sendingReceipts: [{}],
         },
       },
-
       {
         elementId: `${notification.iun}_digital_success_workflow_${index}`,
         timestamp: env.dateGenerator(),
@@ -119,7 +114,6 @@ export const makeTimeLineListPEC_CancelledNotification =
           digitalAddress: recipient.digitalDomicile,
         },
       },
-
       {
         elementId: `${notification.iun}_schedule_refinement_workflow_${index}`,
         timestamp: env.dateGenerator(),
@@ -129,7 +123,6 @@ export const makeTimeLineListPEC_CancelledNotification =
           recIndex: index,
         },
       },
-
       {
         elementId: `${notification.iun}_refinement_${index}`,
         timestamp: env.dateGenerator(),
@@ -140,7 +133,6 @@ export const makeTimeLineListPEC_CancelledNotification =
           notificationCost: 100,
         },
       },
-
       {
         elementId: `${notification.iun}_notification_viewed_${index}`,
         timestamp: env.dateGenerator(),
@@ -154,26 +146,5 @@ export const makeTimeLineListPEC_CancelledNotification =
         details: {
           recIndex: index,
         },
-      },
-
-      {
-        elementId: `NOTIFICATION_CANCELLATION_REQUEST.IUN_${notification.iun}`,
-        timestamp: env.dateGenerator(),
-        legalFactsIds: [],
-        category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLATION_REQUEST,
-        details: {
-          cancellationRequestId: "90e3f130-cb23-4b6b-a0aa-858de7ffb3a0"
-        }
-      },
-      
-      {
-        elementId: `NOTIFICATION_CANCELLED.IUN_${notification.iun}`,
-        timestamp: env.dateGenerator(),
-        legalFactsIds: [],
-        category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLED,
-        details: {
-          notificationCost: 100,
-          notRefinedRecipientIndexes: [0]
-        }
       }
     ];
