@@ -655,7 +655,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/delivery-push/:iun/legal-facts/:legalFactType/:legalFactId",
+					"raw": "{{baseUrl}}/delivery-push/:iun/legal-facts/:legalFactId",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -663,17 +663,12 @@
 						"delivery-push",
 						":iun",
 						"legal-facts",
-						":legalFactType",
 						":legalFactId"
 					],
 					"variable": [
 						{
 							"key": "iun",
 							"value": "{{_iun}}"
-						},
-						{
-							"key": "legalFactType",
-							"value": "SENDER_ACK"
 						},
 						{
 							"key": "legalFactId",
@@ -771,7 +766,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"title\": \"stream_di_timeline\",\r\n  \"eventType\": \"TIMELINE\",\r\n  \"filterValues\": []\r\n}",
+					"raw": "{\r\n  \"title\": \"stream_di_timeline\",\r\n  \"eventType\": \"TIMELINE\",\r\n  \"filterValues\": [\"NOTIFICATION_CANCELLATION_REQUEST\", \"NOTIFICATION_CANCELLED\", \"PREPARE_ANALOG_DOMICILE_FAILURE\"]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1032,6 +1027,33 @@
 			"response": []
 		},
 		{
+			"name": "VL-287 DEL NOTIFICATION",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery-push/v2.1/notifications/cancel/:iun",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery-push",
+						"v2.1",
+						"notifications",
+						"cancel",
+						":iun"
+					],
+					"variable": [
+						{
+							"key": "iun",
+							"value": "{{_iun}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "CHECKLIST RESULT",
 			"request": {
 				"method": "GET",
@@ -1042,12 +1064,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/checklistresult",
-					"protocol": "http",
+					"raw": "{{baseUrl}}/checklistresult",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "8080",
 					"path": [
 						"checklistresult"
 					]
