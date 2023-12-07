@@ -3,7 +3,6 @@
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { DigitalAddressSourceEnum } from '../generated/pnapi/DigitalAddressSource';
 import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
 import { LegalFactCategoryEnum } from '../generated/pnapi/LegalFactCategory';
 import { NotificationRecipient } from '../generated/pnapi/NotificationRecipient';

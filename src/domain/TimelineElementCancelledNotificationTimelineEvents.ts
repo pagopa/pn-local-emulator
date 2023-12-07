@@ -9,7 +9,7 @@ import { IUNGeneratorByIndex } from '../adapters/randexp/IUNGenerator';
 import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
 import { DomainEnv } from './DomainEnv';
 
-export const makeTimeLineListPEC_CancelledNotification = 
+export const makeTimeLineListPEC_Array = 
     (env: DomainEnv, notification: FullSentNotificationV21, index: number, recipient: NotificationRecipient) : ReadonlyArray<TimelineElementV20> =>
     [
       {
