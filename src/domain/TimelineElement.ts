@@ -15,7 +15,6 @@ import { Notification } from './Notification';
 import { DomainEnv } from './DomainEnv';
 import { makeTimeLineListPEC_Array } from './TimelineElementCancelledNotificationTimelineEvents';
 
-
 const makeTimelineListPEC =
   (env: DomainEnv) =>
   (notification: FullSentNotificationV21) =>
