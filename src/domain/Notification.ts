@@ -167,7 +167,13 @@ export const makeNotification =
             // update the notification according to the number of occurrencies
             return pipe(
               makeStatus(env, occurrences),
-              O.map((newStatus) => updateTimeline(env)(notification, ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === 'CANCELLED' ? NotificationStatusEnum.CANCELLED : newStatus)),
+              O.map((newStatus) => updateTimeline(env)(notification, 
+                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord) !== undefined) && 
+                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output) !== undefined &&
+                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21) !== undefined && 
+                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus !== undefined &&
+                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === 'CANCELLED' 
+                ? NotificationStatusEnum.CANCELLED : newStatus)),
               O.getOrElse(() => notification)
             );
           }
