@@ -1,0 +1,1167 @@
+{
+	"info": {
+		"_postman_id": "211b8f3e-63ec-4df4-89b0-1c3662eb33c6",
+		"name": "Pago PA Original Copy v. 2.1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24925980"
+	},
+	"item": [
+		{
+			"name": "1 Preload - delivery/attachments/preload",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Test response values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an(\"array\");",
+							"    pm.expect(jsonData.length).to.equal(2);",
+							"    fistElem = jsonData[0];",
+							"    pm.expect(fistElem).to.have.property('secret');",
+							"    pm.collectionVariables.set(\"_presign_secret_doc\", fistElem.secret);",
+							"    pm.expect(fistElem).to.have.property('httpMethod')",
+							"    pm.collectionVariables.set(\"_presign_httpMethod_doc\", fistElem.httpMethod);",
+							"    pm.expect(fistElem).to.have.property('url')",
+							"    pm.collectionVariables.set(\"_presign_url_doc\", fistElem.url);",
+							"    pm.expect(fistElem).to.have.property('preloadIdx').equals(\"doc1\");",
+							"    pm.collectionVariables.set(\"_presign_key_doc\", fistElem.key);",
+							"    secondElem = jsonData[1];",
+							"    pm.expect(secondElem).to.have.property('secret');",
+							"    pm.collectionVariables.set(\"_presign_secret_pag\", secondElem.secret);",
+							"    pm.expect(secondElem).to.have.property('httpMethod')",
+							"    pm.collectionVariables.set(\"_presign_httpMethod_pag\", secondElem.httpMethod);",
+							"    pm.expect(secondElem).to.have.property('url')",
+							"    pm.collectionVariables.set(\"_presign_url_pag\", secondElem.url);",
+							"    pm.expect(secondElem).to.have.property('preloadIdx').equals(\"pagoPa1\");",
+							"    pm.collectionVariables.set(\"_presign_key_pag\", secondElem.key);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"preloadIdx\": \"doc1\",\r\n        \"contentType\": \"application/pdf\",\r\n        \"sha256\": \"{{doc1_sha}}\"\r\n    },\r\n    {\r\n        \"preloadIdx\": \"pagoPa1\",\r\n        \"contentType\": \"application/pdf\",\r\n        \"sha256\": \"{{pagoPa1_sha}}\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/delivery/attachments/preload",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery",
+						"attachments",
+						"preload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2.1 Upload document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"x-amz-version-id\");",
+							"    pm.collectionVariables.set(\"_x-amz-version-id_doc\", pm.response.headers.get(\"x-amz-version-id\"))",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-amz-checksum-sha256",
+						"value": "{{doc1_sha}}",
+						"type": "text"
+					},
+					{
+						"key": "x-amz-meta-secret",
+						"value": "{{_presign_secret_doc}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/C:/Users/ECARUSD0U/OneDrive - NTT DATA EMEAL/Desktop/PagoPA/TL-00240301-202310.pdf"
+					}
+				},
+				"url": {
+					"raw": "{{_presign_url_doc}}",
+					"host": [
+						"{{_presign_url_doc}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2.2 Upload pagoPa",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"x-amz-version-id\");",
+							"    pm.collectionVariables.set(\"_x-amz-version-id_pag\", pm.response.headers.get(\"x-amz-version-id\"))",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-amz-checksum-sha256",
+						"value": "{{pagoPa1_sha}}",
+						"type": "text"
+					},
+					{
+						"key": "x-amz-meta-secret",
+						"value": "{{_presign_secret_pag}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/C:/Users/ECARUSD0U/OneDrive - NTT DATA EMEAL/Desktop/PagoPA/Wiki PagoPA - 1.0.pdf"
+					}
+				},
+				"url": {
+					"raw": "{{_presign_url_pag}}",
+					"host": [
+						"{{_presign_url_pag}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3 Notifica - delivery/requests",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const suffix = Date.now();",
+							"",
+							"pm.collectionVariables.set(\"_paProtocolNumber\", \"PROT-\" + suffix);",
+							"pm.collectionVariables.set(\"_noticeCode\", \"30201\" + suffix);",
+							"pm.collectionVariables.set(\"_idempotenceToken\", userName = pm.variables.replaceIn(\"{{$randomUserName}}\" + \"-\" +suffix));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							"",
+							"pm.test(\"Test Body values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.paProtocolNumber).to.eql(pm.collectionVariables.get(\"_paProtocolNumber\"));",
+							"    pm.expect(jsonData.idempotenceToken).to.eql(pm.collectionVariables.get(\"_idempotenceToken\"));",
+							"    pm.expect(jsonData).have.property(\"notificationRequestId\");",
+							"    pm.collectionVariables.set(\"_notificationRequestId\", jsonData.notificationRequestId);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idempotenceToken\": \"{{_idempotenceToken}}\",\r\n  \"paProtocolNumber\": \"{{_paProtocolNumber}}\",\r\n  \"subject\": \"Titolo: {{_paProtocolNumber}} E2E_12 run002 del 27/06/2022 16:42\",\r\n  \"abstract\": \"{{$randomLoremParagraph}}\",\r\n  \"recipients\": [\r\n    {\r\n      \"recipientType\": \"PF\",\r\n      \"taxId\": \"FLPCPT69A65Z336P\",\r\n      \"internalId\": \"string\",\r\n      \"denomination\": \"Cleopatra Tea Filopatore\",\r\n      \"digitalDomicile\": {\r\n        \"type\": \"PEC\",\r\n        \"address\": \"FLPCPT69A65Z336P@pnpagopa.postecert.local\"\r\n      },\r\n      \"physicalAddress\": {\r\n        \"at\": \"{{$randomNoun}}\",\r\n        \"address\": \"{{$randomStreetAddress}}\",\r\n        \"addressDetails\": \"Angolo via Garibaldi\",\r\n        \"zip\": \"31038\",\r\n        \"municipality\": \"{{$randomCity}}\",\r\n        \"municipalityDetails\": \"Porcellengo\",\r\n        \"province\": \"{{$randomCountryCode}}\",\r\n        \"foreignState\": \"{{$randomCountry}}\"\r\n      },\r\n      \"payments\": [\r\n        {\r\n          \"pagoPa\": {\r\n            \"noticeCode\": \"{{_noticeCode}}\",\r\n            \"creditorTaxId\": \"01199250158\",\r\n            \"applyCost\": true,\r\n            \"attachment\": {\r\n              \"digests\": {\r\n                \"sha256\": \"{{pagoPa1_sha}}\"\r\n              },\r\n              \"contentType\": \"application/pdf\",\r\n              \"ref\": {\r\n                \"key\": \"{{_presign_key_pag}}\",\r\n                \"versionToken\": \"{{_x-amz-version-id_pag}}\"\r\n              }\r\n            }\r\n          }\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"documents\": [\r\n    {\r\n      \"digests\": {\r\n        \"sha256\": \"{{doc1_sha}}\"\r\n      },\r\n      \"contentType\": \"application/pdf\",\r\n      \"ref\": {\r\n        \"key\": \"{{_presign_key_doc}}\",\r\n        \"versionToken\": \"{{_x-amz-version-id_doc}}\"\r\n      },\r\n      \"title\": \"Atto AME2E1227060002\",\r\n      \"docIdx\": \"0\"\r\n    }\r\n  ],\r\n  \"notificationFeePolicy\": \"DELIVERY_MODE\",\r\n  \"cancelledIun\": null,\r\n  \"physicalCommunicationType\": \"REGISTERED_LETTER_890\",\r\n  \"senderDenomination\": \"Comune di Milano\",\r\n  \"senderTaxId\": \"01199250158\",\r\n  \"group\": null,\r\n  \"amount\": 150,\r\n  \"paymentExpirationDate\": \"2979-01-31\",\r\n  \"taxonomyCode\": \"010101P\",\r\n  \"paFee\": 100,\r\n  \"pagoPaIntMode\": \"NONE\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/delivery/v2.1/requests",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery",
+						"v2.1",
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.1 Avanzamento - pa/id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Test iun\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"iun\");",
+							"    pm.collectionVariables.set(\"_iun\", jsonData.iun);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery/v2.1/requests?paProtocolNumber={{_paProtocolNumber}}&idempotenceToken={{_idempotenceToken}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery",
+						"v2.1",
+						"requests"
+					],
+					"query": [
+						{
+							"key": "paProtocolNumber",
+							"value": "{{_paProtocolNumber}}"
+						},
+						{
+							"key": "idempotenceToken",
+							"value": "{{_idempotenceToken}}"
+						},
+						{
+							"key": "notificationRequestId",
+							"value": "BGAW-JTWG-RMCQ-500886-I-1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4.2 Avanzamento - ReqId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Test iun\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"iun\");",
+							"    pm.collectionVariables.set(\"_iun\", jsonData.iun);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery/v2.1/requests?notificationRequestId={{_notificationRequestId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery",
+						"v2.1",
+						"requests"
+					],
+					"query": [
+						{
+							"key": "paProtocolNumber",
+							"value": "{{_paProtocolNumber}}",
+							"disabled": true
+						},
+						{
+							"key": "idempotenceToken",
+							"value": "{{_idempotenceToken}}",
+							"disabled": true
+						},
+						{
+							"key": "notificationRequestId",
+							"value": "{{_notificationRequestId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5 Dettaglio Notifica - delivery/notifications/sent/",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test iun\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var timeline = jsonData.timeline;\r",
+							"    var elementRequestAccepted;\r",
+							"    var legalFactskey;\r",
+							"    timeline.forEach(x => {\r",
+							"        if(x.category === \"REQUEST_ACCEPTED\"){\r",
+							"            elementRequestAccepted = x\r",
+							"        }\r",
+							"    })\r",
+							"    legalFactskey = elementRequestAccepted.legalFactsIds[0].key\r",
+							"    legalFactskey = legalFactskey.replace(\"safestorage://\", \"\")\r",
+							"    console.log(legalFactskey);\r",
+							"    pm.collectionVariables.set(\"_legalFact_key\", legalFactskey);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery/v2.1/notifications/sent/:iun",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery",
+						"v2.1",
+						"notifications",
+						"sent",
+						":iun"
+					],
+					"variable": [
+						{
+							"key": "iun",
+							"value": "{{_iun}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6 Documenti - delivery/notifications/sent/{iun}/attachments/documents/{docIdx}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Test body values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"filename\");",
+							"    pm.expect(jsonData).to.have.property(\"contentLength\");",
+							"    pm.expect(jsonData).to.have.property(\"url\");",
+							"    pm.expect(jsonData.contentType).to.eql(\"application/pdf\");",
+							"    pm.collectionVariables.set(\"_download_url_doc\", jsonData.url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery/notifications/sent/:iun/attachments/documents/:docidx",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery",
+						"notifications",
+						"sent",
+						":iun",
+						"attachments",
+						"documents",
+						":docidx"
+					],
+					"variable": [
+						{
+							"key": "iun",
+							"value": "{{_iun}}"
+						},
+						{
+							"key": "docidx",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.1 download pdf",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{_download_url_doc}}",
+					"host": [
+						"{{_download_url_doc}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7 Allegati di Pagamento - delivery/notifications/sent/{iun}/attachments/payment/{recipientIdx}/{attachmentName}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Test body values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"filename\");",
+							"    pm.expect(jsonData).to.have.property(\"contentLength\");",
+							"    pm.expect(jsonData).to.have.property(\"url\");",
+							"    pm.expect(jsonData.contentType).to.eql(\"application/pdf\");",
+							"    pm.collectionVariables.set(\"_download_url_pag\", jsonData.url);",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery/notifications/sent/:iun/attachments/payment/:recipientIdx/:attachmentName",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery",
+						"notifications",
+						"sent",
+						":iun",
+						"attachments",
+						"payment",
+						":recipientIdx",
+						":attachmentName"
+					],
+					"variable": [
+						{
+							"key": "iun",
+							"value": "{{_iun}}"
+						},
+						{
+							"key": "recipientIdx",
+							"value": "0"
+						},
+						{
+							"key": "attachmentName",
+							"value": "PAGOPA"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7.1 download pdf",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{_download_url_pag}}",
+					"host": [
+						"{{_download_url_pag}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8 Pagamento - delivery/price/{paTaxId}/{noticeNumber}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"amount\");",
+							"    pm.expect(jsonData.amount).to.eql(pm.collectionVariables.get(\"expectedAmount\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery/price/:paTaxId/:noticeCode",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery",
+						"price",
+						":paTaxId",
+						":noticeCode"
+					],
+					"variable": [
+						{
+							"key": "paTaxId",
+							"value": "01199250158"
+						},
+						{
+							"key": "noticeCode",
+							"value": "{{_noticeCode}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9 Attestato Opponibile - delivery-push/{iun}/legal-facts/{legalFactType}/{legalFactId}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Test body values\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"filename\");\r",
+							"    pm.expect(jsonData).to.have.property(\"contentLength\");\r",
+							"    pm.expect(jsonData).to.have.property(\"url\");\r",
+							"    pm.collectionVariables.set(\"_download_url_legalFact\", jsonData.url);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery-push/:iun/download/legal-facts/:legalFactId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery-push",
+						":iun",
+						"download",
+						"legal-facts",
+						":legalFactId"
+					],
+					"variable": [
+						{
+							"key": "iun",
+							"value": "{{_iun}}"
+						},
+						{
+							"key": "legalFactId",
+							"value": "{{_legalFact_key}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9.1 download Attestazione Opponibile",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{_download_url_legalFact}}",
+					"host": [
+						"{{_download_url_legalFact}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10.1 creazione stream di type STATUS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test Stream values\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    console.log(jsonData)\r",
+							"    pm.expect(jsonData).have.property(\"streamId\");\r",
+							"    pm.collectionVariables.set(\"_streamSTATUS\", jsonData.streamId);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"stream_di_status\",\r\n  \"eventType\": \"STATUS\",\r\n  \"filterValues\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/delivery-progresses/streams",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery-progresses",
+						"streams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10.2 creazione stream di type TIMELINE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test Stream values\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).have.property(\"streamId\");\r",
+							"    pm.collectionVariables.set(\"_streamTIMELINE\", jsonData.streamId);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"stream_di_timeline\",\r\n  \"eventType\": \"TIMELINE\",\r\n  \"filterValues\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/delivery-progresses/streams",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery-progresses",
+						"streams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11.1 consume event stream TIMELINE without eventId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test Stream values\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var lastEvent = jsonData[jsonData.length - 1];\r",
+							"    var lastEventId = lastEvent.eventId;\r",
+							"    pm.collectionVariables.set(\"_streamTIMELINElastEventId\", lastEventId);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery-progresses/streams/:streamId/events",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery-progresses",
+						"streams",
+						":streamId",
+						"events"
+					],
+					"variable": [
+						{
+							"key": "streamId",
+							"value": "{{_streamTIMELINE}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11.2 consume event stream TIMELINE with eventId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"/*pm.test(\"Test Stream values\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).have.property(\"streamId\");\r",
+							"    pm.collectionVariables.set(\"_streamTIMELINE\", jsonData.streamId);\r",
+							"});*/"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery-progresses/streams/:streamId/events?lastEventId={{_streamTIMELINElastEventId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery-progresses",
+						"streams",
+						":streamId",
+						"events"
+					],
+					"query": [
+						{
+							"key": "lastEventId",
+							"value": "{{_streamTIMELINElastEventId}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "streamId",
+							"value": "{{_streamTIMELINE}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11.3 consume event stream STATUS without eventId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test Stream values\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var lastEvent = jsonData[jsonData.length - 1];\r",
+							"    var lastEventId = lastEvent.eventId;\r",
+							"    pm.collectionVariables.set(\"_streamSTATUSlastEventId\", lastEventId);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery-progresses/streams/:streamId/events",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery-progresses",
+						"streams",
+						":streamId",
+						"events"
+					],
+					"variable": [
+						{
+							"key": "streamId",
+							"value": "{{_streamSTATUS}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11.4 consume event stream STATUS with eventId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"/*pm.test(\"Test Stream values\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).have.property(\"streamId\");\r",
+							"    pm.collectionVariables.set(\"_streamTIMELINE\", jsonData.streamId);\r",
+							"});*/"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/delivery-progresses/streams/:streamId/events?lastEventId={{_streamSTATUSlastEventId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"delivery-progresses",
+						"streams",
+						":streamId",
+						"events"
+					],
+					"query": [
+						{
+							"key": "lastEventId",
+							"value": "{{_streamSTATUSlastEventId}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "streamId",
+							"value": "{{_streamSTATUS}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CHECKLIST RESULT",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "key-value"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/checklistresult",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"checklistresult"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{apiKey}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-api-key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "doc1_sha",
+			"value": "WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg=",
+			"type": "string"
+		},
+		{
+			"key": "pagoPa1_sha",
+			"value": "ZanteV6wqTzuidy0Dn+m6CMPv6B1NYL1RyMzEK/JPNI=",
+			"type": "string"
+		},
+		{
+			"key": "expectedAmount",
+			"value": "100",
+			"type": "string"
+		},
+		{
+			"key": "_presign_secret_doc",
+			"value": ""
+		},
+		{
+			"key": "_presign_httpMethod_doc",
+			"value": ""
+		},
+		{
+			"key": "_presign_url_doc",
+			"value": ""
+		},
+		{
+			"key": "_presign_key_doc",
+			"value": ""
+		},
+		{
+			"key": "_presign_secret_pag",
+			"value": ""
+		},
+		{
+			"key": "_presign_httpMethod_pag",
+			"value": ""
+		},
+		{
+			"key": "_presign_url_pag",
+			"value": ""
+		},
+		{
+			"key": "_presign_key_pag",
+			"value": ""
+		},
+		{
+			"key": "_x-amz-version-id_doc",
+			"value": ""
+		},
+		{
+			"key": "_x-amz-version-id_pag",
+			"value": ""
+		},
+		{
+			"key": "_paProtocolNumber",
+			"value": ""
+		},
+		{
+			"key": "_noticeCode",
+			"value": ""
+		},
+		{
+			"key": "_idempotenceToken",
+			"value": ""
+		},
+		{
+			"key": "_iun",
+			"value": ""
+		},
+		{
+			"key": "_download_url_pag",
+			"value": ""
+		},
+		{
+			"key": "_download_url_doc",
+			"value": ""
+		},
+		{
+			"key": "_download_url_legalFact",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "_notificationRequestId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "apiKey",
+			"value": "key-value",
+			"type": "string"
+		},
+		{
+			"key": "_streamSTATUS",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "_streamTIMELINE",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "_streamSTATUSlastEventId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "_streamTIMELINElastEventId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "_legalFact_key",
+			"value": ""
+		}
+	]
+}
