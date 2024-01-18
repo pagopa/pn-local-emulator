@@ -34,7 +34,7 @@ const handler =
 export const makeGetLegalFactDocumentRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery-push/:iun/legal-facts/:legalFactId', toExpressHandler(handler(env)));
+  router.get('/delivery-push/:iun/download/legal-facts/:legalFactId', toExpressHandler(handler(env)));
 
   return router;
 };
