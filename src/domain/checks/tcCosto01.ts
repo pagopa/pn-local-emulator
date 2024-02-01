@@ -2,7 +2,7 @@ import { Group } from '../reportengine/reportengine';
 import * as NewNotificationRequestRecordChecks from './NewNotificationRequestRecordChecks';
 import * as GetNotificationPriceRecordChecks from './GetNotificationPriceRecordChecks';
 
-export const tcPayment01 = Group({
+export const tcCosto01 = Group({
   'Create a notification request providing the same sender and creditor': Group({
     'Have you filled at least one recipient where the field payment.creditorTaxId is the same as the senderTaxId?':
       NewNotificationRequestRecordChecks.atLeastOneNotificationSameSenderAndCreatorC,

@@ -3,7 +3,7 @@ import * as PreLoadRecordChecks from './PreLoadRecordChecks';
 import * as UploadToS3RecordChecks from './UploadToS3RecordChecks';
 import * as NewNotificationRequestRecordChecks from './NewNotificationRequestRecordChecks';
 
-export const tcSend01bis = Group({
+export const tcInvio01 = Group({
   'Request at least one upload slot': Group({
     'Have you done at least one request?': PreLoadRecordChecks.atLeastOnePreLoadRecordC,
     'Have you required at least one pdf?': PreLoadRecordChecks.atLeastOnePreLoadRecordWithPdfC,

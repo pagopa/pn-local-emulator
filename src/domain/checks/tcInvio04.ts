@@ -3,7 +3,7 @@ import * as GetNotificationDocumentMetadataChecks from './GetNotificationDocumen
 import * as GetPaymentNotificationMetadataChecks from './GetPaymentNotificationMetadataChecks';
 import * as LegalFactDownloadMetadataChecks from './LegalFactDownloadMetadataChecks';
 
-export const tcSend03 = Group({
+export const tcInvio04 = Group({
   'Download documents attached to the notification': Group({
     'Have you downloaded the notified document?': Group({
       'Have you requested the metadata of the notification with the IUN retrieved previously?':

@@ -3,7 +3,7 @@ import { DomainEnv } from '../DomainEnv';
 import * as CreateEventStreamRecordChecks from './CreateEventStreamRecordChecks';
 import * as ConsumeEventStreamRecordChecks from './ConsumeEventStreamRecordChecks';
 
-export const tcSend02 = (env: DomainEnv) =>
+export const tcInvio03 = (env: DomainEnv) =>
   Group({
     'Configure a stream where you can get the timeline events of a notification': Group({
       'Have you created the stream with the property eventType set to TIMELINE?':
