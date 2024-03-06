@@ -13,6 +13,10 @@ export type DomainEnv = {
   uploadToS3URL: URL;
   retryAfterMs: number;
   notificationPrice: number;
+  analogCost: number;
+  totalPrice: number;
+  partialPrice: number;
+  sendFee:number;
   // generators
   iunGenerator: IO<IUN>;
   dateGenerator: IO<Date>;

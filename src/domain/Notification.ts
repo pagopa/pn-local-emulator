@@ -7,10 +7,10 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { flow, pipe } from 'fp-ts/function';
 import * as n from 'fp-ts/number';
 import * as s from 'fp-ts/string';
-import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
+import { FullSentNotificationV23 } from '../generated/pnapi/FullSentNotificationV23';
 import { IUN } from '../generated/pnapi/IUN';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
-import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
+import { TimelineElementCategoryV23Enum } from '../generated/pnapi/TimelineElementCategoryV23';
 import { CheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord, getProgressResponse, getProgressResponseList } from './ConsumeEventStreamRecord';
 import { DomainEnv } from './DomainEnv';
@@ -22,7 +22,7 @@ import {
 import { NotificationRequest, makeNotificationRequestFromFind } from './NotificationRequest';
 import { updateTimeline } from './TimelineElement';
 
-export type Notification = FullSentNotificationV21 & Pick<NotificationRequest, 'notificationRequestId'>;
+export type Notification = FullSentNotificationV23 & Pick<NotificationRequest, 'notificationRequestId'>;
 
 export const mkNotification = (env: DomainEnv, notificationRequest: NotificationRequest, iun: IUN) => ({
   notificationRequestId: notificationRequest.notificationRequestId,
@@ -128,7 +128,7 @@ export const makeNotification =
             pipe(getNotificationDetailRecord, countFromDetail(notification.iun)),
           ]),
           (occurrences) => {
-            if (getNotificationDetailRecord[0] as GetNotificationDetailRecord !== undefined && ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === NotificationStatusEnum.CANCELLED) {
+            if (getNotificationDetailRecord[0] as GetNotificationDetailRecord !== undefined && ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV23).notificationStatus === NotificationStatusEnum.CANCELLED) {
               notification.notificationStatus = NotificationStatusEnum.CANCELLED;
               notification.cancelledIun = notification.iun;
               notification.timeline = [
@@ -137,7 +137,7 @@ export const makeNotification =
                   elementId: `NOTIFICATION_CANCELLATION_REQUEST.IUN_${notification.iun}`,
                   timestamp: env.dateGenerator(),
                   legalFactsIds: [],
-                  category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLATION_REQUEST,
+                  category: TimelineElementCategoryV23Enum.NOTIFICATION_CANCELLATION_REQUEST,
                   details: {
                     cancellationRequestId: "90e3f130-cb23-4b6b-a0aa-858de7ffb3a0"
                   }
@@ -146,7 +146,7 @@ export const makeNotification =
                   elementId: `NOTIFICATION_CANCELLED.IUN_${notification.iun}`,
                   timestamp: env.dateGenerator(),
                   legalFactsIds: [],
-                  category: TimelineElementCategoryV20Enum.NOTIFICATION_CANCELLED,
+                  category: TimelineElementCategoryV23Enum.NOTIFICATION_CANCELLED,
                   details: {
                     notificationCost: 100,
                     notRefinedRecipientIndexes: [0]
@@ -170,9 +170,9 @@ export const makeNotification =
               O.map((newStatus) => updateTimeline(env)(notification, 
                 ((getNotificationDetailRecord[0] as GetNotificationDetailRecord) !== undefined) && 
                 ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output) !== undefined &&
-                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21) !== undefined && 
-                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus !== undefined &&
-                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus === 'CANCELLED' 
+                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV23) !== undefined && 
+                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV23).notificationStatus !== undefined &&
+                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV23).notificationStatus === 'CANCELLED' 
                 ? NotificationStatusEnum.CANCELLED : newStatus)),
               O.getOrElse(() => notification)
             );

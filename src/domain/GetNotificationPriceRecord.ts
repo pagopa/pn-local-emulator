@@ -5,8 +5,8 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NotificationPriceResponse } from '../generated/pnapi/NotificationPriceResponse';
-import { NotificationRecipientV21 } from '../generated/pnapi/NotificationRecipientV21';
+import { NotificationPriceResponseV23 } from '../generated/pnapi/NotificationPriceResponseV23';
+import { NotificationRecipientV23 } from '../generated/pnapi/NotificationRecipientV23';
 import { NotificationPaymentItem } from '../generated/pnapi/NotificationPaymentItem';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
@@ -18,7 +18,7 @@ import { Notification } from './Notification';
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';
   input: { apiKey: string; paTaxId: string; noticeCode: string };
-  output: Response<200, NotificationPriceResponse> | Response<403, UnauthorizedMessageBody>;
+  output: Response<200, NotificationPriceResponseV23> | Response<403, UnauthorizedMessageBody>;
 };
 
 export const isGetNotificationPrice = (record: Record) =>
@@ -31,7 +31,7 @@ export const isGetNotificationPrice = (record: Record) =>
     snapshot,
     RA.filterMap(O.FromEither.fromEither),
     RA.findLast(({ recipients }) =>
-      RA.some((recipient: NotificationRecipientV21) => {
+      RA.some((recipient: NotificationRecipientV23) => {
         const payments = recipient.payments || [];
 
         return RA.exists((payment) => {
@@ -68,9 +68,19 @@ export const makeGetNotificationPriceRecord =
             statusCode: 200 as const,
             returned: {
               iun: notification.iun,
-              amount: getNotificationAmountBasedOnNotification(notification),
+              partialPrice: env.partialPrice,
+              totalPrice : env.totalPrice,
+              vat: notification.vat,
+              pafee: notification.paFee,
               refinementDate: env.dateGenerator(),
               notificationViewDate: env.dateGenerator(),
+              
+              sendFee: env.sendFee,
+              analogCost: env.analogCost,
+              
+              
+
+              
             },
           })
         )

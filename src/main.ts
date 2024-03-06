@@ -20,6 +20,10 @@ pipe(
       occurrencesToViewed: 9, // TODO: move this value into configuration ...
       senderPAId: 'aSenderPaId', // TODO: senderPaId move this value into configuration
       retryAfterMs: 1000,
+      analogCost: 200,
+      totalPrice: 300,
+      partialPrice: 100,
+      sendFee: 100,
       downloadDocumentURL: config.server.downloadDocumentURL,
       sampleStaticPdfFileName: 'sample.pdf',
       notificationPrice: 100,

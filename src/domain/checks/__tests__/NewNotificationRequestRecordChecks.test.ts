@@ -21,7 +21,7 @@ const ex6 = [
   ),
 ];
 
-describe('TC-SEND-01', () => {
+describe('TC-INVIO-01', () => {
   describe('Create a notification request', () => {
     it('atLeastOneRecordC', () => {
       const check = NewNotificationRequestRecordChecks.atLeastOneRecordC;

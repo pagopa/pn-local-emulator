@@ -3,7 +3,7 @@ import * as O from 'fp-ts/Option';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { flow, identity, pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
-import { NewNotificationRequestStatusResponseV21 } from '../generated/pnapi/NewNotificationRequestStatusResponseV21';
+import { NewNotificationRequestStatusResponseV23 } from '../generated/pnapi/NewNotificationRequestStatusResponseV23';
 import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 import { PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
 import { SystemEnv } from '../useCases/SystemEnv';
@@ -22,8 +22,8 @@ export type CheckNotificationStatusRecord = AuditRecord & {
     body: { paProtocolNumber: string; idempotenceToken?: string } | { notificationRequestId: string };
   };
   output:
-  | Response<200, NewNotificationRequestStatusResponseV21>
-  | Response<500, NewNotificationRequestStatusResponseV21>
+  | Response<200, NewNotificationRequestStatusResponseV23>
+  | Response<500, NewNotificationRequestStatusResponseV23>
   | Response<403, UnauthorizedMessageBody>
   | Response<404>;
 };
@@ -56,18 +56,18 @@ export const makeCheckNotificationStatusRecord =
                 E.fold(
                   (nr) => ({ ...nr, notificationRequestStatus: 'WAITING' }),
                   (n) =>
-                    t.exact(NewNotificationRequestStatusResponseV21).encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
+                    t.exact(NewNotificationRequestStatusResponseV23).encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
                 )
               ),
               O.map((response) =>
                 pipe(
                   response.recipients,
                   RA.reduce(response, function (res, invalidRec) {
-                    const newRes = t.exact(NewNotificationRequestStatusResponseV21).encode(res as NewNotificationRequestStatusResponseV21);
+                    const newRes = t.exact(NewNotificationRequestStatusResponseV23).encode(res as NewNotificationRequestStatusResponseV23);
                     const pastErrors = newRes.errors ? newRes.errors : [];
                     if (!VALID_CAPS[invalidRec.physicalAddress.zip as keyof typeof VALID_CAPS]) {
-                      return t.exact(NewNotificationRequestStatusResponseV21).encode({
-                        ...res as NewNotificationRequestStatusResponseV21,
+                      return t.exact(NewNotificationRequestStatusResponseV23).encode({
+                        ...res as NewNotificationRequestStatusResponseV23,
                         notificationRequestStatus: 'REFUSED',
                         errors: [
                           ...pastErrors,
@@ -87,7 +87,7 @@ export const makeCheckNotificationStatusRecord =
                   response.documents,
                   // Scroll throw the documents of the responce
                   RA.reduce(response, (respAccrRaw, docRespRaw) => {
-                    const respAccr = t.exact(NewNotificationRequestStatusResponseV21).encode(respAccrRaw as NewNotificationRequestStatusResponseV21);
+                    const respAccr = t.exact(NewNotificationRequestStatusResponseV23).encode(respAccrRaw as NewNotificationRequestStatusResponseV23);
                     const docResp = docRespRaw as NotificationDocument;
 
                     const key = docResp.ref.key;
@@ -140,7 +140,7 @@ export const makeCheckNotificationStatusRecord =
 
                     if (!matchFound) {
                       const pastErrors = respAccr.errors ? respAccr.errors : [];
-                      return t.exact(NewNotificationRequestStatusResponseV21).encode({
+                      return t.exact(NewNotificationRequestStatusResponseV23).encode({
                         ...respAccr,
                         notificationRequestStatus: 'REFUSED',
                         errors: [

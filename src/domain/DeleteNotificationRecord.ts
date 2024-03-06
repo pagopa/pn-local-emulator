@@ -7,7 +7,7 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { IUN } from '../generated/pnapi/IUN';
 import { RequestStatus } from '../generated/pnapi/RequestStatus';
-import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
+import { FullSentNotificationV23 } from '../generated/pnapi/FullSentNotificationV23';
 import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
 import { AuditRecord, Record } from './Repository';
 import { HttpErrorMessageBody, Response, UnauthorizedMessageBody } from './types';
@@ -54,11 +54,11 @@ export const makeDeleteNotificationRecord =
     }
 
     const resultFromInputValidation = pipe(
-      (getNotificationDetailRecord.output.returned as FullSentNotificationV21).iun === input.iun,
+      (getNotificationDetailRecord.output.returned as FullSentNotificationV23).iun === input.iun,
       isValidIun => {
         if (isValidIun) {
-          if ((getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus === 'ACCEPTED') {
-            ((records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV21).notificationStatus = NotificationStatusEnum.CANCELLED;
+          if ((getNotificationDetailRecord.output.returned as FullSentNotificationV23).notificationStatus === 'ACCEPTED') {
+            ((records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV23).notificationStatus = NotificationStatusEnum.CANCELLED;
             return E.right({
               status: "Notification cancellation success",
               details: [
@@ -69,7 +69,7 @@ export const makeDeleteNotificationRecord =
                 },
               ],
             });
-          } else if ((getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus === 'CANCELLED') {
+          } else if ((getNotificationDetailRecord.output.returned as FullSentNotificationV23).notificationStatus === 'CANCELLED') {
             return E.right({
               status: "Notification already cancelled",
               details: [
