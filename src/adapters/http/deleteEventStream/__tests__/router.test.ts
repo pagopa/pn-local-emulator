@@ -28,7 +28,8 @@ describe('Delete Event Stream Router', () => {
   app.use('/api', router);
 
   it('should return a 500 response with some data', async () => {
-    const response = await supertest(app).delete('/api/delivery-progresses/streams/123');
+    const response = await supertest(app)
+      .delete('/api/delivery-progresses/streams/123')
 
     expect(response.status).toBe(500);
   });

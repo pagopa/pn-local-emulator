@@ -9,13 +9,13 @@ const mockEnv: SystemEnv = makeTestSystemEnv();
 jest.mock('../../../../../src/domain/DownloadRecord', () => ({
   makeDownloadRecord: jest.fn(() => (mockEnv: SystemEnv) => {
     return {
-      output: {
-        statusCode: 200,
-        returned: 'Some response',
-      },
-    };
-  }),
-}));
+        output: {
+          statusCode: 200,
+          returned: 'Some response',
+        },
+      };
+    }),
+  }));
 
 jest.mock('../../../../../src/useCases/PersistRecord', () => ({
   persistRecord: jest.fn(),
@@ -28,7 +28,8 @@ describe('Download Document Router', () => {
   app.use('/api', router);
 
   it('should return a 400 response when downloading a document', async () => {
-    const response = await supertest(app).get('/api/download/someDocument.pdf');
+    const response = await supertest(app)
+      .get('/api/download/someDocument.pdf');
 
     expect(response.status).toBe(500);
   });

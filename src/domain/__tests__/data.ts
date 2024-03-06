@@ -149,41 +149,38 @@ export const aRecipient: NewNotificationRecord['input']['body']['recipients'][0]
     zip: '',
     municipality: '',
   },
-  payments: [
-    {
-      pagoPa: {
-        noticeCode: aNoticeCode,
-        creditorTaxId: unsafeCoerce('77777777777'),
-        applyCost: false,
-        attachment: {
-          digests: {
-            sha256: 'WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg=',
-          },
-          contentType: 'application/pdf',
-          ref: {
-            key: 'ac458KYk-NtPFPBiT4Rs0bzPhL9LmScPb8iBj44CsLkY6uoliy6.zzw.4o0cs176Wleuz7NG6p',
-            versionToken:
-              'Zaz;h.P0"VTAHO)s5;\\^]@!8o<dy5)-?7WR_bV8Bz.IJ6-;y[Av5r(XijBydr7M#g6`B,Q<wT\\zv#l/`.{C[vkW\\h=-',
-          },
+  payments: [{
+    pagoPa: {
+      noticeCode: aNoticeCode,
+      creditorTaxId: unsafeCoerce('77777777777'),
+      applyCost: false,
+      attachment: {
+        digests: {
+          sha256: "WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg="
         },
-      },
-      f24: {
-        title: 'Titolo',
-        applyCost: false,
-        metadataAttachment: {
-          digests: {
-            sha256: 'WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg=',
-          },
-          contentType: 'application/pdf',
-          ref: {
-            key: 'ac458KYk-NtPFPBiT4Rs0bzPhL9LmScPb8iBj44CsLkY6uoliy6.zzw.4o0cs176Wleuz7NG6p',
-            versionToken:
-              'Zaz;h.P0"VTAHO)s5;\\^]@!8o<dy5)-?7WR_bV8Bz.IJ6-;y[Av5r(XijBydr7M#g6`B,Q<wT\\zv#l/`.{C[vkW\\h=-',
-          },
-        },
-      },
+        contentType: "application/pdf",
+        ref: {
+          key: "ac458KYk-NtPFPBiT4Rs0bzPhL9LmScPb8iBj44CsLkY6uoliy6.zzw.4o0cs176Wleuz7NG6p",
+          versionToken: "Zaz;h.P0\"VTAHO)s5;\\^]@!8o<dy5)-?7WR_bV8Bz.IJ6-;y[Av5r(XijBydr7M#g6`B,Q<wT\\zv#l/`.{C[vkW\\h=-"
+        }
+      }
     },
-  ],
+    f24: {
+      title: "Titolo",
+      applyCost: false,
+      metadataAttachment: {
+        digests: {
+          sha256: "WQfCK/qv5wqpn5Lbff5RumTulT4h1+rYSmGdikZ2qwg="
+        },
+        contentType: "application/pdf",
+        ref: {
+          key: "ac458KYk-NtPFPBiT4Rs0bzPhL9LmScPb8iBj44CsLkY6uoliy6.zzw.4o0cs176Wleuz7NG6p",
+          versionToken: "Zaz;h.P0\"VTAHO)s5;\\^]@!8o<dy5)-?7WR_bV8Bz.IJ6-;y[Av5r(XijBydr7M#g6`B,Q<wT\\zv#l/`.{C[vkW\\h=-"
+        }
+
+      }
+    }
+  }],
 };
 
 export const aSecret = 'a-secret';
@@ -244,7 +241,7 @@ const newNotificationRequest: NewNotificationRecord['input']['body'] = {
   physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890,
   senderDenomination: unsafeCoerce('senderDenomination'),
   senderTaxId: unsafeCoerce('senderTaxId'),
-  taxonomyCode: '123456A',
+  taxonomyCode: '123456A'
 };
 
 export const mkNewNotificationRecord = (
@@ -549,7 +546,8 @@ export const getNotificationPriceRecord: GetNotificationPriceRecord = {
     statusCode: 200,
     returned: {
       iun: aIun.valid,
-      totalPrice: 300,
+      totalPrice: 300
+
     },
   },
   loggedAt: aDate,

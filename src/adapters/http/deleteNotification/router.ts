@@ -18,7 +18,7 @@ const handler =
     pipe(
       Apply.sequenceS(E.Apply)({
         apiKey: t.string.decode(req.headers['x-api-key']),
-        iun: IUN.decode(req.params.iun),
+        iun: IUN.decode(req.params.iun)
       }),
       E.map(flow(makeDeleteNotificationRecord(env), deleteNotificationRecord(env))),
       E.map(

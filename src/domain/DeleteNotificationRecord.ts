@@ -25,7 +25,7 @@ export type DeleteNotificationRecord = AuditRecord & {
 export const makeDeleteNotificationRecord =
   (env: DomainEnv) =>
   (input: DeleteNotificationRecord['input']) =>
-  (records: ReadonlyArray<Record>): DeleteNotificationRecord => {
+  (records: ReadonlyArray<Record>): DeleteNotificationRecord => { 
     const isRequestAuthorized = authorizeApiKey(input.apiKey);
 
     if (!isRequestAuthorized) {
@@ -35,14 +35,12 @@ export const makeDeleteNotificationRecord =
         loggedAt: env.dateGenerator(),
         output: {
           statusCode: 403,
-          returned: { message: 'Forbidden API key authorization failed' },
-        },
+          returned: { message: "Forbidden API key authorization failed" }
+        }
       };
     }
 
-    const getNotificationDetailRecord: GetNotificationDetailRecord = records.filter(
-      (singleRecord) => singleRecord.type === 'GetNotificationDetailRecord'
-    )[0] as GetNotificationDetailRecord;
+    const getNotificationDetailRecord: GetNotificationDetailRecord = records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord;
     if (getNotificationDetailRecord === undefined || getNotificationDetailRecord.input.iun !== input.iun) {
       return {
         type: 'DeleteNotificationRecord',
@@ -50,63 +48,42 @@ export const makeDeleteNotificationRecord =
         loggedAt: env.dateGenerator(),
         output: {
           statusCode: 404,
-          returned: generateErrorResponse(
-            404,
-            'IUN not found',
-            'The IUN provided is not a valid one. Please provide a valid IUN.'
-          ),
-        },
+          returned: generateErrorResponse(404, "IUN not found", "The IUN provided is not a valid one. Please provide a valid IUN."),
+        }
       };
     }
 
     const resultFromInputValidation = pipe(
       (getNotificationDetailRecord.output.returned as FullSentNotificationV23).iun === input.iun,
-      (isValidIun) => {
+      isValidIun => {
         if (isValidIun) {
-          if (
-            (getNotificationDetailRecord.output.returned as FullSentNotificationV23).notificationStatus === 'ACCEPTED'
-          ) {
-            (
-              (
-                records.filter(
-                  (singleRecord) => singleRecord.type === 'GetNotificationDetailRecord'
-                )[0] as GetNotificationDetailRecord
-              ).output.returned as FullSentNotificationV23
-            ).notificationStatus = NotificationStatusEnum.CANCELLED;
+          if ((getNotificationDetailRecord.output.returned as FullSentNotificationV23).notificationStatus === 'ACCEPTED') {
+            ((records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV23).notificationStatus = NotificationStatusEnum.CANCELLED;
             return E.right({
-              status: 'Notification cancellation success',
+              status: "Notification cancellation success",
               details: [
                 {
-                  code: 'NOTIFICATION_CANCELLATION_ACCEPTED',
-                  level: 'INFO',
-                  detail: 'Notification cancellation accepted',
+                  code: "NOTIFICATION_CANCELLATION_ACCEPTED",
+                  level: "INFO",
+                  detail: "Notification cancellation accepted",
                 },
               ],
             });
-          } else if (
-            (getNotificationDetailRecord.output.returned as FullSentNotificationV23).notificationStatus === 'CANCELLED'
-          ) {
+          } else if ((getNotificationDetailRecord.output.returned as FullSentNotificationV23).notificationStatus === 'CANCELLED') {
             return E.right({
-              status: 'Notification already cancelled',
+              status: "Notification already cancelled",
               details: [
                 {
-                  code: 'NOTIFICATION_ALREADY_CANCELLED',
-                  level: 'INFO',
-                  detail: 'Notification already cancelled',
+                  code: "NOTIFICATION_ALREADY_CANCELLED",
+                  level: "INFO",
+                  detail: "Notification already cancelled",
                 },
               ],
             });
           }
         }
-        return E.left(
-          generateErrorResponse(
-            404,
-            'IUN not found',
-            'The IUN provided is not a valid one. Please provide a valid IUN.'
-          )
-        );
-      }
-    );
+        return E.left(generateErrorResponse(404, "IUN not found", "The IUN provided is not a valid one. Please provide a valid IUN."));      
+      });
 
     return {
       type: 'DeleteNotificationRecord',
@@ -114,11 +91,10 @@ export const makeDeleteNotificationRecord =
       loggedAt: env.dateGenerator(),
       output: E.foldW(
         (error) => error as Response<404, HttpErrorMessageBody>,
-        (success) =>
-          ({
-            statusCode: 202,
-            returned: success,
-          } as Response<202, RequestStatus>)
+        (success) => ({
+          statusCode: 202,
+          returned: success,
+        }) as Response<202, RequestStatus>
       )(resultFromInputValidation),
     };
   };

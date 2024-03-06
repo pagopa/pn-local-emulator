@@ -19,30 +19,29 @@ const makeTimelineListPEC =
   (env: DomainEnv) =>
   (notification: FullSentNotificationV23) =>
   (index: number, recipient: NotificationRecipient): ReadonlyArray<TimelineElementV23> =>
-    notification.notificationStatus !== NotificationStatusEnum.CANCELLED
-      ? makeTimeLineListPEC_Array(env, notification, index, recipient)
-      : [
-          ...makeTimeLineListPEC_Array(env, notification, index, recipient),
-          {
-            elementId: `NOTIFICATION_CANCELLATION_REQUEST.IUN_${notification.iun}`,
-            timestamp: env.dateGenerator(),
-            legalFactsIds: [],
-            category: TimelineElementCategoryV23Enum.NOTIFICATION_CANCELLATION_REQUEST,
-            details: {
-              cancellationRequestId: '90e3f130-cb23-4b6b-a0aa-858de7ffb3a0',
-            },
-          },
-          {
-            elementId: `NOTIFICATION_CANCELLED.IUN_${notification.iun}`,
-            timestamp: env.dateGenerator(),
-            legalFactsIds: [],
-            category: TimelineElementCategoryV23Enum.NOTIFICATION_CANCELLED,
-            details: {
-              notificationCost: 100,
-              notRefinedRecipientIndexes: [0],
-            },
-          },
-        ];
+    notification.notificationStatus !== NotificationStatusEnum.CANCELLED ? 
+    makeTimeLineListPEC_Array(env, notification, index, recipient) : 
+    [...makeTimeLineListPEC_Array(env, notification, index, recipient),
+      {
+        elementId: `NOTIFICATION_CANCELLATION_REQUEST.IUN_${notification.iun}`,
+        timestamp: env.dateGenerator(),
+        legalFactsIds: [],
+        category: TimelineElementCategoryV23Enum.NOTIFICATION_CANCELLATION_REQUEST,
+        details: {
+          cancellationRequestId: "90e3f130-cb23-4b6b-a0aa-858de7ffb3a0"
+        }
+      },
+      {
+        elementId: `NOTIFICATION_CANCELLED.IUN_${notification.iun}`,
+        timestamp: env.dateGenerator(),
+        legalFactsIds: [],
+        category: TimelineElementCategoryV23Enum.NOTIFICATION_CANCELLED,
+        details: {
+          notificationCost: 100,
+          notRefinedRecipientIndexes: [0]
+        }
+      }
+    ];
 
 export const makeTimelineList =
   (env: DomainEnv) =>
@@ -64,10 +63,7 @@ export const makeTimelineList =
 
 export const makeNotificationStatusHistory =
   (env: DomainEnv) =>
-  (
-    notificationStatus: NotificationStatusEnum,
-    timeline: ReadonlyArray<TimelineElementV23>
-  ): NotificationStatusHistory =>
+  (notificationStatus: NotificationStatusEnum, timeline: ReadonlyArray<TimelineElementV23>): NotificationStatusHistory =>
     [
       {
         status: notificationStatus,

@@ -8,52 +8,55 @@ import { middleware } from '../middleware';
 /* Mocking the value of capturedResponse */
 const mockCapturedResponse = jest.fn();
 jest.mock('../../application', () => ({
-  get capturedResponse() {
-    return mockCapturedResponse();
-  },
+    get capturedResponse() {
+        return mockCapturedResponse();
+    },
 }));
 
-describe('middleware', () => {
-  const req = getMockReq({
-    method: 'GET',
-    protocol: 'http',
-    originalUrl: '/uploadS3/api/some-endpoint',
-    url: '/uploadS3/api/some-endpoint',
-    headers: {
-      host: 'localhost:3000',
-      'Content-Type': 'application/json',
-      'x-api-key': data.apiKey.valid,
-    },
-    body: { key: 'value' },
-  });
-  req.get = (headerName: string) => req.headers[headerName] as any;
-  const ric = req as express.Request;
-  const { res } = getMockRes({
-    statusCode: 200,
-  });
-  res.getHeader = (headername: string) => {
-    if (headername === 'x-amz-version-id') {
-      return 'headerTest';
-    }
-  };
+describe("middleware", () => {
 
-  const next = jest.fn();
+    const req = getMockReq({
+        method: 'GET',
+        protocol: 'http',
+        originalUrl: '/uploadS3/api/some-endpoint',
+        url: '/uploadS3/api/some-endpoint',
+        headers: {
+            host: 'localhost:3000',
+            'Content-Type': 'application/json',
+            "x-api-key": data.apiKey.valid,
+        },
+        body: { key: 'value' },
+    });
+    req.get = (headerName: string) => req.headers[headerName] as any;
+    const ric = req as express.Request;
+    const {res} = getMockRes({
+        statusCode: 200
+    });
+    res.getHeader = (headername: string) => {
+        if(headername === "x-amz-version-id"){
+            return "headerTest";
+        }
+    };
 
-  it('All values passed are valid', async () => {
-    mockCapturedResponse.mockReturnValue('this is a test');
+    const next = jest.fn();
 
-    await middleware(data.makeTestSystemEnv())(ric, res, next);
+    it('All values passed are valid', async () => {
+        mockCapturedResponse.mockReturnValue("this is a test");
+    
+        await middleware(data.makeTestSystemEnv())(ric, res, next);
 
-    // Status code should not have changed
-    expect(res.statusCode).toEqual(200);
-  });
+        // Status code should not have changed
+        expect(res.statusCode).toEqual(200);
+      });
 
-  it('Some values are not valid', async () => {
-    mockCapturedResponse.mockReturnValue(1337); // CapturedResponse should be a string
 
-    await middleware(data.makeTestSystemEnv())(ric, res, next);
+      it('Some values are not valid', async () => {
+        mockCapturedResponse.mockReturnValue(1337);     // CapturedResponse should be a string
+    
+        await middleware(data.makeTestSystemEnv())(ric, res, next);
 
-    // Status code should not have changed
-    expect(res.statusCode).toEqual(200);
-  });
+        // Status code should not have changed
+        expect(res.statusCode).toEqual(200);
+      });
+
 });

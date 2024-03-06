@@ -22,19 +22,19 @@ const hasCalledDownloadEndpointForLegalFactC = pipe(
 
 const matchesLegalFactDownloadMetadataRecordC =
   ({ input, output }: LegalFactDownloadMetadataRecord) =>
-  (notificationRecord: GetNotificationDetailRecord) =>
-    output.statusCode === 200 &&
-    notificationRecord.output.statusCode === 200 &&
-    notificationRecord.output.returned.iun === input.iun &&
-    pipe(
-      notificationRecord.output.returned.timeline,
-      RA.exists(({ legalFactsIds }) =>
-        pipe(
-          legalFactsIds || [],
-          RA.exists(({ key }) => key.endsWith(input.legalFactId))
+    (notificationRecord: GetNotificationDetailRecord) =>
+      output.statusCode === 200 &&
+      notificationRecord.output.statusCode === 200 &&
+      notificationRecord.output.returned.iun === input.iun &&
+      pipe(
+        notificationRecord.output.returned.timeline,
+        RA.exists(({ legalFactsIds }) =>
+          pipe(
+            legalFactsIds || [],
+            RA.exists(({ key }) => key.endsWith(input.legalFactId))
+          )
         )
-      )
-    );
+      );
 
 export const getLegalFactDownloadMetadataRecord = pipe(
   R.Do,
