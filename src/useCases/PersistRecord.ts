@@ -21,6 +21,6 @@ export const updateStreamRecordReturningOnlyTheOneUpdatedStream =
     pipe(env.recordRepository.updateStreamRecordReturningOnlyTheOneUpdatedStream(recordToUpdate));
 
 export const deleteNotificationRecord =
-    (env: SystemEnv) =>
-    <R extends Record>(fn: (list: ReadonlyArray<Record>) => R) =>
-      pipe(env.recordRepository.list(), TE.map(fn), TE.chain(env.recordRepository.removeNotificationRecord));
+  (env: SystemEnv) =>
+  <R extends Record>(fn: (list: ReadonlyArray<Record>) => R) =>
+    pipe(env.recordRepository.list(), TE.map(fn), TE.chain(env.recordRepository.removeNotificationRecord));

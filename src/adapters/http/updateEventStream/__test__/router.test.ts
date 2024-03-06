@@ -3,20 +3,15 @@ import supertest from 'supertest';
 import * as data from '../../../../domain/__tests__/data';
 import { makeUpdateEventStreamRouter } from '../router';
 
-describe("sendNotification router", () => {
+describe('sendNotification router', () => {
+  const app = express();
+  app.use(express.json());
+  const router = makeUpdateEventStreamRouter(data.makeTestSystemEnv());
+  app.use(router);
 
-    const app = express();
-    app.use(express.json());
-    const router = makeUpdateEventStreamRouter(data.makeTestSystemEnv());
-    app.use(router);
+  it('With empty body response should be 404', async () => {
+    const response = await supertest(app).post('/delivery/requests').set('x-api-key', data.apiKey.valid).send();
 
-    it("With empty body response should be 404", async () => {
-        const response = await supertest(app)
-            .post('/delivery/requests')
-            .set('x-api-key', data.apiKey.valid)
-            .send();
-
-        expect(response.statusCode).toStrictEqual(404);
-    });
-
+    expect(response.statusCode).toStrictEqual(404);
+  });
 });

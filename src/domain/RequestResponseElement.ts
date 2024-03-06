@@ -11,7 +11,7 @@ const RequestResponseElementO = t.partial({});
 
 export const RequestResponseElement = t.intersection(
   [RequestResponseElementR, RequestResponseElementO],
-  "RequestResponseElement"
+  'RequestResponseElement'
 );
 
 export type RequestResponseElement = t.TypeOf<typeof RequestResponseElement>;

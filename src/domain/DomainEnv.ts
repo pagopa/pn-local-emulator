@@ -16,7 +16,7 @@ export type DomainEnv = {
   analogCost: number;
   totalPrice: number;
   partialPrice: number;
-  sendFee:number;
+  sendFee: number;
   // generators
   iunGenerator: IO<IUN>;
   dateGenerator: IO<Date>;

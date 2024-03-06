@@ -30,7 +30,9 @@ export const makeRecordRepository =
         if (element.type !== 'RequestResponseRecord') {
           logger.debug(`Record item: ${JSON.stringify(element)}`);
         } else {
-          logger.debug(`A RequestResponseRecord was recorded. In order to avoid performance issues it is not shown here.`);
+          logger.debug(
+            `A RequestResponseRecord was recorded. In order to avoid performance issues it is not shown here.`
+          );
         }
         return TE.of(element);
       },
@@ -73,11 +75,14 @@ export const makeRecordRepository =
       },
       removeNotificationRecord: (element) => {
         store = [...store, element];
-        const getNotificationDetailRecord: GetNotificationDetailRecord = (store.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
+        const getNotificationDetailRecord: GetNotificationDetailRecord = store.filter(
+          (singleRecord) => singleRecord.type === 'GetNotificationDetailRecord'
+        )[0] as GetNotificationDetailRecord;
         if (getNotificationDetailRecord !== undefined) {
-          (getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus = NotificationStatusEnum.CANCELLED;
+          (getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus =
+            NotificationStatusEnum.CANCELLED;
         }
         return TE.of(element);
-      } 
+      },
     };
   };

@@ -12,9 +12,7 @@ const ex3 = [
     [
       {
         ...data.aRecipient,
-        payments: data.aRecipient.payments
-          ? { ...data.aRecipient.payments }
-          : undefined,
+        payments: data.aRecipient.payments ? { ...data.aRecipient.payments } : undefined,
       },
     ]
   ),

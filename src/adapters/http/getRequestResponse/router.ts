@@ -21,7 +21,6 @@ export const buildCurl = (req: express.Request): string => {
   return `curl -X ${method} '${url}' ${headers} ${requestBody}`;
 };
 
-
 const handler =
   (env: SystemEnv): Handler =>
   (req, res) =>
@@ -29,7 +28,7 @@ const handler =
       Apply.sequenceS(E.Apply)({
         apiKey: t.string.decode(req.headers['x-api-key']),
         requestCurl: t.success(buildCurl(req)),
-        responseJson: t.success(""),
+        responseJson: t.success(''),
       }),
       E.map(flow(makeRequestResponseRecord(env), persistRecord(env))),
       E.map(

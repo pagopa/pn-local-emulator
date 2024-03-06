@@ -28,7 +28,7 @@ export const isGetNotificationDetailRecord = (record: Record): O.Option<GetNotif
 export const makeFullSentNotification =
   (env: DomainEnv) =>
   (notificationRequest: NotificationRequest) =>
-  (iun: IUN): FullSentNotificationV23 => 
+  (iun: IUN): FullSentNotificationV23 =>
     pipe(
       {
         ...notificationRequest,
@@ -43,8 +43,7 @@ export const makeFullSentNotification =
       (notification) => updateTimeline(env)(notification, notification.notificationStatus)
     );
 
-const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV23): FullSentNotificationV23 =>
-  ({
+const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV23): FullSentNotificationV23 => ({
   // Remove all the properties not defined by FullSentNotificationV21 type
   ...t.exact(FullSentNotificationV23).encode(notification),
   // The encode of FullSentNotificationV21 converts Date to a string.
@@ -52,7 +51,7 @@ const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotific
   notificationStatus: notification.notificationStatus,
   sentAt: notification.sentAt,
   notificationStatusHistory: notification.notificationStatusHistory,
-  timeline: notification.timeline
+  timeline: notification.timeline,
 });
 
 export const makeGetNotificationDetailRecord =
@@ -69,10 +68,16 @@ export const makeGetNotificationDetailRecord =
           computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           RA.findFirstMap((notification) => {
-            const getNotificationDetailRecord: GetNotificationDetailRecord = (records.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
+            const getNotificationDetailRecord: GetNotificationDetailRecord = records.filter(
+              (singleRecord) => singleRecord.type === 'GetNotificationDetailRecord'
+            )[0] as GetNotificationDetailRecord;
             if (getNotificationDetailRecord !== undefined) {
-              const deletedFullSentNotificationV21: FullSentNotificationV23 = getNotificationDetailRecord.output.returned as FullSentNotificationV23;
-              if (notification.iun === deletedFullSentNotificationV21.iun && deletedFullSentNotificationV21.notificationStatus === NotificationStatusEnum.CANCELLED) {
+              const deletedFullSentNotificationV21: FullSentNotificationV23 = getNotificationDetailRecord.output
+                .returned as FullSentNotificationV23;
+              if (
+                notification.iun === deletedFullSentNotificationV21.iun &&
+                deletedFullSentNotificationV21.notificationStatus === NotificationStatusEnum.CANCELLED
+              ) {
                 notification.notificationStatus = NotificationStatusEnum.CANCELLED;
                 notification.cancelledIun = notification.iun;
                 notification.notificationStatusHistory = [
@@ -80,10 +85,8 @@ export const makeGetNotificationDetailRecord =
                   {
                     status: NotificationStatusEnum.CANCELLED,
                     activeFrom: env.dateGenerator(),
-                    relatedTimelineElements: [
-                      `NOTIFICATION_CANCELLED.IUN_${notification.iun}`
-                    ]
-                  }
+                    relatedTimelineElements: [`NOTIFICATION_CANCELLED.IUN_${notification.iun}`],
+                  },
                 ];
               }
             }

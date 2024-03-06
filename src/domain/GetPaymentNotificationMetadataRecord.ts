@@ -57,10 +57,14 @@ export const makeGetPaymentNotificationMetadataRecord =
           computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           // Per il momento solo il tipo PAGOPA e F24 è gestito. In caso di valori differenti si restituisce 404.
-          RA.filter((notification) => notification.iun && (input.attachmentName === 'PAGOPA' || input.attachmentName === 'F24')),
+          RA.filter(
+            (notification) => notification.iun && (input.attachmentName === 'PAGOPA' || input.attachmentName === 'F24')
+          ),
           // Si verifica che il recipientId è coerente e presente negli array dei recipients. In caso contrario restituiamo 404.
           RA.filter((notification) => input.recipientId >= 0 && notification.recipients.length > input.recipientId),
-          RA.chain((notification) => (notification.iun === input.iun ? [notification.recipients[input.recipientId]] : RA.empty)),
+          RA.chain((notification) =>
+            notification.iun === input.iun ? [notification.recipients[input.recipientId]] : RA.empty
+          ),
           RA.filterMap((recipient) => O.fromNullable(recipient.payments)),
           RA.findLastMap(getNotificationPaymentAttachment(input.attachmentName)),
           O.map(makeNotificationAttachmentDownloadMetadataResponse(env)),

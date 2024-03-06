@@ -64,17 +64,19 @@ export const atLeastOneValidCreditorTaxIdC = RA.exists(
     O.exists((record) =>
       pipe(
         record.input.body.recipients,
-        RA.every(({ payments }) => // Update to 'payments'
-          pipe(
-            payments as NotificationPayments,
-            RA.every(payment => pipe(payment?.pagoPa?.creditorTaxId, O.fromNullable, O.isSome))
-          )
+        RA.every(
+          (
+            { payments } // Update to 'payments'
+          ) =>
+            pipe(
+              payments as NotificationPayments,
+              RA.every((payment) => pipe(payment?.pagoPa?.creditorTaxId, O.fromNullable, O.isSome))
+            )
         )
       )
     )
   )
 );
-
 
 export const atLeastOneValidNoticeCodeC = RA.exists(
   flow(
@@ -82,17 +84,17 @@ export const atLeastOneValidNoticeCodeC = RA.exists(
     O.exists((record) =>
       pipe(
         record.input.body.recipients,
-        RA.every(( recipient ) => 
+        RA.every((recipient) =>
           pipe(
             recipient.payments,
             O.fromNullable,
-            O.exists((payments) => payments.some(singlePayment => singlePayment.pagoPa?.noticeCode)))
+            O.exists((payments) => payments.some((singlePayment) => singlePayment.pagoPa?.noticeCode))
+          )
         )
       )
     )
   )
 );
-
 
 // todo denny
 export const atLeastOneValidPagoPaFormC = pipe(
@@ -114,15 +116,14 @@ export const atLeastOneValidPagoPaFormC = pipe(
                   O.fromNullable,
                   O.exists(matchAtLeastOneUploadToS3Record(uploadToS3RecordList))
                 )
-              ),
+              )
             )
-          ),
+          )
         )
-      ),
-    ),
+      )
+    )
   )
 );
-
 
 export const atLeastOneRequestWithValidDocumentsC = pipe(
   R.Do,
@@ -193,7 +194,9 @@ export const atLeastOneNotificationSameSenderAndCreatorC = RA.exists(
           pipe(
             recipient.payments,
             O.fromNullable,
-            O.exists((payments) => payments.some(singlePayment => singlePayment.pagoPa?.creditorTaxId === record.input.body.senderTaxId))
+            O.exists((payments) =>
+              payments.some((singlePayment) => singlePayment.pagoPa?.creditorTaxId === record.input.body.senderTaxId)
+            )
           )
         )
       )

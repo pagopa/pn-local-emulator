@@ -7,16 +7,15 @@ import { makeGetLegalFactDocumentRouter } from '../router';
 const mockEnv: SystemEnv = makeTestSystemEnv();
 
 jest.mock('../../../../../src/domain/CheckNotificationStatusRecord', () => ({
-    makeCheckNotificationStatusRecord: jest.fn(() => (mockEnv: SystemEnv) => {
-      return {
-        output: {
-          statusCode: 200,
-          returned: 'Some response',
-        },
-      };
-    }),
-  }));
-  
+  makeCheckNotificationStatusRecord: jest.fn(() => (mockEnv: SystemEnv) => {
+    return {
+      output: {
+        statusCode: 200,
+        returned: 'Some response',
+      },
+    };
+  }),
+}));
 
 jest.mock('../../../../../src/useCases/PersistRecord', () => ({
   persistRecord: jest.fn(),
@@ -29,11 +28,9 @@ describe('Get Legal Fact Document Router', () => {
   app.use('/api', router);
 
   it('should return a 404 response with some data', async () => {
-    const response = await supertest(app)
-      .get('/api/delivery-push/:iun//download/legal-facts/1A')
-      .query({
-        notificationRequestId: '123',
-      });
+    const response = await supertest(app).get('/api/delivery-push/:iun//download/legal-facts/1A').query({
+      notificationRequestId: '123',
+    });
 
     expect(response.status).toBe(404);
   });
