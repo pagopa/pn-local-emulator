@@ -5,33 +5,30 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NotificationPriceResponse } from '../generated/pnapi/NotificationPriceResponse';
-import { NotificationRecipientV21 } from '../generated/pnapi/NotificationRecipientV21';
+import { NotificationPriceResponseV23 } from '../generated/pnapi/NotificationPriceResponseV23';
+import { NotificationRecipientV23 } from '../generated/pnapi/NotificationRecipientV23';
 import { NotificationPaymentItem } from '../generated/pnapi/NotificationPaymentItem';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody, unauthorizedResponse } from './types';
 import { computeSnapshot, Snapshot } from './Snapshot';
-import { Notification } from './Notification';
 
 export type GetNotificationPriceRecord = AuditRecord & {
   type: 'GetNotificationPriceRecord';
   input: { apiKey: string; paTaxId: string; noticeCode: string };
-  output: Response<200, NotificationPriceResponse> | Response<403, UnauthorizedMessageBody>;
+  output: Response<200, NotificationPriceResponseV23> | Response<403, UnauthorizedMessageBody>;
 };
 
 export const isGetNotificationPrice = (record: Record) =>
   record.type === 'GetNotificationPriceRecord' ? O.some(record) : O.none;
 
-
-
-  const findNotification = (request: GetNotificationPriceRecord['input'], snapshot: Snapshot) =>
+const findNotification = (request: GetNotificationPriceRecord['input'], snapshot: Snapshot) =>
   pipe(
     snapshot,
     RA.filterMap(O.FromEither.fromEither),
     RA.findLast(({ recipients }) =>
-      RA.some((recipient: NotificationRecipientV21) => {
+      RA.some((recipient: NotificationRecipientV23) => {
         const payments = recipient.payments || [];
 
         return RA.exists((payment) => {
@@ -68,9 +65,14 @@ export const makeGetNotificationPriceRecord =
             statusCode: 200 as const,
             returned: {
               iun: notification.iun,
-              amount: getNotificationAmountBasedOnNotification(notification),
+              partialPrice: env.partialPrice,
+              totalPrice: env.totalPrice,
+              vat: notification.vat,
+              pafee: notification.paFee,
               refinementDate: env.dateGenerator(),
               notificationViewDate: env.dateGenerator(),
+              sendFee: env.sendFee,
+              analogCost: env.analogCost,
             },
           })
         )
@@ -79,32 +81,3 @@ export const makeGetNotificationPriceRecord =
     ),
     loggedAt: env.dateGenerator(),
   });
-
-  const getNotificationAmountBasedOnNotification = (notification: Notification): number => {
-    let amountToReturn: number = 0;
-    if (notification.notificationFeePolicy === 'FLAT_RATE') {
-      return amountToReturn;
-    }
-
-    if (notification.notificationFeePolicy === 'DELIVERY_MODE') {
-      notification.recipients.some(singleRecipient => {
-        singleRecipient.payments?.some(singlePayment => {
-          if (singlePayment.pagoPa?.applyCost === true || singlePayment.f24?.applyCost === true) {
-            const notificationPaFee: number = notification.paFee ? notification.paFee : 0;
-            const localAmountToReturn: number = 100 + notificationPaFee;
-            if (singleRecipient.digitalDomicile?.type === 'PEC') {
-              amountToReturn = localAmountToReturn;
-              return true;
-            } else {
-              // 200 è un valore fisso per indicare il costo della spedizione cartacea
-              amountToReturn = localAmountToReturn + 200;
-              return true;
-            }
-          }
-        });
-      });
-    }
-
-    return amountToReturn;
-  };
-  

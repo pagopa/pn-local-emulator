@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
-import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV21';
+import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV23';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
@@ -11,7 +11,7 @@ import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNot
 import { GetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
-import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipientV21';
+import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipientV23';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
@@ -31,7 +31,7 @@ import { noticeCode } from '../../generated/pnapi/noticeCode';
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
 import { RequestResponseRecord } from '../RequestResponseRecord';
-import { TimelineElementCategoryV20Enum } from '../../generated/pnapi/TimelineElementCategoryV20';
+import { TimelineElementCategoryV23Enum } from '../../generated/pnapi/TimelineElementCategoryV23';
 
 export const apiKey = {
   valid: 'key-value',
@@ -117,6 +117,10 @@ export const makeTestSystemEnv = (
     occurrencesToDelivering: 4,
     occurrencesToDelivered: 6,
     occurrencesToViewed: 8,
+    analogCost: 200,
+    totalPrice: 300,
+    partialPrice: 100,
+    sendFee: 100,
     senderPAId: aSenderPaId,
     retryAfterMs: aRetryAfterMs,
     notificationPrice: aNotificationPrice,
@@ -237,6 +241,7 @@ const newNotificationRequest: NewNotificationRecord['input']['body'] = {
   physicalCommunicationType: PhysicalCommunicationTypeEnum.REGISTERED_LETTER_890,
   senderDenomination: unsafeCoerce('senderDenomination'),
   senderTaxId: unsafeCoerce('senderTaxId'),
+  taxonomyCode: '123456A',
 };
 
 export const mkNewNotificationRecord = (
@@ -424,7 +429,7 @@ export const consumeEventStreamRecordDelivered = {
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
       newStatus: NotificationStatusEnum.ACCEPTED,
-      timelineEventCategory: TimelineElementCategoryV20Enum.REQUEST_ACCEPTED,
+      timelineEventCategory: TimelineElementCategoryV23Enum.REQUEST_ACCEPTED,
       iun: aIun.valid,
     })),
   },
@@ -455,7 +460,7 @@ const acceptedNotificationWithTimeline = {
           category: aLegalFactType,
         },
       ],
-      category: TimelineElementCategoryV20Enum.REQUEST_ACCEPTED,
+      category: TimelineElementCategoryV23Enum.REQUEST_ACCEPTED,
     },
   ],
 };
@@ -541,7 +546,7 @@ export const getNotificationPriceRecord: GetNotificationPriceRecord = {
     statusCode: 200,
     returned: {
       iun: aIun.valid,
-      amount: 100,
+      totalPrice: 300,
     },
   },
   loggedAt: aDate,

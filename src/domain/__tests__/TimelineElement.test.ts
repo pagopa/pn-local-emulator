@@ -1,6 +1,6 @@
 import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
 import { TimelineElement } from '../../generated/pnapi/TimelineElement';
-import { TimelineElementV20 } from '../../generated/pnapi/TimelineElementV20';
+import { TimelineElementV23 } from '../../generated/pnapi/TimelineElementV23';
 import { makeLogger } from '../../logger';
 import { mkNotification } from '../Notification';
 import { NotificationRequest } from '../NotificationRequest';
@@ -36,7 +36,7 @@ describe('makeNotificationStatusHistory', () => {
   const notification = mkNotification(data.makeTestSystemEnv(), notifReq, data.aIun.valid);
 
   it("elementId should be '' if value of it is undefined", () => {
-    const nTl1 = notification['timeline'] as ReadonlyArray<TimelineElementV20>;
+    const nTl1 = notification['timeline'] as ReadonlyArray<TimelineElementV23>;
 
     nTl1.map((el) => (el['elementId'] = undefined));
 
@@ -48,7 +48,7 @@ describe('makeNotificationStatusHistory', () => {
   });
 
   it('timeline should have value from environment if it is undefined', () => {
-    const nTl2 = notification['timeline'] as ReadonlyArray<TimelineElementV20>;
+    const nTl2 = notification['timeline'] as ReadonlyArray<TimelineElementV23>;
 
     nTl2.map((el) => (el['timestamp'] = undefined));
 
