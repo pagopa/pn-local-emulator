@@ -30,7 +30,7 @@ describe('Get Stream By Id Router', () => {
 
   it('should return a 400 response with some data', async () => {
     const response = await supertest(app)
-      .get('/api/delivery-progresses/streams/1A')
+      .get('/api/delivery-progresses/v2.3/streams/1A')
       .query({
         notificationRequestId: '123',
       });
