@@ -12,7 +12,7 @@ describe("ListEventStream router", () => {
 
     it("With empty body response should be 404", async () => {
         const response = await supertest(app)
-                        .post('/delivery-progresses/streams')
+                        .post('/delivery-progresses/v2.3/streams')
                         .set('x-api-key', data.apiKey.valid)
                         .send();
 

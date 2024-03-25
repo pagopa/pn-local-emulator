@@ -4,14 +4,14 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { NewNotificationResponse } from '../generated/pnapi/NewNotificationResponse';
-import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
+import { NewNotificationRequestV23 } from '../generated/pnapi/NewNotificationRequestV23';
 import { DomainEnv } from './DomainEnv';
 import { Record, AuditRecord } from './Repository';
 import { HttpErrorMessageBody, Response, UnauthorizedMessageBody } from './types';
 
 export type NewNotificationRecord = AuditRecord & {
   type: 'NewNotificationRecord';
-  input: { apiKey: string; body: NewNotificationRequestV21 };
+  input: { apiKey: string; body: NewNotificationRequestV23 };
   output: Response<202, NewNotificationResponse> | Response<403, UnauthorizedMessageBody> | Response<400, HttpErrorMessageBody>;
 };
 

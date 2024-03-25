@@ -30,7 +30,7 @@ describe('Get Notification Price Metadata Router', () => {
 
   it('should return a 400 response with some data', async () => {
     const response = await supertest(app)
-      .get('/api/delivery/price/3C/1A')
+      .get('/api/delivery/v2.3/price/3C/1A')
       .query({
         notificationRequestId: '123',
       });

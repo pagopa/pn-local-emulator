@@ -32,7 +32,7 @@ const handler =
 export const makeGetNotificationPriceRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery/price/:paTaxId/:noticeCode', toExpressHandler(handler(env)));
+  router.get('/delivery/v2.3/price/:paTaxId/:noticeCode', toExpressHandler(handler(env)));
 
   return router;
 };

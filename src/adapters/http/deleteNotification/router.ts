@@ -31,6 +31,6 @@ const handler =
 
 export const makeDeleteNotificationRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
-  router.put('/delivery-push/v2.1/notifications/cancel/:iun', toExpressHandler(handler(env)));
+  router.put('/delivery-push/v2.3/notifications/cancel/:iun', toExpressHandler(handler(env)));
   return router;
 };

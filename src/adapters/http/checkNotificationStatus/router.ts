@@ -46,7 +46,7 @@ const handler =
 export const makeNotificationStatusRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery/v2.1/requests', toExpressHandler(handler(env)));
+  router.get('/delivery/v2.3/requests', toExpressHandler(handler(env)));
 
   return router;
 };

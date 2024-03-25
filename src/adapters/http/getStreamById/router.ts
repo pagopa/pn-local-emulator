@@ -32,7 +32,7 @@ const handler =
 export const makeGetEventStreamByIdRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery-progresses/streams/:streamId', toExpressHandler(handler(env)));
+  router.get('/delivery-progresses/v2.3/streams/:streamId', toExpressHandler(handler(env)));
 
   return router;
 };

@@ -1,22 +1,22 @@
 /* eslint-disable max-lines-per-function */
 
 import { DigitalAddressSourceEnum } from '../generated/pnapi/DigitalAddressSource';
-import { FullSentNotificationV21 } from '../generated/pnapi/FullSentNotificationV21';
+import { FullSentNotificationV23 } from '../generated/pnapi/FullSentNotificationV23';
 import { LegalFactCategoryEnum } from '../generated/pnapi/LegalFactCategory';
 import { NotificationRecipient } from '../generated/pnapi/NotificationRecipient';
-import { TimelineElementV20 } from '../generated/pnapi/TimelineElementV20';
+import { TimelineElementV23 } from '../generated/pnapi/TimelineElementV23';
 import { IUNGeneratorByIndex } from '../adapters/randexp/IUNGenerator';
-import { TimelineElementCategoryV20Enum } from '../generated/pnapi/TimelineElementCategoryV20';
+import { TimelineElementCategoryV23Enum } from '../generated/pnapi/TimelineElementCategoryV23';
 import { DomainEnv } from './DomainEnv';
 
 export const makeTimeLineListPEC_Array = 
-    (env: DomainEnv, notification: FullSentNotificationV21, index: number, recipient: NotificationRecipient) : ReadonlyArray<TimelineElementV20> =>
+    (env: DomainEnv, notification: FullSentNotificationV23, index: number, recipient: NotificationRecipient) : ReadonlyArray<TimelineElementV23> =>
     [
       {
         elementId: `${notification.iun}_aar_gen_${index}`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryV20Enum.AAR_GENERATION,
+        category: TimelineElementCategoryV23Enum.AAR_GENERATION,
         details: {
           recIndex: index,
           numberOfPages: 1,
@@ -27,7 +27,7 @@ export const makeTimeLineListPEC_Array =
         elementId: `${notification.iun}_get_address_${index}_source_PLATFORM_attempt_0`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryV20Enum.GET_ADDRESS,
+        category: TimelineElementCategoryV23Enum.GET_ADDRESS,
         details: {
           recIndex: index,
           digitalAddressSource: DigitalAddressSourceEnum.PLATFORM,
@@ -39,7 +39,7 @@ export const makeTimeLineListPEC_Array =
         elementId: `${notification.iun}_get_address_${index}_source_SPECIAL_attempt_0`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryV20Enum.GET_ADDRESS,
+        category: TimelineElementCategoryV23Enum.GET_ADDRESS,
         details: {
           recIndex: index,
           digitalAddressSource: DigitalAddressSourceEnum.SPECIAL,
@@ -51,7 +51,7 @@ export const makeTimeLineListPEC_Array =
         elementId: `${notification.iun}_send_digital_domicile_${index}_source_SPECIAL_attempt_0`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryV20Enum.SEND_DIGITAL_DOMICILE,
+        category: TimelineElementCategoryV23Enum.SEND_DIGITAL_DOMICILE,
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
@@ -68,7 +68,7 @@ export const makeTimeLineListPEC_Array =
             category: LegalFactCategoryEnum.PEC_RECEIPT,
           },
         ],
-        category: TimelineElementCategoryV20Enum.SEND_DIGITAL_PROGRESS,
+        category: TimelineElementCategoryV23Enum.SEND_DIGITAL_PROGRESS,
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
@@ -88,7 +88,7 @@ export const makeTimeLineListPEC_Array =
             category: LegalFactCategoryEnum.PEC_RECEIPT,
           },
         ],
-        category: TimelineElementCategoryV20Enum.SEND_DIGITAL_FEEDBACK,
+        category: TimelineElementCategoryV23Enum.SEND_DIGITAL_FEEDBACK,
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
@@ -107,7 +107,7 @@ export const makeTimeLineListPEC_Array =
             category: LegalFactCategoryEnum.DIGITAL_DELIVERY,
           },
         ],
-        category: TimelineElementCategoryV20Enum.DIGITAL_SUCCESS_WORKFLOW,
+        category: TimelineElementCategoryV23Enum.DIGITAL_SUCCESS_WORKFLOW,
         details: {
           recIndex: index,
           digitalAddress: recipient.digitalDomicile,
@@ -117,7 +117,7 @@ export const makeTimeLineListPEC_Array =
         elementId: `${notification.iun}_schedule_refinement_workflow_${index}`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryV20Enum.SCHEDULE_REFINEMENT,
+        category: TimelineElementCategoryV23Enum.SCHEDULE_REFINEMENT,
         details: {
           recIndex: index,
         },
@@ -126,7 +126,7 @@ export const makeTimeLineListPEC_Array =
         elementId: `${notification.iun}_refinement_${index}`,
         timestamp: env.dateGenerator(),
         legalFactsIds: [],
-        category: TimelineElementCategoryV20Enum.REFINEMENT,
+        category: TimelineElementCategoryV23Enum.REFINEMENT,
         details: {
           recIndex: index,
           notificationCost: 100,
@@ -141,7 +141,7 @@ export const makeTimeLineListPEC_Array =
             category: LegalFactCategoryEnum.RECIPIENT_ACCESS,
           },
         ],
-        category: TimelineElementCategoryV20Enum.NOTIFICATION_VIEWED,
+        category: TimelineElementCategoryV23Enum.NOTIFICATION_VIEWED,
         details: {
           recIndex: index,
         },
