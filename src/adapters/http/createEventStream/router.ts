@@ -35,7 +35,7 @@ const handler =
 export const makeCreateEventStreamRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.post('/delivery-progresses/streams', toExpressHandler(handler(env)));
+  router.post('/delivery-progresses/v2.3/streams', toExpressHandler(handler(env)));
 
   return router;
 };

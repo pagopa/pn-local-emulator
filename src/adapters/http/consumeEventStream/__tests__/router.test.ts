@@ -30,7 +30,7 @@ describe('Consume Event Stream Router', () => {
 
   it('should return a 400 response with some data', async () => {
     const response = await supertest(app)
-      .get('/api/delivery-progresses/streams/someStreamId/events')
+      .get('/api/delivery-progresses/v2.3/streams/someStreamId/events')
       .query({
         lastEventId: '123',
       });

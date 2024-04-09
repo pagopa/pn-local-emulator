@@ -33,7 +33,7 @@ const handler =
 export const makeConsumeEventStreamRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery-progresses/streams/:streamId/events', toExpressHandler(handler(env)));
+  router.get('/delivery-progresses/v2.3/streams/:streamId/events', toExpressHandler(handler(env)));
 
   return router;
 };
