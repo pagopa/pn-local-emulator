@@ -31,7 +31,7 @@ const handler =
 export const makeDeleteEventStreamRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.delete('/delivery-progresses/v2.3/streams/:streamId', toExpressHandler(handler(env)));
+  router.delete('/delivery-progresses/v2.4/streams/:streamId', toExpressHandler(handler(env)));
 
   return router;
 };

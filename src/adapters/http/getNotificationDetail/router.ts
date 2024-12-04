@@ -33,7 +33,7 @@ const handler =
 export const makeGetNotificationDetailRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery/v2.3/notifications/sent/:iun', toExpressHandler(handler(env)));
+  router.get('/delivery/v2.4/notifications/sent/:iun', toExpressHandler(handler(env)));
 
   return router;
 };

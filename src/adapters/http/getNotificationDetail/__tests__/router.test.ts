@@ -30,7 +30,7 @@ describe('Get Notification Detail Router', () => {
 
   it('should return a 400 response with some data', async () => {
     const response = await supertest(app)
-      .get('/api/delivery/v2.3/notifications/sent/1A')
+      .get('/api/delivery/v2.4/notifications/sent/1A')
       .query({
         notificationRequestId: '123',
       });

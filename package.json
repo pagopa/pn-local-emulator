@@ -1,11 +1,11 @@
 {
   "name": "pn-local-validator",
-  "version": "2.3",
+  "version": "2.4",
   "description": "A system that emulates some features of Piattaforma Notifiche platform.",
   "main": "dist/main.js",
   "scripts": {
     "generate": "npm run generate:api && npm run generate:pnapi",
-    "generate:pnapi": "shx rm -rf ./src/generated/pnapi && shx mkdir -p ./src/generated/pnapi && gen-api-models --api-spec ./openapi/bundled-api-external-b2b-pa-v2-3.yaml --no-strict --out-dir ./src/generated/pnapi --request-types --response-decoders",
+    "generate:pnapi": "shx rm -rf ./src/generated/pnapi && shx mkdir -p ./src/generated/pnapi && gen-api-models --api-spec ./openapi/bundled-api-external-b2b-pa-v2-4.yaml --no-strict --out-dir ./src/generated/pnapi --request-types --response-decoders",
     "generate:api": "shx rm -rf ./src/generated/api && shx mkdir -p ./src/generated/api && gen-api-models --api-spec ./openapi/internal.yaml --no-strict --out-dir ./src/generated/api",
     "clean": "tsc --build --clean",
     "postcompile": "shx cp -R ./src/adapters/http/download/exampledocuments ./dist/adapters/http/download/exampledocuments",
