@@ -30,7 +30,7 @@ const handler =
 export const makeListEventStreamRouter = (env: SystemEnv): express.Router => {
   const router = express.Router();
 
-  router.get('/delivery-progresses/2.3/streams', toExpressHandler(handler(env)));
+  router.get('/delivery-progresses/2.4/streams', toExpressHandler(handler(env)));
 
   return router;
 };

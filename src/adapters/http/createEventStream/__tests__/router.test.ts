@@ -29,7 +29,7 @@ describe('Create Event Stream Router', () => {
 
   it('should return a 400 response with some data', async () => {
     const response = await supertest(app)
-      .post('/api/delivery-progresses/v2.3/streams')
+      .post('/api/delivery-progresses/v2.4/streams')
       .send({});
 
     expect(response.status).toBe(400);

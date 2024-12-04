@@ -12,7 +12,7 @@ describe("sendNotification router", () => {
 
     it("With empty body response should be 404", async () => {
         const response = await supertest(app)
-            .post('/delivery/v2.3/requests')
+            .post('/delivery/v2.4/requests')
             .set('x-api-key', data.apiKey.valid)
             .send();
 
