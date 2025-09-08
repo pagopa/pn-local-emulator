@@ -1,6 +1,4 @@
 import { Group } from '../reportengine/reportengine';
-import * as GetNotificationDocumentMetadataChecks from './GetNotificationDocumentMetadataChecks';
-import * as GetPaymentNotificationMetadataChecks from './GetPaymentNotificationMetadataChecks';
 import * as LegalFactDownloadMetadataChecks from './LegalFactDownloadMetadataChecks';
 
 export const tcInvio04 = Group({
