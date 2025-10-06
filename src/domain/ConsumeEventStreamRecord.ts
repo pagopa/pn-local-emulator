@@ -18,8 +18,44 @@ import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 import { CreateEventStreamRecord } from './CreateEventStreamRecord';
+import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus'; // <-- uso dell'enum corretto per gli stream
+import { NotificationStatusV26Enum } from '../generated/pnapi/NotificationStatusV26';
 
-// ===== Helpers to format and extract values =====
+type LegalFactRef = { key: string; category?: string };
+type PhysicalAddress = {
+  address?: string;
+  zip?: string;
+  municipality?: string;
+  province?: string;
+};
+
+type DetailsLike = {
+  recIndex?: number;
+  sentAttemptMade?: number;
+  timestamp?: Date | string;
+  ingestionTimestamp?: Date | string;
+  eventTimestamp?: Date | string;
+  notificationSentAt?: Date | string;
+  physicalAddress?: PhysicalAddress;
+  serviceLevel?: string;
+  productType?: string;
+  analogCost?: number;
+  numberOfPages?: number;
+  envelopeWeight?: number;
+  prepareRequestId?: string;
+};
+
+type ElementLike = {
+  elementId: string;
+  timestamp: Date;
+  ingestionTimestamp?: Date;
+  eventTimestamp?: Date;
+  notificationSentAt?: Date;
+  category?: unknown;
+  legalFactsIds?: ReadonlyArray<LegalFactRef>;
+  details?: DetailsLike;
+};
+
 const toNonNegInt = (n: unknown): number | undefined =>
   pipe(NonNegativeInteger.decode(n), E.fold(() => undefined, identity));
 
@@ -27,22 +63,22 @@ const padEventId = (i: number, width = 40): string => i.toString().padStart(widt
 
 const toDate = (d: unknown): Date => (d instanceof Date ? d : new Date(String(d ?? '')));
 
-const sanitizeKey = (k: string) => k.replace(/safestorage:\/\/\/?/g, '')
+const sanitizeKey = (k: string): string => k.replace(/^(safestorage:\/\/)/g, '');
 
-// ===== Builders (V28 shape: element-first) =====
 const makeProgressResponseElementFromNotificationRequest =
   (timestamp: Date) =>
-  (notificationRequest: NotificationRequest): ProgressResponseElementV28 => ({
-    eventId: '0',
-    element: {
-      elementId: '0',
-      timestamp, // Date
-      ingestionTimestamp: timestamp,
-      eventTimestamp: timestamp,
-      notificationSentAt: timestamp,
-    } as any,
-    notificationRequestId: notificationRequest.notificationRequestId,
-  } as unknown as ProgressResponseElementV28);
+  (notificationRequest: NotificationRequest): ProgressResponseElementV28 =>
+    ({
+      eventId: '0',
+      element: {
+        elementId: '0',
+        timestamp,
+        ingestionTimestamp: timestamp,
+        eventTimestamp: timestamp,
+        notificationSentAt: timestamp,
+      } as ElementLike,
+      notificationRequestId: notificationRequest.notificationRequestId,
+    } as unknown as ProgressResponseElementV28);
 
 export const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
@@ -50,48 +86,67 @@ export const makeProgressResponseElementFromNotification =
     pipe(
       notification.timeline,
       RA.map(({ category, legalFactsIds, details }) => {
-        // Base record (has notificationRequestId + base element timestamps)
         const base = makeProgressResponseElementFromNotificationRequest(timestamp)(notification);
-        const iun = (notification as any).iun as string | undefined;
+        const iun = (notification as unknown as { iun?: string }).iun;
 
-        const recIndex = toNonNegInt(details && (details as any).recIndex);
-        const sentAttemptMade = toNonNegInt(details && (details as any).sentAttemptMade) ?? 0;
+        const d = details as DetailsLike | undefined;
+        const recIndex = toNonNegInt(d?.recIndex);
+        const sentAttemptMade = toNonNegInt(d?.sentAttemptMade) ?? 0;
 
-        // Build elementId as requested: <CATEGORY>.IUN_<iun>.RECINDEX_<recIndex>.ATTEMPT_<attempt>
-        const elementId = `${String(category)}.IUN_${String(iun ?? '')}.RECINDEX_${String(recIndex ?? 0)}.ATTEMPT_${String(sentAttemptMade)}`;
+        const elementId = `${String(category)}.IUN_${String(iun ?? '')}.RECINDEX_${String(
+          recIndex ?? 0
+        )}.ATTEMPT_${String(sentAttemptMade)}`;
 
-        // Build prepareRequestId similarly for analog flows
-        const prepareRequestId = `PREPARE_ANALOG_DOMICILE.IUN_${String(iun ?? '')}.RECINDEX_${String(recIndex ?? 0)}.ATTEMPT_${String(sentAttemptMade)}`;
+        const prepareRequestId = `PREPARE_ANALOG_DOMICILE.IUN_${String(iun ?? '')}.RECINDEX_${String(
+          recIndex ?? 0
+        )}.ATTEMPT_${String(sentAttemptMade)}`;
 
-        const element: any = {
-          ...(base as any).element,
+        const element: ElementLike = {
+          ...(base as unknown as { element: ElementLike }).element,
           elementId,
-          category: category as any,
-          // Use provided timestamps if present in details, else fallback to base timestamp
-          timestamp: (details as any)?.timestamp ? toDate((details as any).timestamp) : (base as any).element.timestamp,
-          ingestionTimestamp: (details as any)?.ingestionTimestamp ? toDate((details as any).ingestionTimestamp) : (base as any).element.ingestionTimestamp,
-          eventTimestamp: (details as any)?.eventTimestamp ? toDate((details as any).eventTimestamp) : (base as any).element.eventTimestamp,
-          notificationSentAt: (details as any)?.notificationSentAt ? toDate((details as any).notificationSentAt) : (base as any).element.notificationSentAt,
-          legalFactsIds: (legalFactsIds ?? []).map((lf: any) => ({ key: sanitizeKey(lf.key) })),
+          category,
+          timestamp: d?.timestamp ? toDate(d.timestamp) : (base as unknown as { element: ElementLike }).element.timestamp,
+          ingestionTimestamp: d?.ingestionTimestamp
+            ? toDate(d.ingestionTimestamp)
+            : (base as unknown as { element: ElementLike }).element.ingestionTimestamp,
+          eventTimestamp: d?.eventTimestamp
+            ? toDate(d.eventTimestamp)
+            : (base as unknown as { element: ElementLike }).element.eventTimestamp,
+          notificationSentAt: d?.notificationSentAt
+            ? toDate(d.notificationSentAt)
+            : (base as unknown as { element: ElementLike }).element.notificationSentAt,
+          legalFactsIds: (legalFactsIds ?? []).map((lf: LegalFactRef) => ({ key: sanitizeKey(lf.key) })),
           details: {
-            recIndex: recIndex,
-            physicalAddress: (details as any)?.physicalAddress,
+            recIndex,
+            physicalAddress: d?.physicalAddress,
             sentAttemptMade,
-            serviceLevel: (details as any)?.serviceLevel,
-            productType: (details as any)?.productType,
-            analogCost: (details as any)?.analogCost,
-            numberOfPages: (details as any)?.numberOfPages,
-            envelopeWeight: (details as any)?.envelopeWeight,
-            prepareRequestId: (details as any)?.prepareRequestId ?? prepareRequestId,
+            serviceLevel: d?.serviceLevel,
+            productType: d?.productType,
+            analogCost: d?.analogCost,
+            numberOfPages: d?.numberOfPages,
+            envelopeWeight: d?.envelopeWeight,
+            prepareRequestId: d?.prepareRequestId ?? prepareRequestId,
           },
         };
 
+        // --- MAPPATURA newStatus PER EVENTO ---
+        const cat = String(category);
+        const perElementStatus: ProgressResponseElementV28['newStatus'] =
+          cat === 'REQUEST_ACCEPTED'
+            ? NotificationStatusV26Enum.ACCEPTED
+            : cat === 'NOTIFICATION_VIEWED'
+              ? NotificationStatusV26Enum.VIEWED
+              : cat === 'REFINEMENT'
+                ? NotificationStatusV26Enum.DELIVERED
+                : NotificationStatusV26Enum.DELIVERING;
+
         const merged: ProgressResponseElementV28 = {
-          ...base,
-          iun: iun as any,
-          newStatus: (notification as any).notificationStatus as any,
-          element,
-        } as any;
+          ...(base as ProgressResponseElementV28),
+          iun: iun as unknown as ProgressResponseElementV28['iun'],
+          newStatus: perElementStatus,
+          element: element as unknown as ProgressResponseElementV28['element'],
+        } as unknown as ProgressResponseElementV28;
+
         return merged;
       })
     );
@@ -118,10 +173,11 @@ const makeProgressResponse = (timestamp: Date) =>
     )
   );
 
-const getCategory = (e: any): string =>
+const getCategory = (e: { element?: { category?: string }; timelineEventCategory?: string }): string =>
   String(e?.element?.category ?? e?.timelineEventCategory ?? '');
 
 const log = makeLogger();
+
 export const makeConsumeEventStreamRecord =
   (env: DomainEnv) =>
   (input: ConsumeEventStreamRecord['input']) =>
@@ -139,33 +195,34 @@ export const makeConsumeEventStreamRecord =
       input,
       output: pipe(
         authorizeApiKey(input.apiKey),
-        E.foldW(identity, () =>
-          pipe(
-            computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[],
-            makeProgressResponse(env.dateGenerator()),
-            // eventId padded like "0000...004786"
-            RA.mapWithIndex((i, elem) => ({ ...elem, eventId: padEventId(i) } as any)),
-            RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
-            RA.filterMap((singleEvent) => {
-              const cat = getCategory(singleEvent);
-              log.info('Single Event category: ', cat);
-              if (consumeEventStreamRecordCategories?.length === 0) {
-                return (cat === 'NOTIFICATION_CANCELLATION_REQUEST' ||
-                  cat === 'NOTIFICATION_CANCELLED' ||
-                  cat === 'PREPARE_ANALOG_DOMICILE_FAILURE')
-                  ? O.none
-                  : O.some(singleEvent);
-              }
-              return consumeEventStreamRecordCategories?.some((singleCategory) => singleCategory === cat)
-                ? O.some(singleEvent)
-                : O.none;
-            }),
-            (output) => ({
-              statusCode: 200 as const,
-              headers: { 'retry-after': env.retryAfterMs },
-              returned: output as unknown as ProgressResponse,
-            })
-          )
+        E.foldW(
+          (err) => err,
+          () =>
+            pipe(
+              computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[],
+              makeProgressResponse(env.dateGenerator()),
+              RA.mapWithIndex((i, elem) => ({ ...elem, eventId: padEventId(i) } as unknown as ProgressResponseElementV28)),
+              RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
+              RA.filterMap((singleEvent) => {
+                const cat = getCategory(singleEvent as unknown as { element?: { category?: string } });
+                log.info('Single Event category: ', cat);
+                if (consumeEventStreamRecordCategories?.length === 0) {
+                  return cat === 'NOTIFICATION_CANCELLATION_REQUEST' ||
+                    cat === 'NOTIFICATION_CANCELLED' ||
+                    cat === 'PREPARE_ANALOG_DOMICILE_FAILURE'
+                    ? O.none
+                    : O.some(singleEvent);
+                }
+                return consumeEventStreamRecordCategories?.some((singleCategory) => singleCategory === cat)
+                  ? O.some(singleEvent)
+                  : O.none;
+              }),
+              (outputArr) => ({
+                statusCode: 200 as const,
+                headers: { 'retry-after': env.retryAfterMs },
+                returned: outputArr as unknown as ProgressResponse,
+              })
+            )
         )
       ),
       loggedAt: env.dateGenerator(),

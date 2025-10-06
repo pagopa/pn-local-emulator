@@ -7,6 +7,7 @@ import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { authorizeApiKey } from './authorize';
+import { CreateEventStreamRecord } from './CreateEventStreamRecord';
 
 export type UpdateStreamRecord = AuditRecord & {
   type: 'UpdateStreamRecord';
@@ -16,24 +17,37 @@ export type UpdateStreamRecord = AuditRecord & {
 
 export const makeUpdateStreamRecord =
   (env: DomainEnv) =>
-  (input: UpdateStreamRecord['input']): UpdateStreamRecord => ({
-    type: 'UpdateStreamRecord',
-    input,
-    output: pipe(
-      authorizeApiKey(input.apiKey),
-      E.foldW(identity, () => {
-        const returned: StreamMetadataResponseV28 = {
-          title: (input.body as any).title,
-          eventType: (input.body as any).eventType,
-          filterValues: (input.body as any).filterValues ?? [],
-          streamId: input.streamId,
-          activationDate: env.dateGenerator(), // Date here; io-ts encoder will serialize to ISO string
-        } as const;
-        return { statusCode: 200 as const, returned };
-      })
-    ),
-    loggedAt: env.dateGenerator(),
-  });
+  (input: UpdateStreamRecord['input']): CreateEventStreamRecord => {
+    // Adatta l'input al tipo atteso da CreateEventStreamRecord (niente streamId qui)
+    const createInput: CreateEventStreamRecord['input'] = {
+      apiKey: input.apiKey,
+      body: input.body as unknown as CreateEventStreamRecord['input']['body'],
+    };
+
+    // Tipizza esplicitamente il payload di successo
+    const okReturned: StreamMetadataResponseV28 = {
+      ...(input.body as unknown as StreamMetadataResponseV28),
+      streamId: input.streamId,
+      activationDate: env.dateGenerator(),
+    };
+
+    return {
+      type: 'CreateEventStreamRecord',
+      input: createInput,
+      output: pipe(
+        authorizeApiKey(input.apiKey),
+        E.foldW(
+          identity,
+          () =>
+            ({
+              statusCode: 200 as const,
+              returned: okReturned,
+            }) as Response<200, StreamMetadataResponseV28>
+        )
+      ),
+      loggedAt: env.dateGenerator(),
+    };
+  };
 
 export const isUpdateStreamRecord = (record: Record): O.Option<UpdateStreamRecord> =>
   record.type === 'UpdateStreamRecord' ? O.some(record) : O.none;
