@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-lines-per-function */
 
 import { pipe } from 'fp-ts/function';
@@ -17,6 +18,7 @@ import { DomainEnv } from './DomainEnv';
 import { makeTimeLineListPEC_Array } from './TimelineElementCancelledNotificationTimelineEvents';
 
 // --- Helpers to adapt older timeline items (V23) to V27 shape/enums ---
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const toV27 = (e: any): TimelineElementV27 => ({
   elementId: e?.elementId,
   timestamp: e?.timestamp,

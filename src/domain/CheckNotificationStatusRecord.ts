@@ -9,14 +9,13 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import { NewNotificationRequestStatusResponseV25 } from '../generated/pnapi/NewNotificationRequestStatusResponseV25';
 import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 import { PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
-
+import { SystemEnv } from '../useCases/SystemEnv';
 import { Notification } from './Notification';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { UploadToS3Record } from './UploadToS3Record';
 import { authorizeApiKey } from './authorize';
 import { computeSnapshot } from './Snapshot';
-import { SystemEnv } from '../useCases/SystemEnv';
 import { VALID_CAPS } from './validCaps';
 
 export type CheckNotificationStatusRecord = AuditRecord & {

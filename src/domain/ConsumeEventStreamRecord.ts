@@ -10,6 +10,7 @@ import { ProgressResponse } from '../generated/pnapi/ProgressResponse';
 import { ProgressResponseElementV28 } from '../generated/pnapi/ProgressResponseElementV28';
 import { makeLogger } from '../logger';
 import { StreamMetadataResponse } from '../generated/pnapi/StreamMetadataResponse';
+import { NotificationStatusV26Enum } from '../generated/pnapi/NotificationStatusV26';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
 import { Record, AuditRecord } from './Repository';
@@ -18,8 +19,6 @@ import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
 import { authorizeApiKey } from './authorize';
 import { CreateEventStreamRecord } from './CreateEventStreamRecord';
-import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus'; // <-- uso dell'enum corretto per gli stream
-import { NotificationStatusV26Enum } from '../generated/pnapi/NotificationStatusV26';
 
 type LegalFactRef = { key: string; category?: string };
 type PhysicalAddress = {
@@ -82,6 +81,7 @@ const makeProgressResponseElementFromNotificationRequest =
 
 export const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   (notification: Notification): ReadonlyArray<ProgressResponseElementV28> =>
     pipe(
       notification.timeline,
@@ -129,7 +129,7 @@ export const makeProgressResponseElementFromNotification =
           },
         };
 
-        // --- MAPPATURA newStatus PER EVENTO ---
+        // Mappatura newStatus per evento (richiesta)
         const cat = String(category);
         const perElementStatus: ProgressResponseElementV28['newStatus'] =
           cat === 'REQUEST_ACCEPTED'
@@ -178,6 +178,30 @@ const getCategory = (e: { element?: { category?: string }; timelineEventCategory
 
 const log = makeLogger();
 
+/** --- Helpers per ridurre la complessità senza cambiare la logica --- */
+const EXCLUDED_CATEGORIES = new Set([
+  'NOTIFICATION_CANCELLATION_REQUEST',
+  'NOTIFICATION_CANCELLED',
+  'PREPARE_ANALOG_DOMICILE_FAILURE',
+]);
+
+const withEventId =
+  (i: number) =>
+  (elem: ProgressResponseElementV28): ProgressResponseElementV28 =>
+    ({ ...elem, eventId: padEventId(i) } as unknown as ProgressResponseElementV28);
+
+const shouldIncludeByCategories =
+  (allowed?: readonly string[]) =>
+  (e: { element?: { category?: string }; timelineEventCategory?: string }): boolean => {
+    const cat = getCategory(e);
+    log.info('Single Event category: ', cat);
+
+    if (!allowed || allowed.length === 0) {
+      return !EXCLUDED_CATEGORIES.has(cat);
+    }
+    return allowed.some((c) => c === cat);
+  };
+
 export const makeConsumeEventStreamRecord =
   (env: DomainEnv) =>
   (input: ConsumeEventStreamRecord['input']) =>
@@ -187,9 +211,11 @@ export const makeConsumeEventStreamRecord =
         singleRecord.type === 'CreateEventStreamRecord' &&
         ((singleRecord as CreateEventStreamRecord).output.returned as StreamMetadataResponse).streamId === input.streamId
     )[0] as CreateEventStreamRecord;
+
     const consumeEventStreamRecordCategories: readonly string[] | undefined = (
       createEventStreamRecord.output.returned as StreamMetadataResponse
     ).filterValues;
+
     return {
       type: 'ConsumeEventStreamRecord',
       input,
@@ -197,32 +223,24 @@ export const makeConsumeEventStreamRecord =
         authorizeApiKey(input.apiKey),
         E.foldW(
           (err) => err,
-          () =>
-            pipe(
-              computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[],
-              makeProgressResponse(env.dateGenerator()),
-              RA.mapWithIndex((i, elem) => ({ ...elem, eventId: padEventId(i) } as unknown as ProgressResponseElementV28)),
+          () => {
+            const snapshot = computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[];
+            const ts = env.dateGenerator();
+
+            const filtered = pipe(
+              snapshot,
+              makeProgressResponse(ts),
+              RA.mapWithIndex((i, elem) => withEventId(i)(elem as unknown as ProgressResponseElementV28)),
               RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
-              RA.filterMap((singleEvent) => {
-                const cat = getCategory(singleEvent as unknown as { element?: { category?: string } });
-                log.info('Single Event category: ', cat);
-                if (consumeEventStreamRecordCategories?.length === 0) {
-                  return cat === 'NOTIFICATION_CANCELLATION_REQUEST' ||
-                    cat === 'NOTIFICATION_CANCELLED' ||
-                    cat === 'PREPARE_ANALOG_DOMICILE_FAILURE'
-                    ? O.none
-                    : O.some(singleEvent);
-                }
-                return consumeEventStreamRecordCategories?.some((singleCategory) => singleCategory === cat)
-                  ? O.some(singleEvent)
-                  : O.none;
-              }),
-              (outputArr) => ({
-                statusCode: 200 as const,
-                headers: { 'retry-after': env.retryAfterMs },
-                returned: outputArr as unknown as ProgressResponse,
-              })
-            )
+              RA.filter(shouldIncludeByCategories(consumeEventStreamRecordCategories))
+            );
+
+            return {
+              statusCode: 200 as const,
+              headers: { 'retry-after': env.retryAfterMs },
+              returned: filtered as unknown as ProgressResponse,
+            };
+          }
         )
       ),
       loggedAt: env.dateGenerator(),
