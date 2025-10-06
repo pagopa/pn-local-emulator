@@ -21,17 +21,16 @@ const handler =
           body: StreamCreationRequestV28.decode(req.body),
           streamId: t.string.decode(req.params.streamId),
         }),
-        // FIX SOLO DI TIPO: forziamo la firma della prima funzione della flow
-        // in modo che combaci con quella attesa dalla seconda, senza alterare la logica.
+        // bridge tipizzato per evitare any
         E.map(
           flow(
-            makeUpdateStreamRecord(env) as unknown as (input: any) => any,
+            (input) => makeUpdateStreamRecord(env)(input), // (input: UpdateStreamRecord['input']) => CreateEventStreamRecord
             updateStreamRecordReturningOnlyTheOneUpdatedStream(env)
           )
         ),
         E.map(
           TE.fold(
-            (_) => T.of(res.status(404).send(Problem.fromNumber(404))),
+            () => T.of(res.status(404).send(Problem.fromNumber(404))),
             ({ output }) => T.of(res.status(output.statusCode).send(output.returned))
           )
         )
