@@ -75,6 +75,9 @@ const computeStatusFromCategory = (cat: string): NotificationStatusV26Enum => {
     case 'NOTIFICATION_VIEWED':
       return NotificationStatusV26Enum.VIEWED;
     case 'REFINEMENT':
+      return NotificationStatusV26Enum.EFFECTIVE_DATE;
+    case 'ANALOG_SUCCESS_WORKFLOW':
+    case 'DIGITAL_SUCCESS_WORKFLOW':
       return NotificationStatusV26Enum.DELIVERED;
     default:
       return NotificationStatusV26Enum.DELIVERING;
@@ -107,7 +110,10 @@ const buildElement = (
     ingestionTimestamp: pickDate(details?.ingestionTimestamp, base.ingestionTimestamp),
     eventTimestamp: pickDate(details?.eventTimestamp, base.eventTimestamp),
     notificationSentAt: pickDate(details?.notificationSentAt, base.notificationSentAt),
-    legalFactsIds: (legalFactsIds ?? []).map((lf) => ({ key: sanitizeKey(lf.key) })),
+    // Mantiene anche category se presente
+    legalFactsIds: (legalFactsIds ?? []).map((lf) =>
+      lf.category ? { key: sanitizeKey(lf.key), category: lf.category } : { key: sanitizeKey(lf.key) }
+    ),
     details: {
       recIndex,
       physicalAddress: details?.physicalAddress,
@@ -149,20 +155,24 @@ export const makeProgressResponseElementFromNotification =
         const baseElement = (base as unknown as { element: ElementLike }).element;
         const element = buildElement(baseElement, category, details as DetailsLike | undefined, legalFactsIds, iun);
 
-        const cat = String(category);
-        const perElementStatus = computeStatusFromCategory(cat);
+        const perElementStatus = computeStatusFromCategory(String(category));
 
+        // top-level legalFactsIds: includi SOLO se non vuoto
         const topLevelLegalFacts: ReadonlyArray<string> = (legalFactsIds ?? []).map((lf) => sanitizeKey(lf.key));
 
-        const merged: ProgressResponseElementV28 = {
+        const mergedBase: ProgressResponseElementV28 = {
           ...(base as ProgressResponseElementV28),
           iun: iun as unknown as ProgressResponseElementV28['iun'],
           newStatus: perElementStatus,
           element: element as unknown as ProgressResponseElementV28['element'],
-          legalFactsIds: topLevelLegalFacts, // sempre presente, anche se []
         } as unknown as ProgressResponseElementV28;
 
-        return merged;
+        return topLevelLegalFacts.length > 0
+            ? ({
+                ...mergedBase,
+                legalFactsIds: topLevelLegalFacts,
+              } as unknown as ProgressResponseElementV28)
+            : mergedBase;
       })
     );
 
