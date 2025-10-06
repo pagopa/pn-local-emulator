@@ -6,8 +6,8 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { IUN } from '../generated/pnapi/IUN';
-import { FullSentNotificationV23 } from '../generated/pnapi/FullSentNotificationV23';
-import { NotificationStatusEnum } from '../generated/pnapi/NotificationStatus';
+import { FullSentNotificationV27 } from '../generated/pnapi/FullSentNotificationV27';
+import { NotificationStatusV26Enum } from '../generated/pnapi/NotificationStatusV26';
 import { AuditRecord, Record } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { NotificationRequest } from './NotificationRequest';
@@ -19,7 +19,7 @@ import { updateTimeline } from './TimelineElement';
 export type GetNotificationDetailRecord = AuditRecord & {
   type: 'GetNotificationDetailRecord';
   input: { apiKey: string; iun: IUN };
-  output: Response<200, FullSentNotificationV23> | Response<403, UnauthorizedMessageBody> | Response<404>;
+  output: Response<200, FullSentNotificationV27> | Response<403, UnauthorizedMessageBody> | Response<404>;
 };
 
 export const isGetNotificationDetailRecord = (record: Record): O.Option<GetNotificationDetailRecord> =>
@@ -28,13 +28,13 @@ export const isGetNotificationDetailRecord = (record: Record): O.Option<GetNotif
 export const makeFullSentNotification =
   (env: DomainEnv) =>
   (notificationRequest: NotificationRequest) =>
-  (iun: IUN): FullSentNotificationV23 =>
+  (iun: IUN): FullSentNotificationV27 =>
     pipe(
       {
         ...notificationRequest,
         iun,
         sentAt: env.dateGenerator(),
-        notificationStatus: NotificationStatusEnum.ACCEPTED,
+        notificationStatus: NotificationStatusV26Enum.ACCEPTED,
         notificationStatusHistory: [],
         documentsAvailable: true,
         timeline: [],
@@ -43,9 +43,9 @@ export const makeFullSentNotification =
       (notification) => updateTimeline(env)(notification, notification.notificationStatus)
     );
 
-const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV23): FullSentNotificationV23 => ({
+const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV27): FullSentNotificationV27 => ({
   // Remove all the properties not defined by FullSentNotificationV21 type
-  ...t.exact(FullSentNotificationV23).encode(notification),
+  ...t.exact(FullSentNotificationV27).encode(notification),
   // The encode of FullSentNotificationV21 converts Date to a string.
   // Quick workaround: just copy them from the original input
   notificationStatus: notification.notificationStatus,
@@ -72,18 +72,18 @@ export const makeGetNotificationDetailRecord =
               (singleRecord) => singleRecord.type === 'GetNotificationDetailRecord'
             )[0] as GetNotificationDetailRecord;
             if (getNotificationDetailRecord !== undefined) {
-              const deletedFullSentNotificationV21: FullSentNotificationV23 = getNotificationDetailRecord.output
-                .returned as FullSentNotificationV23;
+              const deletedFullSentNotificationV21: FullSentNotificationV27 = getNotificationDetailRecord.output
+                .returned as FullSentNotificationV27;
               if (
                 notification.iun === deletedFullSentNotificationV21.iun &&
-                deletedFullSentNotificationV21.notificationStatus === NotificationStatusEnum.CANCELLED
+                deletedFullSentNotificationV21.notificationStatus === NotificationStatusV26Enum.CANCELLED
               ) {
-                notification.notificationStatus = NotificationStatusEnum.CANCELLED;
+                notification.notificationStatus = NotificationStatusV26Enum.CANCELLED;
                 notification.cancelledIun = notification.iun;
                 notification.notificationStatusHistory = [
                   ...notification.notificationStatusHistory,
                   {
-                    status: NotificationStatusEnum.CANCELLED,
+                    status: NotificationStatusV26Enum.CANCELLED,
                     activeFrom: env.dateGenerator(),
                     relatedTimelineElements: [`NOTIFICATION_CANCELLED.IUN_${notification.iun}`],
                   },

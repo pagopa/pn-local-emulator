@@ -6,7 +6,7 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { NotificationPriceResponseV23 } from '../generated/pnapi/NotificationPriceResponseV23';
-import { NotificationRecipientV23 } from '../generated/pnapi/NotificationRecipientV23';
+import { NotificationRecipientV24 } from '../generated/pnapi/NotificationRecipientV24';
 import { NotificationPaymentItem } from '../generated/pnapi/NotificationPaymentItem';
 import { authorizeApiKey } from './authorize';
 import { DomainEnv } from './DomainEnv';
@@ -28,7 +28,7 @@ const findNotification = (request: GetNotificationPriceRecord['input'], snapshot
     snapshot,
     RA.filterMap(O.FromEither.fromEither),
     RA.findLast(({ recipients }) =>
-      RA.some((recipient: NotificationRecipientV23) => {
+      RA.some((recipient: NotificationRecipientV24) => {
         const payments = recipient.payments || [];
 
         return RA.exists((payment) => {

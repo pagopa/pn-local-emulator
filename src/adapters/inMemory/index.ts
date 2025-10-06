@@ -6,15 +6,15 @@ import { Record, RecordRepository } from '../../domain/Repository';
 import { Logger } from '../../logger';
 import { DeleteStreamRecord } from '../../domain/DeleteStreamRecord';
 import { CreateEventStreamRecord, isCreateEventStreamRecord } from '../../domain/CreateEventStreamRecord';
-import { StreamMetadataResponse } from '../../generated/pnapi/StreamMetadataResponse';
+import { StreamMetadataResponseV28 } from '../../generated/pnapi/StreamMetadataResponseV28';
 import { GetNotificationDetailRecord } from '../../domain/GetNotificationDetailRecord';
-import { FullSentNotificationV21 } from '../../generated/pnapi/FullSentNotificationV21';
-import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
+import { FullSentNotificationV27 } from '../../generated/pnapi/FullSentNotificationV27';
+import { NotificationStatusV26Enum } from '../../generated/pnapi/NotificationStatusV26';
 
 const filterByStreamId = (streamId: string, record: Record): boolean =>
   O.fold(
     () => true,
-    (csr: CreateEventStreamRecord) => (csr.output.returned as StreamMetadataResponse).streamId !== streamId
+    (csr: CreateEventStreamRecord) => (csr.output.returned as StreamMetadataResponseV28).streamId !== streamId
   )(isCreateEventStreamRecord(record));
 
 // TODO: Instead of mutable variable, try to use the State Monad (or STM)
@@ -51,7 +51,7 @@ export const makeRecordRepository =
       ): TE.TaskEither<Error, ReadonlyArray<Record>> => {
         // Filter out CreateEventStreamRecord with matching streamId
         const filteredStore = store.filter((record) =>
-          filterByStreamId((createEvenStreamRecord.output.returned as StreamMetadataResponse).streamId, record)
+          filterByStreamId((createEvenStreamRecord.output.returned as StreamMetadataResponseV28).streamId, record)
         );
         store = [...filteredStore, createEvenStreamRecord];
         return TE.of(store);
@@ -61,7 +61,7 @@ export const makeRecordRepository =
       ): TE.TaskEither<Error, CreateEventStreamRecord> => {
         // Filter out CreateEventStreamRecord with matching streamId
         const filteredStore = store.filter((record) =>
-          filterByStreamId((createEvenStreamRecord.output.returned as StreamMetadataResponse).streamId, record)
+          filterByStreamId((createEvenStreamRecord.output.returned as StreamMetadataResponseV28).streamId, record)
         );
         if (filteredStore.length === store.length) {
           const error = new Error('No records were updated.');
@@ -75,7 +75,7 @@ export const makeRecordRepository =
         store = [...store, element];
         const getNotificationDetailRecord: GetNotificationDetailRecord = (store.filter(singleRecord => singleRecord.type === 'GetNotificationDetailRecord')[0] as GetNotificationDetailRecord);
         if (getNotificationDetailRecord !== undefined) {
-          (getNotificationDetailRecord.output.returned as FullSentNotificationV21).notificationStatus = NotificationStatusEnum.CANCELLED;
+          (getNotificationDetailRecord.output.returned as FullSentNotificationV27).notificationStatus = NotificationStatusV26Enum.CANCELLED;
         }
         return TE.of(element);
       } 

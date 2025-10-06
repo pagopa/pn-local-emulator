@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { unsafeCoerce } from 'fp-ts/function';
-import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV23';
+import { PhysicalCommunicationTypeEnum } from '../../generated/pnapi/NewNotificationRequestV25';
 import { CheckNotificationStatusRecord } from '../CheckNotificationStatusRecord';
 import { ConsumeEventStreamRecord } from '../ConsumeEventStreamRecord';
 import { CreateEventStreamRecord } from '../CreateEventStreamRecord';
@@ -11,7 +11,7 @@ import { GetNotificationDetailRecord, makeFullSentNotification } from '../GetNot
 import { GetNotificationDocumentMetadataRecord } from '../GetNotificationDocumentMetadataRecord';
 import { GetPaymentNotificationMetadataRecord } from '../GetPaymentNotificationMetadataRecord';
 import { ListEventStreamRecord } from '../ListEventStreamRecord';
-import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipientV23';
+import { RecipientTypeEnum } from '../../generated/pnapi/NotificationRecipientV24';
 import { SystemEnv } from '../../useCases/SystemEnv';
 import { Logger, makeLogger } from '../../logger';
 import * as inMemory from '../../adapters/inMemory';
@@ -31,7 +31,7 @@ import { noticeCode } from '../../generated/pnapi/noticeCode';
 import { NotificationFeePolicyEnum } from '../../generated/pnapi/NotificationFeePolicy';
 import { NotificationStatusEnum } from '../../generated/pnapi/NotificationStatus';
 import { RequestResponseRecord } from '../RequestResponseRecord';
-import { TimelineElementCategoryV23Enum } from '../../generated/pnapi/TimelineElementCategoryV23';
+import { TimelineElementCategoryV27Enum } from '../../generated/pnapi/TimelineElementCategoryV27';
 
 export const apiKey = {
   valid: 'key-value',
@@ -429,7 +429,7 @@ export const consumeEventStreamRecordDelivered = {
     returned: consumeEventStreamResponse.returned.map((returned) => ({
       ...returned,
       newStatus: NotificationStatusEnum.ACCEPTED,
-      timelineEventCategory: TimelineElementCategoryV23Enum.REQUEST_ACCEPTED,
+      timelineEventCategory: TimelineElementCategoryV27Enum.REQUEST_ACCEPTED,
       iun: aIun.valid,
     })),
   },
@@ -460,7 +460,7 @@ const acceptedNotificationWithTimeline = {
           category: aLegalFactType,
         },
       ],
-      category: TimelineElementCategoryV23Enum.REQUEST_ACCEPTED,
+      category: TimelineElementCategoryV27Enum.REQUEST_ACCEPTED,
     },
   ],
 };

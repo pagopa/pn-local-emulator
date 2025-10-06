@@ -2,7 +2,7 @@ import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import * as R from 'fp-ts/Reader';
 import * as RA from 'fp-ts/ReadonlyArray';
-import { NewNotificationRequestV21 } from '../generated/pnapi/NewNotificationRequestV21';
+import { NewNotificationRequestV25 } from '../generated/pnapi/NewNotificationRequestV25';
 import { isCheckNotificationStatusRecord } from './CheckNotificationStatusRecord';
 import { isConsumeEventStreamRecord } from './ConsumeEventStreamRecord';
 import { DomainEnv } from './DomainEnv';
@@ -12,7 +12,7 @@ import { makeNotification, Notification } from './Notification';
 import { makeNotificationRequestFromCreate } from './NotificationRequest';
 import { Record } from './Repository';
 
-export type Snapshot = ReadonlyArray<E.Either<NewNotificationRequestV21, Notification>>;
+export type Snapshot = ReadonlyArray<E.Either<NewNotificationRequestV25, Notification>>;
 
 export const computeSnapshot = (env: DomainEnv): R.Reader<ReadonlyArray<Record>, Snapshot> =>
   pipe(
