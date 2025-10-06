@@ -64,6 +64,64 @@ const toDate = (d: unknown): Date => (d instanceof Date ? d : new Date(String(d 
 
 const sanitizeKey = (k: string): string => k.replace(/^(safestorage:\/\/)/g, '');
 
+/** --- Helpers di costruzione elemento --- */
+const pickDate = (maybe: Date | string | undefined, fallback: Date | undefined): Date | undefined =>
+  maybe ? toDate(maybe) : fallback;
+
+const computeStatusFromCategory = (cat: string): NotificationStatusV26Enum => {
+  switch (cat) {
+    case 'REQUEST_ACCEPTED':
+      return NotificationStatusV26Enum.ACCEPTED;
+    case 'NOTIFICATION_VIEWED':
+      return NotificationStatusV26Enum.VIEWED;
+    case 'REFINEMENT':
+      return NotificationStatusV26Enum.DELIVERED;
+    default:
+      return NotificationStatusV26Enum.DELIVERING;
+  }
+};
+
+const buildElement = (
+  base: ElementLike,
+  category: unknown,
+  details: DetailsLike | undefined,
+  legalFactsIds: ReadonlyArray<LegalFactRef> | undefined,
+  iun: string | undefined
+): ElementLike => {
+  const recIndex = toNonNegInt(details?.recIndex);
+  const sentAttemptMade = toNonNegInt(details?.sentAttemptMade) ?? 0;
+
+  const elementId = `${String(category)}.IUN_${String(iun ?? '')}.RECINDEX_${String(
+    recIndex ?? 0
+  )}.ATTEMPT_${String(sentAttemptMade)}`;
+
+  const prepareRequestId = `PREPARE_ANALOG_DOMICILE.IUN_${String(iun ?? '')}.RECINDEX_${String(
+    recIndex ?? 0
+  )}.ATTEMPT_${String(sentAttemptMade)}`;
+
+  return {
+    ...base,
+    elementId,
+    category,
+    timestamp: pickDate(details?.timestamp, base.timestamp) as Date,
+    ingestionTimestamp: pickDate(details?.ingestionTimestamp, base.ingestionTimestamp),
+    eventTimestamp: pickDate(details?.eventTimestamp, base.eventTimestamp),
+    notificationSentAt: pickDate(details?.notificationSentAt, base.notificationSentAt),
+    legalFactsIds: (legalFactsIds ?? []).map((lf) => ({ key: sanitizeKey(lf.key) })),
+    details: {
+      recIndex,
+      physicalAddress: details?.physicalAddress,
+      sentAttemptMade,
+      serviceLevel: details?.serviceLevel,
+      productType: details?.productType,
+      analogCost: details?.analogCost,
+      numberOfPages: details?.numberOfPages,
+      envelopeWeight: details?.envelopeWeight,
+      prepareRequestId: details?.prepareRequestId ?? prepareRequestId,
+    },
+  };
+};
+
 const makeProgressResponseElementFromNotificationRequest =
   (timestamp: Date) =>
   (notificationRequest: NotificationRequest): ProgressResponseElementV28 =>
@@ -81,7 +139,6 @@ const makeProgressResponseElementFromNotificationRequest =
 
 export const makeProgressResponseElementFromNotification =
   (timestamp: Date) =>
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   (notification: Notification): ReadonlyArray<ProgressResponseElementV28> =>
     pipe(
       notification.timeline,
@@ -89,62 +146,20 @@ export const makeProgressResponseElementFromNotification =
         const base = makeProgressResponseElementFromNotificationRequest(timestamp)(notification);
         const iun = (notification as unknown as { iun?: string }).iun;
 
-        const d = details as DetailsLike | undefined;
-        const recIndex = toNonNegInt(d?.recIndex);
-        const sentAttemptMade = toNonNegInt(d?.sentAttemptMade) ?? 0;
+        const baseElement = (base as unknown as { element: ElementLike }).element;
+        const element = buildElement(baseElement, category, details as DetailsLike | undefined, legalFactsIds, iun);
 
-        const elementId = `${String(category)}.IUN_${String(iun ?? '')}.RECINDEX_${String(
-          recIndex ?? 0
-        )}.ATTEMPT_${String(sentAttemptMade)}`;
-
-        const prepareRequestId = `PREPARE_ANALOG_DOMICILE.IUN_${String(iun ?? '')}.RECINDEX_${String(
-          recIndex ?? 0
-        )}.ATTEMPT_${String(sentAttemptMade)}`;
-
-        const element: ElementLike = {
-          ...(base as unknown as { element: ElementLike }).element,
-          elementId,
-          category,
-          timestamp: d?.timestamp ? toDate(d.timestamp) : (base as unknown as { element: ElementLike }).element.timestamp,
-          ingestionTimestamp: d?.ingestionTimestamp
-            ? toDate(d.ingestionTimestamp)
-            : (base as unknown as { element: ElementLike }).element.ingestionTimestamp,
-          eventTimestamp: d?.eventTimestamp
-            ? toDate(d.eventTimestamp)
-            : (base as unknown as { element: ElementLike }).element.eventTimestamp,
-          notificationSentAt: d?.notificationSentAt
-            ? toDate(d.notificationSentAt)
-            : (base as unknown as { element: ElementLike }).element.notificationSentAt,
-          legalFactsIds: (legalFactsIds ?? []).map((lf: LegalFactRef) => ({ key: sanitizeKey(lf.key) })),
-          details: {
-            recIndex,
-            physicalAddress: d?.physicalAddress,
-            sentAttemptMade,
-            serviceLevel: d?.serviceLevel,
-            productType: d?.productType,
-            analogCost: d?.analogCost,
-            numberOfPages: d?.numberOfPages,
-            envelopeWeight: d?.envelopeWeight,
-            prepareRequestId: d?.prepareRequestId ?? prepareRequestId,
-          },
-        };
-
-        // Mappatura newStatus per evento (richiesta)
         const cat = String(category);
-        const perElementStatus: ProgressResponseElementV28['newStatus'] =
-          cat === 'REQUEST_ACCEPTED'
-            ? NotificationStatusV26Enum.ACCEPTED
-            : cat === 'NOTIFICATION_VIEWED'
-              ? NotificationStatusV26Enum.VIEWED
-              : cat === 'REFINEMENT'
-                ? NotificationStatusV26Enum.DELIVERED
-                : NotificationStatusV26Enum.DELIVERING;
+        const perElementStatus = computeStatusFromCategory(cat);
+
+        const topLevelLegalFacts: ReadonlyArray<string> = (legalFactsIds ?? []).map((lf) => sanitizeKey(lf.key));
 
         const merged: ProgressResponseElementV28 = {
           ...(base as ProgressResponseElementV28),
           iun: iun as unknown as ProgressResponseElementV28['iun'],
           newStatus: perElementStatus,
           element: element as unknown as ProgressResponseElementV28['element'],
+          legalFactsIds: topLevelLegalFacts, // sempre presente, anche se []
         } as unknown as ProgressResponseElementV28;
 
         return merged;
@@ -178,7 +193,7 @@ const getCategory = (e: { element?: { category?: string }; timelineEventCategory
 
 const log = makeLogger();
 
-/** --- Helpers per ridurre la complessità senza cambiare la logica --- */
+/** Helpers per ridurre la complessità senza cambiare la logica */
 const EXCLUDED_CATEGORIES = new Set([
   'NOTIFICATION_CANCELLATION_REQUEST',
   'NOTIFICATION_CANCELLED',
@@ -199,50 +214,69 @@ const shouldIncludeByCategories =
     if (!allowed || allowed.length === 0) {
       return !EXCLUDED_CATEGORIES.has(cat);
     }
+
     return allowed.some((c) => c === cat);
   };
+
+/** Estrae le categorie consentite dal record di creazione (stessa logica di prima) */
+const getAllowedCategoriesForStream = (
+  records: ReadonlyArray<Record>,
+  streamId: string
+): readonly string[] | undefined => {
+  const createEventStreamRecord: CreateEventStreamRecord = records.filter(
+    (singleRecord) =>
+      singleRecord.type === 'CreateEventStreamRecord' &&
+      ((singleRecord as CreateEventStreamRecord).output.returned as StreamMetadataResponse).streamId === streamId
+  )[0] as CreateEventStreamRecord;
+
+  return (createEventStreamRecord.output.returned as StreamMetadataResponse).filterValues;
+};
+
+/** Costruisce l'array filtrato dei ProgressResponseElementV28 (stessa logica di prima) */
+const buildFilteredProgress = (
+  env: DomainEnv,
+  input: ConsumeEventStreamRecord['input'],
+  records: ReadonlyArray<Record>,
+  allowed?: readonly string[]
+): ReadonlyArray<ProgressResponseElementV28> => {
+  const snapshot = computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[];
+  const ts = env.dateGenerator();
+
+  return pipe(
+    snapshot,
+    makeProgressResponse(ts),
+    RA.mapWithIndex((i, elem) => withEventId(i)(elem as unknown as ProgressResponseElementV28)),
+    RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
+    RA.filter(shouldIncludeByCategories(allowed))
+  );
+};
+
+const buildAuthorizedOutput = (
+  env: DomainEnv,
+  input: ConsumeEventStreamRecord['input'],
+  records: ReadonlyArray<Record>
+): Response<200, ProgressResponse> => {
+  const allowedCategories = getAllowedCategoriesForStream(records, input.streamId);
+  const filtered = buildFilteredProgress(env, input, records, allowedCategories);
+  return {
+    statusCode: 200 as const,
+    headers: { 'retry-after': env.retryAfterMs },
+    returned: filtered as unknown as ProgressResponse,
+  };
+};
 
 export const makeConsumeEventStreamRecord =
   (env: DomainEnv) =>
   (input: ConsumeEventStreamRecord['input']) =>
-  (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => {
-    const createEventStreamRecord: CreateEventStreamRecord = records.filter(
-      (singleRecord) =>
-        singleRecord.type === 'CreateEventStreamRecord' &&
-        ((singleRecord as CreateEventStreamRecord).output.returned as StreamMetadataResponse).streamId === input.streamId
-    )[0] as CreateEventStreamRecord;
-
-    const consumeEventStreamRecordCategories: readonly string[] | undefined = (
-      createEventStreamRecord.output.returned as StreamMetadataResponse
-    ).filterValues;
-
-    return {
-      type: 'ConsumeEventStreamRecord',
-      input,
-      output: pipe(
-        authorizeApiKey(input.apiKey),
-        E.foldW(
-          (err) => err,
-          () => {
-            const snapshot = computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[];
-            const ts = env.dateGenerator();
-
-            const filtered = pipe(
-              snapshot,
-              makeProgressResponse(ts),
-              RA.mapWithIndex((i, elem) => withEventId(i)(elem as unknown as ProgressResponseElementV28)),
-              RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
-              RA.filter(shouldIncludeByCategories(consumeEventStreamRecordCategories))
-            );
-
-            return {
-              statusCode: 200 as const,
-              headers: { 'retry-after': env.retryAfterMs },
-              returned: filtered as unknown as ProgressResponse,
-            };
-          }
-        )
-      ),
-      loggedAt: env.dateGenerator(),
-    };
-  };
+  (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => ({
+    type: 'ConsumeEventStreamRecord',
+    input,
+    output: pipe(
+      authorizeApiKey(input.apiKey),
+      E.foldW(
+        (err) => err,
+        () => buildAuthorizedOutput(env, input, records)
+      )
+    ),
+    loggedAt: env.dateGenerator(),
+  });
