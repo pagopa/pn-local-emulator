@@ -1,18 +1,21 @@
-import * as E from 'fp-ts/Either';
-import * as O from 'fp-ts/Option';
-import * as RA from 'fp-ts/ReadonlyArray';
-import { flow, identity, pipe } from 'fp-ts/function';
+/* eslint-disable functional/immutable-data */
+
 import * as t from 'io-ts';
-import { NewNotificationRequestStatusResponseV23 } from '../generated/pnapi/NewNotificationRequestStatusResponseV23';
+import { pipe } from 'fp-ts/function';
+import * as O from 'fp-ts/Option';
+import * as E from 'fp-ts/Either';
+import * as RA from 'fp-ts/ReadonlyArray';
+
+import { NewNotificationRequestStatusResponseV25 } from '../generated/pnapi/NewNotificationRequestStatusResponseV25';
 import { NotificationDocument } from '../generated/pnapi/NotificationDocument';
 import { PreLoadResponse } from '../generated/pnapi/PreLoadResponse';
 import { SystemEnv } from '../useCases/SystemEnv';
 import { Notification } from './Notification';
 import { AuditRecord, Record } from './Repository';
-import { computeSnapshot } from './Snapshot';
+import { Response, UnauthorizedMessageBody } from './types';
 import { UploadToS3Record } from './UploadToS3Record';
 import { authorizeApiKey } from './authorize';
-import { Response, UnauthorizedMessageBody } from './types';
+import { computeSnapshot } from './Snapshot';
 import { VALID_CAPS } from './validCaps';
 
 export type CheckNotificationStatusRecord = AuditRecord & {
@@ -22,10 +25,10 @@ export type CheckNotificationStatusRecord = AuditRecord & {
     body: { paProtocolNumber: string; idempotenceToken?: string } | { notificationRequestId: string };
   };
   output:
-  | Response<200, NewNotificationRequestStatusResponseV23>
-  | Response<500, NewNotificationRequestStatusResponseV23>
-  | Response<403, UnauthorizedMessageBody>
-  | Response<404>;
+    | Response<200, NewNotificationRequestStatusResponseV25>
+    | Response<500, NewNotificationRequestStatusResponseV25>
+    | Response<403, UnauthorizedMessageBody>
+    | Response<404>;
 };
 
 export const isCheckNotificationStatusRecord = (record: Record): O.Option<CheckNotificationStatusRecord> =>
@@ -41,136 +44,146 @@ export const makeCheckNotificationStatusRecord =
         loggedAt: env.dateGenerator(),
         output: pipe(
           authorizeApiKey(input.apiKey),
-          E.foldW(identity, () =>
-            pipe(
-              computeSnapshot(env)(records),
-              RA.findFirst(
-                flow(E.toUnion, (notificationRequest) =>
+          E.foldW(
+            (err) => err,
+            () =>
+              pipe(
+                computeSnapshot(env)(records),
+                RA.findFirst((notificationRequest) =>
                   'notificationRequestId' in input.body
-                    ? (notificationRequest as Notification).notificationRequestId === input.body.notificationRequestId
-                    : notificationRequest.paProtocolNumber === input.body.paProtocolNumber &&
-                    notificationRequest.idempotenceToken === input.body.idempotenceToken
-                )
-              ),
-              O.map(
-                E.fold(
-                  (nr) => ({ ...nr, notificationRequestStatus: 'WAITING' }),
-                  (n) =>
-                    t.exact(NewNotificationRequestStatusResponseV23).encode({ ...n, notificationRequestStatus: 'ACCEPTED' })
-                )
-              ),
-              O.map((response) =>
-                pipe(
-                  response.recipients,
-                  RA.reduce(response, function (res, invalidRec) {
-                    const newRes = t.exact(NewNotificationRequestStatusResponseV23).encode(res as NewNotificationRequestStatusResponseV23);
-                    const pastErrors = newRes.errors ? newRes.errors : [];
-                    if (!VALID_CAPS[invalidRec.physicalAddress.zip as keyof typeof VALID_CAPS]) {
-                      return t.exact(NewNotificationRequestStatusResponseV23).encode({
-                        ...res as NewNotificationRequestStatusResponseV23,
-                        notificationRequestStatus: 'REFUSED',
-                        errors: [
-                          ...pastErrors,
-                          {
-                            code: 'NOT_VALID_ADDRESS',
-                            detail: `Validation failed, address is not valid. Error=Cap ${invalidRec.physicalAddress.zip} not found`,
-                          },
-                        ],
-                      });
-                    }
-                    return res;
-                  })
-                )
-              ),
-              O.map((response) =>
-                pipe(
-                  response.documents,
-                  // Scroll throw the documents of the responce
-                  RA.reduce(response, (respAccrRaw, docRespRaw) => {
-                    const respAccr = t.exact(NewNotificationRequestStatusResponseV23).encode(respAccrRaw as NewNotificationRequestStatusResponseV23);
-                    const docResp = docRespRaw as NotificationDocument;
+                    ? (E.toUnion(notificationRequest) as Notification).notificationRequestId ===
+                      input.body.notificationRequestId
+                    : (E.toUnion(notificationRequest) as Notification).paProtocolNumber ===
+                        input.body.paProtocolNumber &&
+                      (E.toUnion(notificationRequest) as Notification).idempotenceToken ===
+                        input.body.idempotenceToken
+                ),
+                O.map((nrOrN) =>
+                  E.isLeft(nrOrN)
+                    ? { ...nrOrN.left, notificationRequestStatus: 'WAITING' }
+                    : t.exact(NewNotificationRequestStatusResponseV25).encode({
+                        ...nrOrN.right,
+                        notificationRequestStatus: 'ACCEPTED',
+                      })
+                ),
+                // validazione CAP
+                O.map((response) =>
+                  pipe(
+                    response.recipients,
+                    RA.reduce(response, (res, invalidRec) => {
+                      const newRes = t.exact(NewNotificationRequestStatusResponseV25)
+                        .encode(res as NewNotificationRequestStatusResponseV25);
 
-                    const key = docResp.ref.key;
+                      const pastErrors = newRes.errors ? newRes.errors : [];
+                      const cap = invalidRec?.physicalAddress?.zip as keyof typeof VALID_CAPS | undefined;
 
-                    // Scroll throw the records saved in memory
-                    const matchFound = RA.reduce(false, (corresponds, recordRaw) => {
-                      const recordFull = recordRaw as Record;
-
-                      //  Scroll throw the documents of a record in memory to get the URL
-                      if (recordFull.type === 'PreLoadRecord') {
-                        const preloadRecords = recordFull.output.returned as PreLoadResponse[];
-
-                        const hasTokenOnePreload = RA.reduce(false, (hasTokenOnePreload, preloadRecordRaw) => {
-                          const preloadRecord = preloadRecordRaw as PreLoadResponse;
-                          const preloadKey: string = preloadRecord.key as string;
-                          if (preloadRecord.url && key === preloadKey) {
-                            const url = preloadRecord.url;
-
-                            // Scroll uploaded records
-                            const hasEqualVersionToken = RA.reduce(false, (hasToken, recordRaw2) => {
-                              const recordFull2 = recordRaw2 as Record;
-
-                              // Check if the URL mach
-                              if (recordFull2.type === 'UploadToS3Record') {
-                                const uploadRecord = recordRaw2 as UploadToS3Record;
-
-                                // Version Tokens
-                                const uploadVersionToken = uploadRecord.output.returned.toString();
-                                // eslint-disable-next-line sonarjs/prefer-single-boolean-return
-                                if (
-                                  url.includes(uploadRecord.input.url) &&
-                                  docResp.ref.versionToken === uploadVersionToken
-                                ) {
-                                  return true;
-                                }
-                              }
-                              return hasToken;
-                            })(records);
-
-                            return hasTokenOnePreload || hasEqualVersionToken;
-                          }
-
-                          return hasTokenOnePreload;
-                        })(preloadRecords);
-
-                        return corresponds || hasTokenOnePreload;
+                      if (!cap || !VALID_CAPS[cap]) {
+                        return t.exact(NewNotificationRequestStatusResponseV25).encode({
+                          ...(res as NewNotificationRequestStatusResponseV25),
+                          notificationRequestStatus: 'REFUSED',
+                          errors: [
+                            ...pastErrors,
+                            {
+                              code: 'NOT_VALID_ADDRESS',
+                              detail: `Validation failed, address is not valid. Error=Cap ${invalidRec?.physicalAddress?.zip ?? ''} not found`,
+                            },
+                          ],
+                        });
                       }
-                      return corresponds;
-                    })(records);
+                      return res;
+                    })
+                  )
+                ),
+                // validazione versionToken dei documenti
+                O.map((response) =>
+                  pipe(
+                    response.documents,
+                    RA.reduce(response, (respAccrRaw, docRespRaw) => {
+                      const respAccr = t
+                        .exact(NewNotificationRequestStatusResponseV25)
+                        .encode(respAccrRaw as NewNotificationRequestStatusResponseV25);
+                      const docResp = docRespRaw as NotificationDocument;
 
-                    if (!matchFound) {
-                      const pastErrors = respAccr.errors ? respAccr.errors : [];
-                      return t.exact(NewNotificationRequestStatusResponseV23).encode({
-                        ...respAccr,
-                        notificationRequestStatus: 'REFUSED',
-                        errors: [
-                          ...pastErrors,
-                          {
-                            code: 'FILE_NOTFOUND',
-                            detail: `Internal Server Error; versionToken ${docResp.ref.versionToken} provided by the user isn't between the valid versionTokens available (please, use one between the ones provided by the 'x-amz-version-id' headers in the upload phase)`,
-                          },
-                        ],
-                      });
-                    }
+                      const key = docResp.ref.key;
 
-                    return respAccr;
-                  })
-                )
-              ),
+                      const matchFound = RA.reduce(false, (corresponds, recordRaw) => {
+                        const recordFull = recordRaw as Record;
 
-              O.map((response) =>
-                response.notificationRequestStatus === 'REFUSED'
-                  ? {
-                    statusCode: 500 as const,
-                    returned: Object.assign({ notificationRequestId: (input.body as Notification).notificationRequestId }, { ...response, retryAfter: env.retryAfterMs / 1000 }),
-                  }
-                  : {
-                    statusCode: 200 as const,
-                    returned: Object.assign({ notificationRequestId: (input.body as Notification).notificationRequestId }, { ...response, retryAfter: env.retryAfterMs / 1000 }),
-                  }
-              ),
-              O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
-            )
+                        if (recordFull.type === 'PreLoadRecord') {
+                          const preloadRecords = recordFull.output.returned as PreLoadResponse[];
+
+                          const hasTokenOnePreload = RA.reduce(false, (accHasToken, preloadRecordRaw) => {
+                            const preloadRecord = preloadRecordRaw as PreLoadResponse;
+                            const preloadKey = preloadRecord.key as string;
+                            if (preloadRecord.url && key === preloadKey) {
+                              const url = preloadRecord.url;
+
+                              const hasEqualVersionToken = RA.reduce(false, (hasToken, recordRaw2) => {
+                                const recordFull2 = recordRaw2 as Record;
+
+                                if (recordFull2.type === 'UploadToS3Record') {
+                                  const uploadRecord = recordRaw2 as UploadToS3Record;
+
+                                  const uploadVersionToken = uploadRecord.output.returned.toString();
+                                  if (
+                                    url.includes(uploadRecord.input.url) &&
+                                    docResp.ref.versionToken === uploadVersionToken
+                                  ) {
+                                    return true;
+                                  }
+                                }
+                                return hasToken;
+                              })(records);
+
+                              return accHasToken || hasEqualVersionToken;
+                            }
+
+                            return accHasToken;
+                          })(preloadRecords);
+
+                          return corresponds || hasTokenOnePreload;
+                        }
+                        return corresponds;
+                      })(records);
+
+                      if (!matchFound) {
+                        const pastErrors = respAccr.errors ? respAccr.errors : [];
+                        return t.exact(NewNotificationRequestStatusResponseV25).encode({
+                          ...respAccr,
+                          notificationRequestStatus: 'REFUSED',
+                          errors: [
+                            ...pastErrors,
+                            {
+                              code: 'FILE_NOTFOUND',
+                              detail: `Internal Server Error; versionToken ${docResp.ref.versionToken} provided by the user isn't between the valid versionTokens available (please, use one between the ones provided by the 'x-amz-version-id' headers in the upload phase)`,
+                            },
+                          ],
+                        });
+                      }
+
+                      return respAccr;
+                    })
+                  )
+                ),
+                O.map((response) =>
+                  response.notificationRequestStatus === 'REFUSED'
+                    ? {
+                        statusCode: 500 as const,
+                        returned: Object.assign(
+                          { notificationRequestId: (input.body as Notification).notificationRequestId },
+                          { ...response, retryAfter: env.retryAfterMs / 1000 }
+                        ),
+                      }
+                    : {
+                        statusCode: 200 as const,
+                        returned: Object.assign(
+                          { notificationRequestId: (input.body as Notification).notificationRequestId },
+                          { ...response, retryAfter: env.retryAfterMs / 1000 }
+                        ),
+                      }
+                ),
+                O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
+              )
           )
         ),
       });

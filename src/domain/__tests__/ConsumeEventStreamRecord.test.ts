@@ -10,7 +10,7 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import { mkNotification } from '../Notification';
 import { NotificationRequest } from '../NotificationRequest';
-import { ProgressResponseElement } from '../../generated/pnapi/ProgressResponseElement';
+import { ProgressResponseElementV28 } from '../../generated/pnapi/ProgressResponseElementV28';
 import { LegalFactsId } from '../../generated/pnapi/LegalFactsId';
 import { TimelineElement } from '../../generated/pnapi/TimelineElement';
 
@@ -84,7 +84,7 @@ describe('makeProgressResponseElementFromNotification', () => {
     it("response doesn't contain safestorage:// ", () => {
       pipe(
         actual,
-        RA.map((responseElement: ProgressResponseElement) => {
+        RA.map((responseElement: ProgressResponseElementV28) => {
           const re = JSON.parse(JSON.stringify(responseElement));
           pipe(
             re['legalFactsIds'],
@@ -104,7 +104,7 @@ describe('makeProgressResponseElementFromNotification', () => {
       let legalFactListActual: ReadonlyArray<ReadonlyArray<LegalFactsId>> = [];
       pipe(
         actual,
-        RA.map((responseElement: ProgressResponseElement) => {
+        RA.map((responseElement: ProgressResponseElementV28) => {
           const re = JSON.parse(JSON.stringify(responseElement));
           legalFactListActual = [...legalFactListActual, re['legalFactsIds'] as ReadonlyArray<LegalFactsId>];
         })
@@ -131,7 +131,7 @@ describe('makeProgressResponseElementFromNotification', () => {
       const another = makeProgressResponseElementFromNotification(data.aDate)(notification);
       pipe(
         another,
-        RA.map((responseElement: ProgressResponseElement) => {
+        RA.map((responseElement: ProgressResponseElementV28) => {
           const re = JSON.parse(JSON.stringify(responseElement));
           pipe(
             re['legalFactsIds'],
