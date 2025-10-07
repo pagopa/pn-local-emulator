@@ -59,16 +59,11 @@ const toNonNegInt = (n: unknown): number | undefined =>
   pipe(NonNegativeInteger.decode(n), E.fold(() => undefined, identity));
 
 const padEventId = (i: number, width = 40): string => i.toString().padStart(width, '0');
-
 const toDate = (d: unknown): Date => (d instanceof Date ? d : new Date(String(d ?? '')));
 
-const sanitizeKey = (k: string): string => k.replace(/^(safestorage:\/\/)/g, '');
-
-/** --- Helpers di costruzione elemento --- */
 const pickDate = (maybe: Date | string | undefined, fallback: Date | undefined): Date | undefined =>
   maybe ? toDate(maybe) : fallback;
 
-/** Mappa categoria → newStatus come nel target richiesto */
 const computeStatusFromCategory = (cat: string): NotificationStatusV26Enum => {
   switch (cat) {
     case 'REQUEST_ACCEPTED':
@@ -76,9 +71,6 @@ const computeStatusFromCategory = (cat: string): NotificationStatusV26Enum => {
     case 'NOTIFICATION_VIEWED':
       return NotificationStatusV26Enum.VIEWED;
     case 'REFINEMENT':
-      return NotificationStatusV26Enum.EFFECTIVE_DATE;
-    case 'DIGITAL_SUCCESS_WORKFLOW':
-    case 'ANALOG_SUCCESS_WORKFLOW':
       return NotificationStatusV26Enum.DELIVERED;
     default:
       return NotificationStatusV26Enum.DELIVERING;
@@ -95,9 +87,10 @@ const buildElement = (
   const recIndex = toNonNegInt(details?.recIndex);
   const sentAttemptMade = toNonNegInt(details?.sentAttemptMade) ?? 0;
 
-  const elementId = `${String(category)}.IUN_${String(iun ?? '')}.RECINDEX_${String(
-    recIndex ?? 0
-  )}.ATTEMPT_${String(sentAttemptMade)}`;
+  const elementId = `${String(category)}.IUN_${String(iun ?? '')}${
+    // mantieni RECINDEX/ATTEMPT solo se disponibili
+    recIndex !== undefined || sentAttemptMade !== 0 ? `.RECINDEX_${String(recIndex ?? 0)}.ATTEMPT_${String(sentAttemptMade)}` : ''
+  }`;
 
   const prepareRequestId = `PREPARE_ANALOG_DOMICILE.IUN_${String(iun ?? '')}.RECINDEX_${String(
     recIndex ?? 0
@@ -111,10 +104,8 @@ const buildElement = (
     ingestionTimestamp: pickDate(details?.ingestionTimestamp, base.ingestionTimestamp),
     eventTimestamp: pickDate(details?.eventTimestamp, base.eventTimestamp),
     notificationSentAt: pickDate(details?.notificationSentAt, base.notificationSentAt),
-    // Mantiene key sanificata e preserva category (se presente)
-    legalFactsIds: (legalFactsIds ?? []).map((lf) =>
-      lf.category ? { key: sanitizeKey(lf.key), category: lf.category } : { key: sanitizeKey(lf.key) }
-    ),
+    // ➜ lasciamo intatti key e category (niente sanitizzazione, come nell’originale)
+    legalFactsIds: (legalFactsIds ?? []) as ReadonlyArray<LegalFactRef>,
     details: {
       recIndex,
       physicalAddress: details?.physicalAddress,
@@ -142,6 +133,7 @@ const makeProgressResponseElementFromNotificationRequest =
         notificationSentAt: timestamp,
       } as ElementLike,
       notificationRequestId: notificationRequest.notificationRequestId,
+      // ⚠️ nessun legalFactsIds top-level nell’originale
     } as unknown as ProgressResponseElementV28);
 
 export const makeProgressResponseElementFromNotification =
@@ -156,30 +148,16 @@ export const makeProgressResponseElementFromNotification =
         const baseElement = (base as unknown as { element: ElementLike }).element;
         const element = buildElement(baseElement, category, details as DetailsLike | undefined, legalFactsIds, iun);
 
-        const cat = String(category);
-        const perElementStatus = computeStatusFromCategory(cat);
+        const perElementStatus = computeStatusFromCategory(String(category));
 
-        // top-level legalFactsIds solo se non vuoto
-        const topLevelLegalFacts: ReadonlyArray<string> = (legalFactsIds ?? []).map((lf) => sanitizeKey(lf.key));
-
-        // Costruisco l'oggetto nello stesso ordine chiavi del target:
-        // eventId, element, notificationRequestId, iun, newStatus, [legalFactsIds]
-        const mergedBase: ProgressResponseElementV28 = {
+        // ➜ Ordine top-level: eventId, notificationRequestId, iun, newStatus, element
+        return {
           eventId: (base as ProgressResponseElementV28).eventId,
-          element: element as unknown as ProgressResponseElementV28['element'],
           notificationRequestId: (base as ProgressResponseElementV28).notificationRequestId,
           iun: iun as unknown as ProgressResponseElementV28['iun'],
           newStatus: perElementStatus,
+          element: element as unknown as ProgressResponseElementV28['element'],
         } as unknown as ProgressResponseElementV28;
-
-        if (topLevelLegalFacts.length > 0) {
-          return {
-            ...mergedBase,
-            legalFactsIds: topLevelLegalFacts,
-          } as unknown as ProgressResponseElementV28;
-        }
-
-        return mergedBase;
       })
     );
 
@@ -210,7 +188,6 @@ const getCategory = (e: { element?: { category?: string }; timelineEventCategory
 
 const log = makeLogger();
 
-/** Helpers per ridurre la complessità senza cambiare la logica */
 const EXCLUDED_CATEGORIES = new Set([
   'NOTIFICATION_CANCELLATION_REQUEST',
   'NOTIFICATION_CANCELLED',
@@ -227,15 +204,12 @@ const shouldIncludeByCategories =
   (e: { element?: { category?: string }; timelineEventCategory?: string }): boolean => {
     const cat = getCategory(e);
     log.info('Single Event category: ', cat);
-
     if (!allowed || allowed.length === 0) {
       return !EXCLUDED_CATEGORIES.has(cat);
     }
-
     return allowed.some((c) => c === cat);
   };
 
-/** Estrae le categorie consentite dal record di creazione (stessa logica di prima) */
 const getAllowedCategoriesForStream = (
   records: ReadonlyArray<Record>,
   streamId: string
@@ -249,7 +223,6 @@ const getAllowedCategoriesForStream = (
   return (createEventStreamRecord.output.returned as StreamMetadataResponse).filterValues;
 };
 
-/** Costruisce l'array filtrato dei ProgressResponseElementV28 (stessa logica di prima) */
 const buildFilteredProgress = (
   env: DomainEnv,
   input: ConsumeEventStreamRecord['input'],
