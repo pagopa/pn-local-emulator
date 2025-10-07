@@ -68,6 +68,7 @@ const sanitizeKey = (k: string): string => k.replace(/^(safestorage:\/\/)/g, '')
 const pickDate = (maybe: Date | string | undefined, fallback: Date | undefined): Date | undefined =>
   maybe ? toDate(maybe) : fallback;
 
+/** Mappa categoria → newStatus come nel target richiesto */
 const computeStatusFromCategory = (cat: string): NotificationStatusV26Enum => {
   switch (cat) {
     case 'REQUEST_ACCEPTED':
@@ -75,6 +76,9 @@ const computeStatusFromCategory = (cat: string): NotificationStatusV26Enum => {
     case 'NOTIFICATION_VIEWED':
       return NotificationStatusV26Enum.VIEWED;
     case 'REFINEMENT':
+      return NotificationStatusV26Enum.EFFECTIVE_DATE;
+    case 'DIGITAL_SUCCESS_WORKFLOW':
+    case 'ANALOG_SUCCESS_WORKFLOW':
       return NotificationStatusV26Enum.DELIVERED;
     default:
       return NotificationStatusV26Enum.DELIVERING;
@@ -107,7 +111,10 @@ const buildElement = (
     ingestionTimestamp: pickDate(details?.ingestionTimestamp, base.ingestionTimestamp),
     eventTimestamp: pickDate(details?.eventTimestamp, base.eventTimestamp),
     notificationSentAt: pickDate(details?.notificationSentAt, base.notificationSentAt),
-    legalFactsIds: (legalFactsIds ?? []).map((lf) => ({ key: sanitizeKey(lf.key) })),
+    // Mantiene key sanificata e preserva category (se presente)
+    legalFactsIds: (legalFactsIds ?? []).map((lf) =>
+      lf.category ? { key: sanitizeKey(lf.key), category: lf.category } : { key: sanitizeKey(lf.key) }
+    ),
     details: {
       recIndex,
       physicalAddress: details?.physicalAddress,
@@ -152,17 +159,27 @@ export const makeProgressResponseElementFromNotification =
         const cat = String(category);
         const perElementStatus = computeStatusFromCategory(cat);
 
+        // top-level legalFactsIds solo se non vuoto
         const topLevelLegalFacts: ReadonlyArray<string> = (legalFactsIds ?? []).map((lf) => sanitizeKey(lf.key));
 
-        const merged: ProgressResponseElementV28 = {
-          ...(base as ProgressResponseElementV28),
+        // Costruisco l'oggetto nello stesso ordine chiavi del target:
+        // eventId, element, notificationRequestId, iun, newStatus, [legalFactsIds]
+        const mergedBase: ProgressResponseElementV28 = {
+          eventId: (base as ProgressResponseElementV28).eventId,
+          element: element as unknown as ProgressResponseElementV28['element'],
+          notificationRequestId: (base as ProgressResponseElementV28).notificationRequestId,
           iun: iun as unknown as ProgressResponseElementV28['iun'],
           newStatus: perElementStatus,
-          element: element as unknown as ProgressResponseElementV28['element'],
-          legalFactsIds: topLevelLegalFacts, // sempre presente, anche se []
         } as unknown as ProgressResponseElementV28;
 
-        return merged;
+        if (topLevelLegalFacts.length > 0) {
+          return {
+            ...mergedBase,
+            legalFactsIds: topLevelLegalFacts,
+          } as unknown as ProgressResponseElementV28;
+        }
+
+        return mergedBase;
       })
     );
 
