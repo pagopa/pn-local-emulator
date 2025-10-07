@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable functional/no-let */
 
@@ -14,7 +13,7 @@ import { StreamMetadataResponse } from '../generated/pnapi/StreamMetadataRespons
 import { NotificationStatusV26Enum } from '../generated/pnapi/NotificationStatusV26';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
-import { Record as RepoRecord, AuditRecord } from './Repository'; // <-- alias per evitare collisione
+import { Record as RepoRecord, AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
@@ -52,7 +51,7 @@ type ElementLike = {
   eventTimestamp?: Date;
   notificationSentAt?: Date;
   category?: unknown;
-  legalFactsIds?: ReadonlyArray<LegalFactRef>; // teniamo i LF qui
+  legalFactsIds?: ReadonlyArray<LegalFactRef>; // LF dentro element, con category
   details?: DetailsLike;
 };
 
@@ -161,7 +160,7 @@ const buildElement = (
     ingestionTimestamp: pickDate(details?.ingestionTimestamp, base.ingestionTimestamp),
     eventTimestamp: pickDate(details?.eventTimestamp, base.eventTimestamp),
     notificationSentAt: pickDate(details?.notificationSentAt, base.notificationSentAt),
-    legalFactsIds: toElementLegalFacts(catStr, legalFactsIds), // LF solo qui
+    legalFactsIds: toElementLegalFacts(catStr, legalFactsIds), // LF solo qui dentro, con category
     details: {
       recIndex,
       physicalAddress: details?.physicalAddress,
@@ -177,6 +176,7 @@ const buildElement = (
 
   // Se vuoto, omettiamo la proprietà
   if (!element.legalFactsIds || element.legalFactsIds.length === 0) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { legalFactsIds: _drop, ...rest } = element;
     return orderElementKeys(rest as ElementLike);
   }
@@ -184,36 +184,32 @@ const buildElement = (
   return orderElementKeys(element);
 };
 
-// --- shape top-level (senza legalFactsIds)
+// --- shape top-level (ORA con legalFactsIds come array di stringhe, SEMPRE presente)
 type OutLike = {
   readonly eventId: string;
   readonly element: ElementLike;
   readonly notificationRequestId?: string;
   readonly iun?: string;
   readonly newStatus?: NotificationStatusV26Enum;
+  readonly legalFactsIds: ReadonlyArray<string>;
 };
 
 const orderTopKeys = (e: OutLike): OutLike => {
-  const { eventId, notificationRequestId, iun, newStatus, element } = e;
+  const { eventId, notificationRequestId, iun, newStatus, element, legalFactsIds } = e;
   return {
     eventId,
     notificationRequestId,
     iun,
     newStatus,
     element,
+    legalFactsIds,
   };
-};
-
-// rimuove qualsiasi legalFactsIds top-level se presente per errore
-const stripTopLevelLegalFactsIds = (elem: ProgressResponseElementV28): ProgressResponseElementV28 => {
-  const { legalFactsIds: _drop, ...rest } = (elem as unknown) as { [k: string]: unknown };
-  return rest as ProgressResponseElementV28;
 };
 
 const makeProgressResponseElementFromNotificationRequest =
   (timestamp: Date) =>
   (notificationRequest: NotificationRequest): ProgressResponseElementV28 =>
-    stripTopLevelLegalFactsIds({
+    ({
       eventId: '0',
       notificationRequestId: notificationRequest.notificationRequestId,
       iun: undefined,
@@ -225,7 +221,7 @@ const makeProgressResponseElementFromNotificationRequest =
         eventTimestamp: timestamp,
         notificationSentAt: timestamp,
       } as ElementLike),
-      // niente legalFactsIds top-level
+      legalFactsIds: [], // <- richiesto dai test: array sempre presente (vuoto se nessun LF)
     } as unknown as ProgressResponseElementV28);
 
 export const makeProgressResponseElementFromNotification =
@@ -249,16 +245,22 @@ export const makeProgressResponseElementFromNotification =
         const cat = String(category);
         const perElementStatus = computeStatusFromCategory(cat);
 
+        // TOP-LEVEL: array di stringhe, sanificate; se assenti -> []
+        const topLevelLf: ReadonlyArray<string> =
+          (legalFactsIds && legalFactsIds.length > 0
+            ? legalFactsIds.map((lf) => sanitizeKey(lf.key))
+            : (elementBuilt.legalFactsIds ?? []).map((lf) => lf.key)) || [];
+
         const outPre: OutLike = {
           eventId: (base as unknown as OutLike).eventId,
           notificationRequestId: (base as unknown as OutLike).notificationRequestId,
           iun: iun as string | undefined,
           newStatus: perElementStatus,
           element: elementBuilt,
+          legalFactsIds: topLevelLf, // <- presente sempre
         };
 
-        const out = orderTopKeys(outPre) as unknown as ProgressResponseElementV28;
-        return stripTopLevelLegalFactsIds(out);
+        return orderTopKeys(outPre) as unknown as ProgressResponseElementV28;
       })
     );
 
@@ -340,8 +342,7 @@ const buildFilteredProgress = (
     makeProgressResponse(ts),
     RA.mapWithIndex((i, elem) => withEventId(i)(elem as unknown as ProgressResponseElementV28)),
     RA.filterWithIndex((i) => i > parseInt(input.lastEventId || '-1', 10)),
-    RA.filter(shouldIncludeByCategories(allowed)),
-    RA.map(stripTopLevelLegalFactsIds) // sicurezza extra
+    RA.filter(shouldIncludeByCategories(allowed))
   );
 };
 
