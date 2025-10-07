@@ -13,7 +13,7 @@ import { StreamMetadataResponse } from '../generated/pnapi/StreamMetadataRespons
 import { NotificationStatusV26Enum } from '../generated/pnapi/NotificationStatusV26';
 import { NotificationRequest } from './NotificationRequest';
 import { Notification } from './Notification';
-import { Record, AuditRecord } from './Repository';
+import { Record as RepoRecord, AuditRecord } from './Repository';
 import { Response, UnauthorizedMessageBody } from './types';
 import { DomainEnv } from './DomainEnv';
 import { computeSnapshot } from './Snapshot';
@@ -51,7 +51,7 @@ type ElementLike = {
   eventTimestamp?: Date;
   notificationSentAt?: Date;
   category?: unknown;
-  legalFactsIds?: ReadonlyArray<LegalFactRef>;
+  legalFactsIds?: ReadonlyArray<LegalFactRef>; // LF dentro element, con category
   details?: DetailsLike;
 };
 
@@ -64,7 +64,7 @@ const toDate = (d: unknown): Date => (d instanceof Date ? d : new Date(String(d 
 
 const sanitizeKey = (k: string): string => k.replace(/^(safestorage:\/\/)/g, '');
 
-/** --- Helpers di costruzione elemento --- */
+/** --- Helpers --- */
 const pickDate = (maybe: Date | string | undefined, fallback: Date | undefined): Date | undefined =>
   maybe ? toDate(maybe) : fallback;
 
@@ -81,6 +81,57 @@ const computeStatusFromCategory = (cat: string): NotificationStatusV26Enum => {
   }
 };
 
+const lfCategoryForEvent = (cat: string): string | undefined => {
+  switch (cat) {
+    case 'REQUEST_ACCEPTED':
+      return 'SENDER_ACK';
+    case 'SEND_DIGITAL_PROGRESS':
+    case 'SEND_DIGITAL_FEEDBACK':
+      return 'PEC_RECEIPT';
+    case 'DIGITAL_SUCCESS_WORKFLOW':
+      return 'DIGITAL_DELIVERY';
+    case 'NOTIFICATION_VIEWED':
+      return 'RECIPIENT_ACCESS';
+    default:
+      return undefined;
+  }
+};
+
+const toElementLegalFacts = (
+  cat: string,
+  legalFactsIds?: ReadonlyArray<LegalFactRef>
+): ReadonlyArray<LegalFactRef> | undefined => {
+  if (!legalFactsIds || legalFactsIds.length === 0) {return undefined;}
+  const category = lfCategoryForEvent(cat);
+  return legalFactsIds.map((lf) => ({
+    key: sanitizeKey(lf.key),
+    ...(category ? { category } : {}),
+  }));
+};
+
+const orderElementKeys = (el: ElementLike): ElementLike => {
+  const {
+    elementId,
+    timestamp,
+    ingestionTimestamp,
+    eventTimestamp,
+    notificationSentAt,
+    category,
+    legalFactsIds,
+    details,
+  } = el;
+  return {
+    elementId,
+    timestamp,
+    ingestionTimestamp,
+    eventTimestamp,
+    notificationSentAt,
+    category,
+    legalFactsIds,
+    details,
+  };
+};
+
 const buildElement = (
   base: ElementLike,
   category: unknown,
@@ -91,15 +142,17 @@ const buildElement = (
   const recIndex = toNonNegInt(details?.recIndex);
   const sentAttemptMade = toNonNegInt(details?.sentAttemptMade) ?? 0;
 
-  const elementId = `${String(category)}.IUN_${String(iun ?? '')}.RECINDEX_${String(
-    recIndex ?? 0
-  )}.ATTEMPT_${String(sentAttemptMade)}`;
+  const catStr = String(category);
+
+  const elementId = `${catStr}.IUN_${String(iun ?? '')}.RECINDEX_${String(recIndex ?? 0)}.ATTEMPT_${String(
+    sentAttemptMade
+  )}`;
 
   const prepareRequestId = `PREPARE_ANALOG_DOMICILE.IUN_${String(iun ?? '')}.RECINDEX_${String(
     recIndex ?? 0
   )}.ATTEMPT_${String(sentAttemptMade)}`;
 
-  return {
+  const element: ElementLike = {
     ...base,
     elementId,
     category,
@@ -107,7 +160,7 @@ const buildElement = (
     ingestionTimestamp: pickDate(details?.ingestionTimestamp, base.ingestionTimestamp),
     eventTimestamp: pickDate(details?.eventTimestamp, base.eventTimestamp),
     notificationSentAt: pickDate(details?.notificationSentAt, base.notificationSentAt),
-    legalFactsIds: (legalFactsIds ?? []).map((lf) => ({ key: sanitizeKey(lf.key) })),
+    legalFactsIds: toElementLegalFacts(catStr, legalFactsIds), // LF solo qui dentro, con category
     details: {
       recIndex,
       physicalAddress: details?.physicalAddress,
@@ -120,6 +173,37 @@ const buildElement = (
       prepareRequestId: details?.prepareRequestId ?? prepareRequestId,
     },
   };
+
+  // Se vuoto, omettiamo la proprietà
+  if (!element.legalFactsIds || element.legalFactsIds.length === 0) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { legalFactsIds: _drop, ...rest } = element;
+    return orderElementKeys(rest as ElementLike);
+  }
+
+  return orderElementKeys(element);
+};
+
+// --- shape top-level (ORA con legalFactsIds come array di stringhe, SEMPRE presente)
+type OutLike = {
+  readonly eventId: string;
+  readonly element: ElementLike;
+  readonly notificationRequestId?: string;
+  readonly iun?: string;
+  readonly newStatus?: NotificationStatusV26Enum;
+  readonly legalFactsIds: ReadonlyArray<string>;
+};
+
+const orderTopKeys = (e: OutLike): OutLike => {
+  const { eventId, notificationRequestId, iun, newStatus, element, legalFactsIds } = e;
+  return {
+    eventId,
+    notificationRequestId,
+    iun,
+    newStatus,
+    element,
+    legalFactsIds,
+  };
 };
 
 const makeProgressResponseElementFromNotificationRequest =
@@ -127,14 +211,17 @@ const makeProgressResponseElementFromNotificationRequest =
   (notificationRequest: NotificationRequest): ProgressResponseElementV28 =>
     ({
       eventId: '0',
-      element: {
+      notificationRequestId: notificationRequest.notificationRequestId,
+      iun: undefined,
+      newStatus: undefined,
+      element: orderElementKeys({
         elementId: '0',
         timestamp,
         ingestionTimestamp: timestamp,
         eventTimestamp: timestamp,
         notificationSentAt: timestamp,
-      } as ElementLike,
-      notificationRequestId: notificationRequest.notificationRequestId,
+      } as ElementLike),
+      legalFactsIds: [], // <- richiesto dai test: array sempre presente (vuoto se nessun LF)
     } as unknown as ProgressResponseElementV28);
 
 export const makeProgressResponseElementFromNotification =
@@ -147,22 +234,33 @@ export const makeProgressResponseElementFromNotification =
         const iun = (notification as unknown as { iun?: string }).iun;
 
         const baseElement = (base as unknown as { element: ElementLike }).element;
-        const element = buildElement(baseElement, category, details as DetailsLike | undefined, legalFactsIds, iun);
+        const elementBuilt = buildElement(
+          baseElement,
+          category,
+          details as DetailsLike | undefined,
+          legalFactsIds as ReadonlyArray<LegalFactRef> | undefined,
+          iun
+        );
 
         const cat = String(category);
         const perElementStatus = computeStatusFromCategory(cat);
 
-        const topLevelLegalFacts: ReadonlyArray<string> = (legalFactsIds ?? []).map((lf) => sanitizeKey(lf.key));
+        // TOP-LEVEL: array di stringhe, sanificate; se assenti -> []
+        const topLevelLf: ReadonlyArray<string> =
+          (legalFactsIds && legalFactsIds.length > 0
+            ? legalFactsIds.map((lf) => sanitizeKey(lf.key))
+            : (elementBuilt.legalFactsIds ?? []).map((lf) => lf.key)) || [];
 
-        const merged: ProgressResponseElementV28 = {
-          ...(base as ProgressResponseElementV28),
-          iun: iun as unknown as ProgressResponseElementV28['iun'],
+        const outPre: OutLike = {
+          eventId: (base as unknown as OutLike).eventId,
+          notificationRequestId: (base as unknown as OutLike).notificationRequestId,
+          iun: iun as string | undefined,
           newStatus: perElementStatus,
-          element: element as unknown as ProgressResponseElementV28['element'],
-          legalFactsIds: topLevelLegalFacts, // sempre presente, anche se []
-        } as unknown as ProgressResponseElementV28;
+          element: elementBuilt,
+          legalFactsIds: topLevelLf, // <- presente sempre
+        };
 
-        return merged;
+        return orderTopKeys(outPre) as unknown as ProgressResponseElementV28;
       })
     );
 
@@ -172,7 +270,7 @@ export type ConsumeEventStreamRecord = AuditRecord & {
   output: Response<200, ProgressResponse> | Response<403, UnauthorizedMessageBody> | Response<419>;
 };
 
-export const isConsumeEventStreamRecord = (record: Record): O.Option<ConsumeEventStreamRecord> =>
+export const isConsumeEventStreamRecord = (record: RepoRecord): O.Option<ConsumeEventStreamRecord> =>
   record.type === 'ConsumeEventStreamRecord' ? O.some(record) : O.none;
 
 export const getProgressResponse = (record: ConsumeEventStreamRecord): O.Option<ProgressResponse> =>
@@ -193,7 +291,7 @@ const getCategory = (e: { element?: { category?: string }; timelineEventCategory
 
 const log = makeLogger();
 
-/** Helpers per ridurre la complessità senza cambiare la logica */
+/** Helpers */
 const EXCLUDED_CATEGORIES = new Set([
   'NOTIFICATION_CANCELLATION_REQUEST',
   'NOTIFICATION_CANCELLED',
@@ -214,13 +312,11 @@ const shouldIncludeByCategories =
     if (!allowed || allowed.length === 0) {
       return !EXCLUDED_CATEGORIES.has(cat);
     }
-
     return allowed.some((c) => c === cat);
   };
 
-/** Estrae le categorie consentite dal record di creazione (stessa logica di prima) */
 const getAllowedCategoriesForStream = (
-  records: ReadonlyArray<Record>,
+  records: ReadonlyArray<RepoRecord>,
   streamId: string
 ): readonly string[] | undefined => {
   const createEventStreamRecord: CreateEventStreamRecord = records.filter(
@@ -232,11 +328,10 @@ const getAllowedCategoriesForStream = (
   return (createEventStreamRecord.output.returned as StreamMetadataResponse).filterValues;
 };
 
-/** Costruisce l'array filtrato dei ProgressResponseElementV28 (stessa logica di prima) */
 const buildFilteredProgress = (
   env: DomainEnv,
   input: ConsumeEventStreamRecord['input'],
-  records: ReadonlyArray<Record>,
+  records: ReadonlyArray<RepoRecord>,
   allowed?: readonly string[]
 ): ReadonlyArray<ProgressResponseElementV28> => {
   const snapshot = computeSnapshot(env)(records) as E.Either<NotificationRequest, Notification>[];
@@ -254,10 +349,11 @@ const buildFilteredProgress = (
 const buildAuthorizedOutput = (
   env: DomainEnv,
   input: ConsumeEventStreamRecord['input'],
-  records: ReadonlyArray<Record>
+  records: ReadonlyArray<RepoRecord>
 ): Response<200, ProgressResponse> => {
   const allowedCategories = getAllowedCategoriesForStream(records, input.streamId);
   const filtered = buildFilteredProgress(env, input, records, allowedCategories);
+
   return {
     statusCode: 200 as const,
     headers: { 'retry-after': env.retryAfterMs },
@@ -268,7 +364,7 @@ const buildAuthorizedOutput = (
 export const makeConsumeEventStreamRecord =
   (env: DomainEnv) =>
   (input: ConsumeEventStreamRecord['input']) =>
-  (records: ReadonlyArray<Record>): ConsumeEventStreamRecord => ({
+  (records: ReadonlyArray<RepoRecord>): ConsumeEventStreamRecord => ({
     type: 'ConsumeEventStreamRecord',
     input,
     output: pipe(
