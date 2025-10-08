@@ -57,7 +57,6 @@ const countFromFind = (notificationRequestId: string) =>
 const countFromConsume = (notificationRequestId: string) =>
   flow(
     RA.filterMap(getProgressResponse),
-    
     // for each page remove duplicated notificationRequestId
     RA.map(
       flow(
@@ -87,6 +86,17 @@ const makeStatus = (env: DomainEnv, occurrences: number) =>
     ? O.some(NotificationStatusV26Enum.VIEWED)
     : O.none;
 
+/** Legge in modo sicuro lo status più recente (statusCode 200) dai detail */
+const getLatestDetailStatus = (
+  records: ReadonlyArray<GetNotificationDetailRecord>
+): O.Option<NotificationStatusV26Enum> =>
+  pipe(
+    records,
+    RA.findLastMap((r) => (r.output.statusCode === 200 ? O.some(r.output.returned) : O.none)),
+    O.map((ret) => ret.notificationStatus),
+    O.filter((s): s is NotificationStatusV26Enum => s !== undefined)
+  );
+
 /**
  * Compose a NotificationRequest starting from a list of records
  */
@@ -98,10 +108,7 @@ export const makeNotification =
   (notificationRequest: NotificationRequest): O.Option<Notification> =>
     pipe(
       // get iun from find records
-      pipe(
-        findNotificationRequestRecord, 
-        RA.findLastMap(getIunFromFind(notificationRequest)),
-        ),
+      pipe(findNotificationRequestRecord, RA.findLastMap(getIunFromFind(notificationRequest))),
       // get iun from consume records
       O.alt(() => pipe(consumeEventStreamRecord, RA.findLastMap(getIunFromConsume(notificationRequest)))),
       // create Notification from iun if any
@@ -128,7 +135,15 @@ export const makeNotification =
             pipe(getNotificationDetailRecord, countFromDetail(notification.iun)),
           ]),
           (occurrences) => {
-            if (getNotificationDetailRecord[0] as GetNotificationDetailRecord !== undefined && ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV27).notificationStatus === NotificationStatusV26Enum.CANCELLED) {
+            // Valuta lo stato (eventuale) proveniente dai "detail"
+            const maybeDetailStatus = getLatestDetailStatus(getNotificationDetailRecord);
+            const isCancelled = pipe(
+              maybeDetailStatus,
+              O.exists((st) => st === NotificationStatusV26Enum.CANCELLED)
+            );
+
+            if (isCancelled) {
+              // Aggiorna subito a CANCELLED e arricchisci timeline/history
               notification.notificationStatus = NotificationStatusV26Enum.CANCELLED;
               notification.cancelledIun = notification.iun;
               notification.timeline = [
@@ -138,43 +153,40 @@ export const makeNotification =
                   timestamp: env.dateGenerator(),
                   legalFactsIds: [],
                   category: TimelineElementCategoryV27Enum.NOTIFICATION_CANCELLATION_REQUEST,
-                  details: {
-                    cancellationRequestId: "90e3f130-cb23-4b6b-a0aa-858de7ffb3a0"
-                  }
+                  details: { cancellationRequestId: '90e3f130-cb23-4b6b-a0aa-858de7ffb3a0' },
                 },
                 {
                   elementId: `NOTIFICATION_CANCELLED.IUN_${notification.iun}`,
                   timestamp: env.dateGenerator(),
                   legalFactsIds: [],
                   category: TimelineElementCategoryV27Enum.NOTIFICATION_CANCELLED,
-                  details: {
-                    notificationCost: 100,
-                    notRefinedRecipientIndexes: [0]
-                  }
-                }
+                  details: { notificationCost: 100, notRefinedRecipientIndexes: [0] },
+                },
               ];
               notification.notificationStatusHistory = [
                 ...notification.notificationStatusHistory,
                 {
                   status: NotificationStatusV26Enum.CANCELLED,
                   activeFrom: env.dateGenerator(),
-                  relatedTimelineElements: [
-                    `NOTIFICATION_CANCELLED.IUN_${notification.iun}`
-                  ]
-                }
+                  relatedTimelineElements: [`NOTIFICATION_CANCELLED.IUN_${notification.iun}`],
+                },
               ];
             }
-            // update the notification according to the number of occurrencies
+
+            // update the notification according to the number of occurrences
             return pipe(
               makeStatus(env, occurrences),
-              O.map((newStatus) => updateTimeline(env)(notification, 
-                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord) !== undefined) && 
-                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output) !== undefined &&
-                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV27) !== undefined && 
-                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV27).notificationStatus !== undefined &&
-                ((getNotificationDetailRecord[0] as GetNotificationDetailRecord).output.returned as FullSentNotificationV27).notificationStatus === 'CANCELLED' 
-                ? NotificationStatusV26Enum.CANCELLED : newStatus)),
-              O.getOrElse(() => notification)
+              O.map((newStatus) =>
+                updateTimeline(env)(
+                  notification,
+                  isCancelled ? NotificationStatusV26Enum.CANCELLED : newStatus
+                )
+              ),
+              O.getOrElse(() =>
+                isCancelled
+                  ? updateTimeline(env)(notification, NotificationStatusV26Enum.CANCELLED)
+                  : notification
+              )
             );
           }
         )

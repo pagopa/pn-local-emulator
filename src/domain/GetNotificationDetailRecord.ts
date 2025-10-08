@@ -44,15 +44,27 @@ export const makeFullSentNotification =
     );
 
 const exactFullSentNotification = (env: DomainEnv, notification: FullSentNotificationV27): FullSentNotificationV27 => ({
-  // Remove all the properties not defined by FullSentNotificationV21 type
+  // Limita alle proprietà del codec (rimuove extra)
   ...t.exact(FullSentNotificationV27).encode(notification),
-  // The encode of FullSentNotificationV21 converts Date to a string.
-  // Quick workaround: just copy them from the original input
+  // Re-inserisce i campi Date e strutture complesse intatte
   notificationStatus: notification.notificationStatus,
   sentAt: notification.sentAt,
   notificationStatusHistory: notification.notificationStatusHistory,
   timeline: notification.timeline,
 });
+
+/**
+ * Ritorna l'ultimo FullSentNotificationV27 (status 200) per uno specifico IUN, se presente.
+ */
+const getLatestDetailReturnedForIun =
+  (iun: IUN) =>
+  (records: ReadonlyArray<Record>): O.Option<FullSentNotificationV27> =>
+    pipe(
+      records,
+      RA.filterMap(isGetNotificationDetailRecord),
+      // scegliamo l'ULTIMO in ordine di registrazione
+      RA.findLastMap((r) => (r.output.statusCode === 200 && r.input.iun === iun ? O.some(r.output.returned) : O.none))
+    );
 
 export const makeGetNotificationDetailRecord =
   (env: DomainEnv) =>
@@ -68,16 +80,13 @@ export const makeGetNotificationDetailRecord =
           computeSnapshot(env)(records),
           RA.filterMap(O.fromEither),
           RA.findFirstMap((notification) => {
-            const getNotificationDetailRecord: GetNotificationDetailRecord = records.filter(
-              (singleRecord) => singleRecord.type === 'GetNotificationDetailRecord'
-            )[0] as GetNotificationDetailRecord;
-            if (getNotificationDetailRecord !== undefined) {
-              const deletedFullSentNotificationV21: FullSentNotificationV27 = getNotificationDetailRecord.output
-                .returned as FullSentNotificationV27;
-              if (
-                notification.iun === deletedFullSentNotificationV21.iun &&
-                deletedFullSentNotificationV21.notificationStatus === NotificationStatusV26Enum.CANCELLED
-              ) {
+            // Se per questo IUN esiste un dettaglio 200 ed è CANCELLED, aggiorna in modo sicuro
+            const maybeDetail = getLatestDetailReturnedForIun(notification.iun)(records);
+
+            const notificationPatched = pipe(
+              maybeDetail,
+              O.filter((d) => d.notificationStatus === NotificationStatusV26Enum.CANCELLED),
+              O.map(() => {
                 notification.notificationStatus = NotificationStatusV26Enum.CANCELLED;
                 notification.cancelledIun = notification.iun;
                 notification.notificationStatusHistory = [
@@ -88,9 +97,14 @@ export const makeGetNotificationDetailRecord =
                     relatedTimelineElements: [`NOTIFICATION_CANCELLED.IUN_${notification.iun}`],
                   },
                 ];
-              }
-            }
-            return notification.iun === input.iun ? O.some(exactFullSentNotification(env, notification)) : O.none;
+                return notification;
+              }),
+              O.getOrElseW(() => notification)
+            );
+
+            return notificationPatched.iun === input.iun
+              ? O.some(exactFullSentNotification(env, notificationPatched))
+              : O.none;
           }),
           O.map((returned) => ({ statusCode: 200 as const, returned })),
           O.getOrElseW(() => ({ statusCode: 404 as const, returned: undefined }))
