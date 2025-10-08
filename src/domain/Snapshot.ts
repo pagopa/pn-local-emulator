@@ -29,16 +29,17 @@ export const computeSnapshot = (env: DomainEnv): R.Reader<ReadonlyArray<Record>,
         getNotificationDetailRecords,
       }) =>
         pipe(
-          // create all the NotificationRequest
+          // Crea tutte le NotificationRequest valide
           notificationRequestRecords,
           RA.filterMap(makeNotificationRequestFromCreate),
-          // for each one try to create a Notification
+          // Per ognuna prova a costruire la Notification
           RA.map((notificationRequest) =>
             pipe(
               notificationRequest,
               makeNotification(env)(checkNotificationStatusRecords)(consumeEventStreamRecords)(
                 getNotificationDetailRecords
               ),
+              // Se non riesce, mantieni la NewNotificationRequest a sinistra
               E.fromOption(() => notificationRequest)
             )
           )
